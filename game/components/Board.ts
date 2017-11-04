@@ -11,6 +11,8 @@ export class Board {
     this.cards = this.generateCards();
   }
 
+  // blue = 0, red = 1, neutral = 2, assassin = 3
+
   generateCards() {
     var cardsArray : Card[] = [];
     var cardColors = shuffle([0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3, Math.round(Math.random())]);
@@ -20,5 +22,9 @@ export class Board {
       cardsArray.push(card);
     }
     return cardsArray
+  }
+
+  findCard(word) {
+
   }
 }

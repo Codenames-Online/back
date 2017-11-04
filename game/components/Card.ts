@@ -1,10 +1,8 @@
-import { Color } from "../constants/Constants";
-
 export class Card {
   word: string;
   votes: number;
   revealed: boolean;
-  color: Color;
+  color: number;
 
   constructor(word, color) {
     this.votes = 0;
