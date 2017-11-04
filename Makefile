@@ -10,4 +10,4 @@ test: all
 	npm test
 
 server: all
-	ts-node src/index.ts
+	npm run ts-node game/index.ts
