@@ -1,6 +1,6 @@
 import url = require('url')
 import WebSocket = require('ws')
-// import Game
+import { Game } from './Game'
 
 export class Receiver {
 	wss: WebSocket.Server;
@@ -15,12 +15,12 @@ export class Receiver {
 	}
 
 	setupSocketServer() {
-		this.wss.on('connection', (ws, req) => {
-			ws.on('message', (message) => {
+		this.wss.on('connection', (socket, req) => {
+			socket.on('message', (message) => {
 				let data = JSON.parse(message.toString());
 				console.log(data);
 
-				this.handleMessage(data);
+				this.handleMessage(data, socket);
 
 				this.wss.clients.forEach((client) => {
 					if(client.readyState === WebSocket.OPEN) {
@@ -29,59 +29,66 @@ export class Receiver {
 				})
 			});
 
-			ws.on('close', (ws, req) => {
+			socket.on('close', (ws, req) => {
 				console.log('Closed connection');
 			});
 
-			ws.send('Hi there socket!');
+			socket.send('Hi there socket!');
 		});
 	}
 
-	handleMessage(message) {
+	handleMessage(message: any, socket: WebSocket) {
 		if(message.hasOwnProperty('action')) {
 			let action: string = message.action;
-			console.log("action: " + action)
-	
+			console.log(message);
+			
 			switch(action) {
 				case "setName":
 					console.log('Case setName reached');
+					// this.game.registerPlayer(message.name, socket);
 					
 					break;
 				case "switchTeam":
 					console.log('Case switchTeam reached');
-		
-					break;
+					throw new Error("Need to implement switchTeam on Game");
+					// break;
 				case "startGame":
 					console.log('Case startGame reached');
-		
+					this.game.startGame();
+
 					break;
 				case "selectCard":
 					console.log('Case selectCard reached');
-		
-					break;
+					throw new Error("Need to implement selectCard on Game");
+					// break;
 				case "deselectCard":
 					console.log('Case deselectCard reached');
-		
-					break;
+					throw new Error("Need to implement deselectCard on Game");
+					// break;
 				case "submitGuess":
 					console.log('Case submitGuess reached');
-		
-					break;
+					throw new Error("Need to implement submitGuess on Game");
+					// break;
 				case "endTurn":
 					console.log('Case endTurn reached');
-		
-					break;
+					throw new Error("Need to implement selectCard on Game");
+					// break;
 				case "sendMessage":
-					console.log('Case sendMessage reached');	
-
-					break;
+					// console.log('Case sendMessage reached');	
+					throw new Error("Need to implement sendMessage on Game (Chat?)");
+					// break;
 				case "sendClue":
 					console.log('Case sendClue reached');
-
-					break;
+					// this.game.initializeClue(message.clue);
+					throw new Error("Need to finish handling sent clue on Game");
+					// break;
 				default:
 					console.log(`Whoops don't know what ${message} is`);
 			}
 		}
+	}
+
+	genericBounceBack() {
+		
 	}
 }
