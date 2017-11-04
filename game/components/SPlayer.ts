@@ -1,9 +1,9 @@
-//import { Team } from "./Team";
+import { Team } from "../constants";
 
 export class SPlayer {
   name: string;
   id: number;
-  //team: Team;
+  team: Team;
 
   constructor(name, id, team) {
     if (new.target === SPlayer) {
@@ -12,6 +12,6 @@ export class SPlayer {
 
     this.name = name;
     this.id = id;
-    //this.team = team;
+    this.team = team;
   }
 }
