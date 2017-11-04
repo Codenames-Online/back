@@ -1,0 +1,22 @@
+{
+  "name": "codenames",
+  "version": "1.0.0",
+  "description": "Dead names: Not codenames - wildnames - catnames - codenames in the wild",
+  "main": "lib/index",
+	"types": "lib/index",
+  "scripts": {
+		"tsc": "tsc",
+		"ts-node": "ts-node",
+		"test": "mocha -t 15000 ts-node/register test/**/*.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nathanshelly/codenames.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nathanshelly/codenames/issues"
+  },
+  "homepage": "https://github.com/nathanshelly/codenames#readme"
+}
