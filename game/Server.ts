@@ -35,4 +35,4 @@ wss.on('connection', function connection(ws, req) {
   ws.send('something');
 });
 
-export default app;
+export default server;

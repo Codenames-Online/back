@@ -1,4 +1,4 @@
-/// <reference types="express" />
-import express = require('express');
-declare const app: express.Application;
-export default app;
+/// <reference types="node" />
+import http = require('http');
+declare const server: http.Server;
+export default server;
