@@ -1,4 +1,4 @@
-var words = [
+export var words = [
   "AFRICA",
   "AGENT",
   "AIR",
@@ -400,5 +400,3 @@ var words = [
   "WORM",
   "YARD",
 ];
-
-export default words;
