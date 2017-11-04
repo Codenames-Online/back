@@ -1,5 +1,5 @@
 import { Card } from "./Card";
-import { Team } from "../constants";
+import { Team } from "../constants/Constants";
 import { words } from "../constants/wordlist";
 var shuffle = require('shuffle-array');
 

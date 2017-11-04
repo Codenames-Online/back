@@ -1,4 +1,4 @@
-import { Color } from "../constants";
+import { Color } from "../constants/Constants";
 
 export class Card {
   word: string;
