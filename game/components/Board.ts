@@ -15,7 +15,7 @@ export class Board {
     var cardsArray : Card[] = [];
     var cardColors = shuffle([0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3, Math.round(Math.random())]);
     var cardWords = shuffle.pick(words, { pick : 25 });
-    for (var i = 0; i < 26; i++) {
+    for (var i = 0; i < 25; i++) {
       var card = new Card(cardWords[i], cardColors[i]);
       cardsArray.push(card);
     }

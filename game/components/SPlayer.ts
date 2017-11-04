@@ -5,9 +5,9 @@ export abstract class SPlayer {
   name: string;
   id: number;
   team: Team;
-  ws: WebSocket;
+  socket: WebSocket;
 
-  constructor(name, id, team, ws) {
+  constructor(name, id, team, socket) {
     if (new.target === SPlayer) {
       throw new TypeError("SPlayer is an abstract class.");
     }
@@ -15,6 +15,6 @@ export abstract class SPlayer {
     this.name = name;
     this.id = id;
     this.team = team;
-    this.ws = ws;
+    this.socket = socket;
   }
 }

@@ -5,12 +5,12 @@ export class SLoiterer {
   name: string;
   id: number;
   team: Team;
-  ws: WebSocket;
+  socket: WebSocket;
 
-  constructor(name, id, team, ws) {
+  constructor(name, id, team, socket) {
     this.name = name;
     this.id = id;
     this.team = team;
-    this. ws;
+    this.socket = socket;
   }
 }
