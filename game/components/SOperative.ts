@@ -1,16 +1,16 @@
 import { SPlayer } from "./SPlayer";
-import { Card } from "./Card";
+//import { Card } from "./Card";
 
-class SOperative extends SPlayer {
+export class SOperative extends SPlayer {
+  //selected = Card;
+
   constructor(name, id, team) {
     super(name, id, team);
-    this.selected = null;
+    //this.selected = null;
   }
 
   set selectedCard(card) {
-    this.selected = card;
+    //this.selected = card;
   }
 
 }
-
-export default SOperative;
