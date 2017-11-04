@@ -1,5 +1,6 @@
-import ws = require('ws')
-import url = require('url')
+import WebSocket = require('ws')
+import { Receiver } from './components/Receiver'
+
 import http = require('http')
 import express = require('express')
 
@@ -16,23 +17,15 @@ app.use(logger(
 	':method :url :status :response-time ms - :res[content-length] :req-body'
 ));
 
-app.use(function (req, res) {
+app.get('/test', (req, res) => {
   res.send({ msg: "hello" });
 });
 
+app.use(express.static('static'));
+
 const server = http.createServer(app);
-const wss = new ws.Server({ server });
+const wss = new WebSocket.Server({ server });
 
-wss.on('connection', function connection(ws, req) {
-  const location = url.parse(req.url as string, true);
-  // You might use location.query.access_token to authenticate or share sessions
-  // or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
-
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
-  });
-
-  ws.send('something');
-});
+let receiver = new Receiver(wss, 'TODO: Actually pass a game here');
 
 export default server;
