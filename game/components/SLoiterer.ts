@@ -14,7 +14,5 @@ export class SLoiterer {
     this.socket = socket;
   }
 
-  toJSON() {
-    return { name: this.name, id: this.id, team: this.team };
-  }
+  toJSON() { return { name: this.name, id: this.id, team: this.team }; }
 }
