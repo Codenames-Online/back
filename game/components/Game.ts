@@ -56,8 +56,9 @@ export class Game {
     this.loiterers.push(newLoiterer);
     let sloitererRoster = gu.getSloitererRoster(this.loiterers);
 
-		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
 		Broadcaster.updateLoiterer(newLoiterer);
+		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
+		
 		if (RuleEnforcer.canStartGame(sloitererRoster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
