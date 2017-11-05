@@ -122,6 +122,10 @@ export class Receiver {
 					});
 
 					this.game.checkGuess(currSelection as number);
+
+					this.game.findOperatives().filter(op => op.team === sop.team).forEach(
+						innerOp => this.game.deselectCard(innerOp, currSelection)
+					)
 					break;
 
 				case "endGame":
