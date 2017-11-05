@@ -193,17 +193,17 @@ export class Game {
 		Broadcaster.postClue(this.players, this.clue, this.currTeam);
   }
 
-	selectCard(player: SOperative, cardIndex: number): void {
-		player.selectCard(this.board.cards[cardIndex]);
-		this.board.cards[cardIndex].votes.push(player.name);
-		this.broadcastUpdatedBoard();
-	}
-
-	deselectCard(player: SOperative, cardIndex: number): void {
-		Broadcaster.allowGuess(gu.getPlayerTeams(this.players)[this.currTeam], false);
-
+	// toggle card (select OR deselect)
+	toggleCard(player: SOperative, cardIndex: number): void {
 		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.name);
-		this.board.cards[cardIndex].votes.splice(playerIndex, 1);
+		if (playerIndex !== -1) {
+			player.deselectCard();
+			this.board.cards[cardIndex].votes.splice(playerIndex, 1);
+		}
+		else {
+			player.selectCard(this.board.cards[cardIndex]);
+			this.board.cards[cardIndex].votes.push(player.name);
+		}
 		this.broadcastUpdatedBoard();
 	}
 
@@ -212,7 +212,7 @@ export class Game {
     this.numGuesses--;
 		(this.clue as Clue).num--;
 		Broadcaster.postClue(this.players, this.clue as Clue, this.currTeam);
-		
+
 		if (this.numGuesses == 0) { this.switchActiveTeam(); }
   }
 

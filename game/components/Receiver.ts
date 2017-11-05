@@ -72,8 +72,8 @@ export class Receiver {
 					}
 					break;
 
-				case "selectCard": {
-					console.log('Case selectCard reached');
+				case "toggleCard": {
+					console.log('Case toggleCard reached');
 					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
 					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex)
 						&& RuleEnforcer.isPlayerTurn(this.game, sop)
@@ -83,11 +83,16 @@ export class Receiver {
 						});
 
 						console.log(previousSelection);
+						console.log(message.cardIndex);
 						if(previousSelection !== -1) {
-							this.game.deselectCard(sop, previousSelection);
+							console.log('first');
+							this.game.toggleCard(sop, previousSelection);
 						}
 
-						this.game.selectCard(sop, message.cardIndex);
+						if (Number(previousSelection) !== Number(message.cardIndex)) {
+							console.log('second');
+							this.game.toggleCard(sop, message.cardIndex);
+						}
 					}
 
 					let [ canGuess, index ] = RuleEnforcer.canSubmitGuess(this.game);
@@ -100,20 +105,7 @@ export class Receiver {
 
 					break;
 				}
-				case "deselectCard": {
-					console.log('Case deselectCard reached');
-					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
-					let previousSelection = this.game.board.cards.findIndex((card: Card) => {
-						return card.votes.indexOf(sop.name) !== -1;
-					});
-					if(previousSelection === message.cardIndex
-						&& RuleEnforcer.isSelectableCard(this.game, message.cardIndex)
-						&& RuleEnforcer.isPlayerTurn(this.game, sop)
-						&& !RuleEnforcer.isPlayerSpy(this.game, sop)) {
-						this.game.deselectCard(sop, message.cardIndex);
-					}
-					break;
-				}
+
 				case "submitGuess":
 					console.log('Case submitGuess reached');
 					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
@@ -124,7 +116,7 @@ export class Receiver {
 					this.game.checkGuess(currSelection as number);
 
 					this.game.findOperatives().filter(op => op.team === sop.team).forEach(
-						innerOp => this.game.deselectCard(innerOp, currSelection)
+						innerOp => this.game.toggleCard(innerOp, currSelection)
 					)
 					break;
 
