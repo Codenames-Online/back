@@ -1,6 +1,7 @@
 import ws = require('ws')
 import url = require('url')
 
+import { Card } from './Card'
 import { Game } from './Game'
 import { SPlayer } from './SPlayer'
 import { SOperative } from './SOperative'
@@ -71,22 +72,39 @@ export class Receiver {
 					}
 					break;
 
-				case "selectCard":
-					let player1: SOperative = this.game.getPlayerById(message.id) as SOperative;
-					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player1)) {
-						this.game.selectCard(player1, message.cardIndex);
-					}
+				case "selectCard": {
 					console.log('Case selectCard reached');
-					break;
+					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
+					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex)
+						&& RuleEnforcer.isPlayerTurn(this.game, sop)
+						&& !RuleEnforcer.isPlayerSpy(this.game, sop)) {
+						let previousSelection = this.game.board.cards.findIndex((card: Card) => {
+							return card.votes.indexOf(message.id) !== -1;
+						});
 
-				case "deselectCard":
-					let player2: SOperative = this.game.getPlayerById(message.id) as SOperative;
-					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player2)) {
-						this.game.deselectCard(player2, message.cardIndex);
+						console.log(previousSelection);
+						if(previousSelection && previousSelection !== -1) {
+							this.game.deselectCard(sop, previousSelection);
+						}
+
+						this.game.selectCard(sop, message.cardIndex);
 					}
-					console.log('Case deselectCard reached');
 					break;
-
+				}
+				case "deselectCard": {
+					console.log('Case deselectCard reached');
+					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
+					let previousSelection = this.game.board.cards.findIndex((card: Card) => {
+						return card.votes.indexOf(message.id) !== -1;
+					});
+					if(previousSelection === message.cardIndex
+						&& RuleEnforcer.isSelectableCard(this.game, message.cardIndex)
+						&& RuleEnforcer.isPlayerTurn(this.game, sop)
+						&& !RuleEnforcer.isPlayerSpy(this.game, sop)) {
+						this.game.deselectCard(sop, message.cardIndex);
+					}
+					break;
+				}
 				case "submitGuess":
 					console.log('Case submitGuess reached');
 					

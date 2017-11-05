@@ -26,7 +26,7 @@ export module RuleEnforcer {
   }
 
   export function isSelectableCard(game: Game, cardIndex: number): boolean {
-    return !game.board.cards[cardIndex].revealed
+    return !game.board.cards[cardIndex].revealed;
   }
 
   export function canStartGame(sloitererRoster: [string[], string[]]) {
