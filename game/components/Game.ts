@@ -48,14 +48,6 @@ export class Game {
 		return [blue, red];
 	}
 
-	// TODO: testing
-	// create roster of blue and red teams
-	getRoster(players) { //: [SPlayer[], SPlayer[]] {	
-		const redTeam = players.filter(person => person.team === Team.red)
-    const blueTeam = players.filter(person => person.team === Team.blue)
-		return [blueTeam, redTeam];
-	}
-
 	getSloitererRoster(sloiterers: SLoiterer[]): [string[], string[]] {
 		let teams = this.getSloitererTeams(sloiterers);
 		return [teams[0].map((sloiterer) => {
@@ -76,10 +68,7 @@ export class Game {
 
 	// adds new loiterer to play class
   registerLoiterer(name, socket) {
-		console.log(this.loiterers);
 		let sloitererTeams: [SLoiterer[], SLoiterer[]] = this.getSloitererTeams(this.loiterers);
-		console.log(sloitererTeams);
-		console.log(sloitererTeams[0].length <= sloitererTeams[1].length);
 		let team: Team = sloitererTeams[0].length <= sloitererTeams[1].length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
