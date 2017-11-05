@@ -41,10 +41,6 @@ export module Broadcaster {
 		broadcastToPlayers(players, { action: "generateCards", board: Board });
 	}
 
-	export function updateScore(players: SPlayer[], score: number[]) {
-		broadcastToPlayers(players, { action: "updateScore", score: score });
-	}
-
 	export function startTeam(players: SPlayer[], team: Team) {
 		broadcastToPlayers(players, { action: "startTeam", team: team });
 	}
@@ -59,11 +55,24 @@ export module Broadcaster {
 		});
 	}
 
-
 	export function toggleStartButton(players, canEnable: boolean) {
 		broadcastToPlayers(players, {
 			action: "toggleStartButton",
 			enable: canEnable,
+		});
+	}
+
+	export function updateBoard(splayers: SPlayer[], board) {
+		broadcastToPlayers(splayers, {
+			action: "updateBoard",
+			board: board,
+		});
+	}
+
+	export function updateScore(splayers: SPlayer[], score) {
+		broadcastToPlayers(splayers, {
+			action: "updateBoard",
+			score: score,
 		});
 	}
 
@@ -92,7 +101,7 @@ export module Broadcaster {
 	}
 
 	export function promptForClue(spymaster: SSpymaster, message: string) {
-		sendToPlayer(spymaster, { action: "addMessage", board: Board });
+		sendToPlayer(spymaster, { action: "promptForClue" });
 	}
 
 	function broadcastToSloiterers(sloiterers: SLoiterer[], message: Object) {
@@ -107,9 +116,5 @@ export module Broadcaster {
 
 	export function nameSet(sloiterer: SLoiterer, id: number, name: string) {
 		sendToSloiterer(sloiterer, { action: "nameSet", id: id, name: name});
-	}
-
-	export function startGame(sloiterers: SLoiterer[]) {
-		broadcastToPlayers(sloiterers, { action: "startGame" });
 	}
 }
