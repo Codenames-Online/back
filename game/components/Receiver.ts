@@ -54,10 +54,10 @@ export class Receiver {
 					break;
 
 				case "startGame":
+					console.log('Case startGame reached');
 					if(RuleEnforcer.canStartGame(gu.getSloitererRoster(this.game.loiterers))) {
 						this.game.startGame();
 					};
-					console.log('Case startGame reached');
 					break;
 
 				case "sendClue":

@@ -123,10 +123,15 @@ export class Game {
 		this.currTeam = this.startTeam;
 		this.score = [8,8];
 		this.score[this.startTeam] = 9;
-  	this.turn = Turn.spy;
+		this.turn = Turn.spy;
+		
+		let startingRoster = this.players.map((player) => {
+			return { name: player.name, role: player.role, team: player.team }
+		});
 		
 		this.broadcastUpdatedBoard();
 		Broadcaster.updateScore(this.players, this.score);
+		Broadcaster.startGame(this.players, this.currTeam, startingRoster);
 		Broadcaster.promptForClue(this.findSpymasters()[this.startTeam]);
   }
 
@@ -168,9 +173,11 @@ export class Game {
 
   // set the clue and the initial number of guesses for operatives, switch turn to operatives
   initializeClue(clue: Clue): void {
-    this.clue = clue;
+		this.clue = clue;
+		this.clue.num = Number(clue.num) + 1;
+		console.log("Clue num after: " + this.clue.num);
 		this.turn = Turn.op;
-		this.numGuesses = clue.num + 1;
+		this.numGuesses = clue.num;
 
 		Broadcaster.switchTurn(this.players, this.currTeam, this.turn);
 		Broadcaster.postClue(this.players, this.clue, this.currTeam);
@@ -194,7 +201,7 @@ export class Game {
   decrementGuesses(): void {
     this.numGuesses--;
 		if (this.numGuesses == 0) { this.switchActiveTeam(); }
-		Broadcaster.updateNumGuesses(this.players, this.numGuesses);
+		Broadcaster.updateNumGuesses(this.players, this.clue as Clue);
   }
 
 	guessAllowed(): void {
