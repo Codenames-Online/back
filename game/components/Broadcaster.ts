@@ -17,13 +17,17 @@ export module Broadcaster {
 		player.socket.send(JSON.stringify(message));
 	}
 
-	export function revealCard(players: SPlayer[], card: Card) {
-		broadcastToPlayers(players, { action: "revealCard", card: card });
-	}
-
 	export function switchTurn(players: SPlayer[], team: Team, turn: Turn) {
 		broadcastToPlayers(players, {
 			action: "switchTurn",
+			team: team,
+			turn: turn,
+		});
+	}
+
+	export function switchActiveTeam(players: SPlayer[], team: Team, turn: Turn) {
+		broadcastToPlayers(players, {
+			action: "switchActiveTeam",
 			team: team,
 			turn: turn,
 		});
@@ -65,7 +69,7 @@ export module Broadcaster {
 		});
 	}
 
-	export function updateScore(splayers: SPlayer[], score) {
+	export function updateScore(splayers: SPlayer[], score: number[]) {
 		broadcastToPlayers(splayers, {
 			action: "updateBoard",
 			score: score,
@@ -80,6 +84,14 @@ export module Broadcaster {
 			playerName: player.name
 		});
 	}
+
+	export function updateNumGuesses(splayers: SPlayer[], guesses: number) {
+		broadcastToPlayers(splayers, {
+			action: "updateBoard",
+			guesses: guesses,
+		});
+	}
+
 
 	// PRIVATE
 

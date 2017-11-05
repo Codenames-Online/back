@@ -87,9 +87,16 @@ export class Receiver {
 					break;
 
 				case "submitGuess":
+					const submittingPlayer = this.game.getPlayerById(message.id);
+					const submitGuess = RuleEnforcer.canSubmitGuess(this.game);
+					if(!RuleEnforcer.isPlayerSpy(this.game, submittingPlayer) &&
+						!RuleEnforcer.isPlayerTurn(this.game, submittingPlayer) &&
+						submitGuess[0]) {
+						this.game.checkGuess(submitGuess[1]);
+					}
 					console.log('Case submitGuess reached');
-					throw new Error("Need to implement submitGuess on Game");
-					// break;
+					break;
+
 				case "endTurn":
 					console.log('Case endTurn reached');
 					throw new Error("Need to implement selectCard on Game");
