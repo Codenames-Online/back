@@ -64,11 +64,16 @@ export class Receiver {
 					console.log('Case sendClue reached');
 					let legalClue: boolean = RuleEnforcer.isLegalClue(message.clue);
 					let theirTurn: boolean = RuleEnforcer.isPlayerTurn(this.game, this.game.getPlayerById(message.id));
-					if(legalClue && theirTurn) {
+					let validNum: boolean = RuleEnforcer.isValidNum(message.clue)
+					if(legalClue && theirTurn && validNum) {
 						this.game.initializeClue(message.clue);
 					} else {
-						const promptAgain = { action: "invalidClue", }
-						socket.send(JSON.stringify(promptAgain));
+						if(!legalClue) {
+							socket.send(JSON.stringify({ action: "invalidClueWord", }));
+						}
+						else if(!validNum) {
+							socket.send(JSON.stringify({ action: "invalidClueNum", }));
+						}
 					}
 					break;
 
@@ -82,7 +87,6 @@ export class Receiver {
 							return card.votes.indexOf(sop.name) !== -1;
 						});
 
-						console.log(previousSelection);
 						if(previousSelection !== -1) {
 							this.game.deselectCard(sop, previousSelection);
 						}

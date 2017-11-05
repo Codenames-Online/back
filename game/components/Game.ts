@@ -135,11 +135,6 @@ export class Game {
 
 		
 		let spyMaster = this.findSpymasters()[this.startTeam];
-
-		console.log(JSON.stringify(spyMaster));
-		console.log("Starting team " + this.startTeam)
-		console.log("Curr team " + this.currTeam)
-
 		Broadcaster.promptForClue(spyMaster);
   }
 
