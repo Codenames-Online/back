@@ -33,16 +33,12 @@ export module Broadcaster {
 		broadcastToPlayers(players, { action: "spyEndTurn" });
 	}
 
-	export function broadcastClue(players: SPlayer[], clue: Clue) {
-		broadcastToPlayers(players, { action: "broadcastClue", clue: clue });
+	export function postClue(players: SPlayer[], clue: Clue) {
+		broadcastToPlayers(players, { action: "postClue", clue: clue });
 	}
 
 	export function generateCards(players: SPlayer[], board: Board) {
 		broadcastToPlayers(players, { action: "generateCards", board: Board });
-	}
-
-	export function startTeam(players: SPlayer[], team: Team) {
-		broadcastToPlayers(players, { action: "startTeam", team: team });
 	}
 
 	export function updateTeams(players, roster) {
@@ -97,11 +93,16 @@ export module Broadcaster {
 	}
 
 	export function assignColors(spymasters: SSpymaster[], boardColors: number[]) {
-		broadcastToPlayers(spymasters, { action: "addMessage", boardColors: boardColors });
+		broadcastToPlayers(spymasters, {
+			action: "addMessage",
+			boardColors: boardColors
+		});
 	}
 
 	export function promptForClue(spymaster: SSpymaster) {
-		sendToPlayer(spymaster, { action: "promptForClue" });
+		sendToPlayer(spymaster, { 
+			action: "promptForClue"
+		});
 	}
 
 	function broadcastToSloiterers(sloiterers: SLoiterer[], message: Object) {

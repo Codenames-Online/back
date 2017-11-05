@@ -56,6 +56,19 @@ export class Receiver {
 					console.log('Case startGame reached');
 					break;
 
+				case "sendClue":
+					console.log('Case sendClue reached');
+					if(isLegalClue(message.clue) && isPlayerTurn(this.game, this.game.getPlayerById(message.id))) {
+						this.game.initializeClue(message.clue);
+					}
+					else {
+						message = {
+							action: "invalidClue",
+						}
+						socket.send(JSON.stringify(message));
+					}
+					break;
+
 				case "selectCard":
 					console.log('Case selectCard reached');
 					throw new Error("Need to implement selectCard on Game");
@@ -76,11 +89,7 @@ export class Receiver {
 					// console.log('Case sendMessage reached');	
 					throw new Error("Need to implement sendMessage on Game (Chat?)");
 					// break;
-				case "sendClue":
-					console.log('Case sendClue reached');
-					// this.game.initializeClue(message.clue);
-					throw new Error("Need to finish handling sent clue on Game");
-					// break;
+			
 				default:
 					console.log(`Whoops don't know what ${message} is`);
 			}
