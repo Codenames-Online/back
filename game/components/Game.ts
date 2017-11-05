@@ -20,6 +20,7 @@ export class Game {
 	loiterers: SLoiterer[];
 	startTeam: Team;
 	currTeam?: Team;
+	chat: string[];
 
   constructor() {
     this.numGuesses = 0;
@@ -128,10 +129,11 @@ export class Game {
 		this.score = [8,8];
 		this.score[this.startTeam] = 9;
   	this.turn = Turn.spy;
+		var spymasters = this.findSpymaster();
 		Broadcaster.updateScore(this.players, this.score);
 		Broadcaster.updateBoard(this.players, this.board);
-		var spy = this.findSpymaster(this.startTeam);
-		Broadcaster.promptForClue(spy);
+		Broadcaster.promptForClue(spymasters[this.startTeam]);
+		Broadcaster.assignColors(spymasters, this.board.colors);
   }
 
 	// turn loiterers into players
@@ -153,13 +155,15 @@ export class Game {
 		this.loiterers = [];
   }
 
-	findSpymaster(team) {
+	findSpymaster() {
+		var spymasters : SSpymaster[] = [];
 		var roster = this.getRoster(this.players)
-		for (var player of roster[team]) {
+		for (var player of roster) {
 			if (player.role === Turn.spy) {
-				return player
+				spymasters[player.team] = player;
 			}
 		}
+		return spymasters
 	}
 
   setStartTeam() {
