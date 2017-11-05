@@ -20,6 +20,13 @@ export module RuleEnforcer {
     return false
   }
 
+  export function isPlayerSpy(game, player) {
+    if (Turn.spy === player.role) {
+      return true
+    }
+    return false
+  }
+
   export function isSelectableCard(card) {
     return !card.revealed
   }

@@ -20,7 +20,6 @@ export class Game {
 	loiterers: SLoiterer[];
 	startTeam: Team;
 	currTeam?: Team;
-	chat: string[];
 
   constructor() {
     this.numGuesses = 0;
@@ -188,7 +187,6 @@ export class Game {
   }
 
   // decrease number of guesses
-  // -> int
   decrementGuesses() {
     this.numGuesses--;
 		if (this.numGuesses == 0) {
