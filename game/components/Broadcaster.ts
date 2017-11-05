@@ -46,22 +46,33 @@ export module Broadcaster {
 	}
 
 	export function startTeam(players: SPlayer[], team: Team) {
-		broadcastToPlayers(players, { action: "updateScore", team: team });
+		broadcastToPlayers(players, { action: "startTeam", team: team });
 	}
 
-	export function displayTeams(players: SPlayer[]) {
-		throw new Error('TODO: Display Teams - How are we passing teams?');
-		// broadcast(players, { action: "updateScore" });
+	export function updateTeams(players, roster) {
+		broadcastToPlayers(players, {
+			action: "updateTeams",
+			teams: {
+				blue: roster[0],
+				red: roster[1],
+			},
+		});
 	}
 
-	export function updateTeams(players: SPlayer[]) {
-		throw new Error('TODO: Update Teams - How are we passing teams?');
-		// broadcast(players, { action: "updateScore" });
+	export function updateLoiterer(sloiterer) {
+		sendToPlayer(sloiterer, {
+			action: "updateLoiterer",
+			person: sloiterer,
+		});
 	}
 
-
-
-	export function addMessage (players: SPlayer[], message: string) {
+	export function enableStartGame(players) {
+		broadcastToPlayers(players, {
+			action: "enableStartGame",
+			enable: true,
+		});
+	}
+	export function addMessage(players: SPlayer[], message: string) {
 		broadcastToPlayers(players, { action: "addMessage", message: message });
 	}
 

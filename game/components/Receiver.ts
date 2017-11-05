@@ -21,12 +21,6 @@ export class Receiver {
 				console.log(data);
 
 				this.handleMessage(data, socket);
-
-				this.wss.clients.forEach((client) => {
-					if(client.readyState === WebSocket.OPEN) {
-						client.send(message);
-					}
-				})
 			});
 
 			socket.on('close', (ws, req) => {
@@ -45,8 +39,7 @@ export class Receiver {
 			switch(action) {
 				case "setName":
 					console.log('Case setName reached');
-					// this.game.registerPlayer(message.name, socket);
-					
+					this.game.registerPlayer(message.name, socket);
 					break;
 				case "switchTeam":
 					console.log('Case switchTeam reached');
