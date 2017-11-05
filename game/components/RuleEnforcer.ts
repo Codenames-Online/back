@@ -34,7 +34,7 @@ export module RuleEnforcer {
   export function canStartGame(roster) {
     var blueTeam = roster[0]
     var redTeam = roster[1]
-    return (blueTeam.length > 2 && redTeam.length > 2)
+    return (blueTeam.length >= 2 && redTeam.length >= 2)
   }
 
   export function canSubmitGuess(game) {
