@@ -92,9 +92,10 @@ export module Broadcaster {
 		});
 	}
 
-	export function endGame(splayers: SPlayer[]) {
+	export function endGame(splayers: SPlayer[], team: Team) {
 		broadcastToPlayers(splayers, {
 			action: "endGame",
+			team: team,
 		});
 	}
 
