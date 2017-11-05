@@ -8,9 +8,7 @@ import { SSpymaster } from './SSpymaster'
 
 export module Broadcaster {
 	function broadcastToPlayers(players: SPlayer[], message: Object) {
-		for(let player of players) {
-			sendToPlayer(player, message);
-		}
+		for(let player of players) { sendToPlayer(player, message); }
 	}
 
 	function sendToPlayer(player: SPlayer, message: Object) {
@@ -18,9 +16,7 @@ export module Broadcaster {
 	}
 
 	function broadcastToSloiterers(sloiterers: SLoiterer[], message: Object) {
-		for(let sloiterer of sloiterers) {
-			sendToSloiterer(sloiterer, message);
-		}
+		for(let sloiterer of sloiterers) { sendToSloiterer(sloiterer, message); }
 	}
 
 	function sendToSloiterer(sloiterer: SLoiterer, message: Object) {
@@ -57,21 +53,18 @@ export module Broadcaster {
 
 	export function updateTeams(sloiterers: SLoiterer[], roster: [string[], string[]]) {
 		broadcastToSloiterers(sloiterers, { action: "updateTeams",
-			teams: {
-				blue: roster[0],
-				red: roster[1]
-			},
+			teams: { blue: roster[Team.blue], red: roster[Team.red] },
 		});
 	}
 
-	export function toggleStartButton(players, canEnable: boolean) {
-		broadcastToPlayers(players, {
+	export function toggleStartButton(sloiterers: SLoiterer[], canEnable: boolean) {
+		broadcastToSloiterers(sloiterers, {
 			action: "toggleStartButton",
 			enable: canEnable,
 		});
 	}
 
-	export function updateBoard(splayers: SPlayer[], board) {
+export function updateBoard(splayers: SPlayer[], board: [number, Card][]) {
 		broadcastToPlayers(splayers, {
 			action: "updateBoard",
 			board: board,
@@ -110,23 +103,21 @@ export module Broadcaster {
 
 	// PRIVATE
 
-	export function updateLoiterer(sloiterer) {
-		sendToPlayer(sloiterer, {
+	export function updateLoiterer(sloiterer: SLoiterer) {
+		sendToSloiterer(sloiterer, {
 			action: "updateLoiterer",
 			person: sloiterer,
 		});
 	}
 
-	export function updateLoitererToPlayer(sloiterer, splayer) {
-		sendToPlayer(sloiterer, {
+	export function updateLoitererToPlayer(sloiterer: SLoiterer, splayer: SPlayer) {
+		sendToSloiterer(sloiterer, {
 			action: "updateLoitererToPlayer",
 			player: splayer,
 		});
 	}
 
 	export function promptForClue(spymaster: SSpymaster) {
-		sendToPlayer(spymaster, {
-			action: "promptForClue",
-		});
+		sendToPlayer(spymaster, { action: "promptForClue", });
 	}
 }

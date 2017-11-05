@@ -1,5 +1,9 @@
 import * as _ from 'lodash'
+import { GameUtility as gu } from './GameUtility'
+import * as c from '../constants/Constants'
+
 import { Clue } from './Clue';
+import { Card } from './Card'
 import { Board } from './Board';
 import { SPlayer } from './SPlayer';
 import { SOperative } from './SOperative';
@@ -26,55 +30,30 @@ export class Game {
 		this.players = [];
   }
 
+	boardToColorsAndCards(toSpymasters): [number, Card][] {
+		return this.board.cards.map((card: Card, index) => {
+			let color = (toSpymasters || card.revealed) ? this.board.colors[index] : 4;
+			return [color, card] as [number, Card];
+		});
+	}
+
 	broadcastUpdatedBoard() {
 		var spymasters = this.findSpymasters();
     var operatives = this.findOperatives();
 
-		Broadcaster.updateBoard(operatives, this.board.cards.map((card, index) => {
-				return [card, card.revealed ? this.board.colors[index] : 4]
-    }));
-		Broadcaster.updateBoard(spymasters, this.board);
-	}
-
-	getSloitererTeams(sloiterers: SLoiterer[]): [SLoiterer[], SLoiterer[]] {
-		let red = sloiterers.filter((sloiterer) => sloiterer.team === Team.red);
-		let blue = sloiterers.filter((sloiterer) => sloiterer.team === Team.blue);
-		return [blue, red];
-	}
-
-	getPlayerTeams(players: SPlayer[]): [SPlayer[], SPlayer[]] {
-		let red = players.filter((player) => player.team === Team.red);
-		let blue = players.filter((player) => player.team === Team.blue);
-		return [blue, red];
-	}
-
-	getSloitererRoster(sloiterers: SLoiterer[]): [string[], string[]] {
-		let teams = this.getSloitererTeams(sloiterers);
-		return [teams[0].map((sloiterer) => {
-			return sloiterer.name;
-		}), teams[1].map((sloiterer) => {
-			return sloiterer.name;
-		})];
-	}
-
-	getPlayerRoster(players: SPlayer[]): [string[], string[]] {
-			let teams = this.getPlayerTeams(players);
-			return [teams[0].map((player) => {
-				return player.name;
-			}), teams[1].map((player) => {
-				return player.name;
-			})];
+		Broadcaster.updateBoard(operatives, this.boardToColorsAndCards(false));
+		Broadcaster.updateBoard(spymasters, this.boardToColorsAndCards(true));
 	}
 
 	// adds new loiterer to play class
-  registerLoiterer(name, socket) {
-		let sloitererTeams: [SLoiterer[], SLoiterer[]] = this.getSloitererTeams(this.loiterers);
-		let team: Team = sloitererTeams[0].length <= sloitererTeams[1].length ? Team.blue : Team.red;
+  registerLoiterer(name: string, socket: WebSocket) {
+		let sloitererTeams: [SLoiterer[], SLoiterer[]] = gu.getSloitererTeams(this.loiterers);
+		let team: Team = sloitererTeams[Team.blue].length <= sloitererTeams[Team.red].length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
     let newLoiterer = new SLoiterer(name, id, team, socket);
     this.loiterers.push(newLoiterer);
-    let sloitererRoster = this.getSloitererRoster(this.loiterers);
+    let sloitererRoster = gu.getSloitererRoster(this.loiterers);
 
 		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
 		Broadcaster.updateLoiterer(newLoiterer);
@@ -84,16 +63,16 @@ export class Game {
   }
 
 	// switches loiterer team
-	switchLoitererTeam(id) {
+	switchLoitererTeam(id: string) {
 		for (var i = 0; i < this.loiterers.length; i++) {
 			if (this.loiterers[i].id === id) {
 				var team = this.loiterers[i].team
-				team = (team + 1) % 2;
+				team = gu.getOtherTeam(team);
 				this.loiterers[i].team = team;
 			}
     }
 
-		let sloitererRoster = this.getSloitererRoster(this.loiterers);
+		let sloitererRoster = gu.getSloitererRoster(this.loiterers);
 
 		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
 		if (RuleEnforcer.canStartGame(sloitererRoster)) {
@@ -105,32 +84,26 @@ export class Game {
 	}
 
 	// on socket close, remove person
-	removePerson(socket) {
+	removePerson(socket: WebSocket) {
 		var index = -1
 		let roster: [string[], string[]];
 
 		if (this.players.length == 0) {
 			for (var i = 0; i < this.loiterers.length; i++) {
-				if (_.isEqual(this.loiterers[i].socket, socket)) {
-					index = i;
-				}
+				if (_.isEqual(this.loiterers[i].socket, socket)) { index = i; }
 			}
-			if (index > -1) {
-				this.loiterers.splice(index, 1);
-			}
-			roster = this.getSloitererRoster(this.loiterers);
+			if (index > -1) { this.loiterers.splice(index, 1); }
+			
+			roster = gu.getSloitererRoster(this.loiterers);
 			Broadcaster.updateTeams(this.loiterers, roster);
 		}
 		else {
 			for (var i = 0; i < this.players.length; i++) {
-				if (_.isEqual(this.players[i].socket, socket)) {
-					index = i;
-				}
+				if (_.isEqual(this.players[i].socket, socket)) { index = i; }
 			}
-			if (index > -1) {
-				this.players.splice(index, 1);
-			}
-			roster = this.getPlayerRoster(this.players);
+			if (index > -1) { this.players.splice(index, 1); }
+			
+			roster = gu.getPlayerRoster(this.players);
 			Broadcaster.updateTeams(this.players, roster);
 		}
 
@@ -148,45 +121,36 @@ export class Game {
 		this.score = [8,8];
 		this.score[this.startTeam] = 9;
   	this.turn = Turn.spy;
-		Broadcaster.updateScore(this.players, this.score);
+		
 		this.broadcastUpdatedBoard();
-		var spymasters = this.findSpymasters();
-		Broadcaster.promptForClue(spymasters[this.startTeam]);
+		Broadcaster.updateScore(this.players, this.score);
+		Broadcaster.promptForClue(this.findSpymasters()[this.startTeam]);
   }
 
 	// turn loiterers into players
 	setPlayerRoles() {
-		var foundSpy = [false, false];
-		for (var loiterer of this.loiterers) {
-			if (foundSpy[loiterer.team]) {
-				var operative = new SOperative(loiterer.name, loiterer.id, loiterer.team, loiterer.socket, Turn.op);
-				this.players.push(operative);
-				Broadcaster.updateLoitererToPlayer(loiterer, operative);
-			}
-			else {
-				var spy= new SSpymaster(loiterer.name, loiterer.id, loiterer.team, loiterer.socket, Turn.spy);
-				this.players.push(spy);
-				Broadcaster.updateLoitererToPlayer(loiterer, spy);
-				foundSpy[loiterer.team] = true;
-			}
+		let foundSpy = [false, false];
+		for (let loit of this.loiterers) {
+			let haveTeamSpy = foundSpy[loit.team];
+			
+			if(haveTeamSpy) { foundSpy[loit.team] = true; }
+			let player = haveTeamSpy
+				? new SOperative(loit.name, loit.id, loit.team, loit.socket, Turn.op)
+				: new SSpymaster(loit.name, loit.id, loit.team, loit.socket, Turn.spy);
+			
+			this.players.push(player);	
+			Broadcaster.updateLoitererToPlayer(loit, player);	
 		}
+		
 		this.loiterers = [];
   }
 
-	findSpymasters(): SSpymaster[] {
-		var spymasters = new Array<SSpymaster>(2);
-		var playerTeams = this.getPlayerTeams(this.players)
-		var players = playerTeams[0].concat(playerTeams[1]);
-		for (var player of players) {
-			if (player.role === Turn.spy) {
-				spymasters[player.team] = player;
-			}
-    }
-    return spymasters;
+	findSpymasters(): SSpymaster[] {		
+		return this.players.filter(player => player.role === Turn.spy);
 	}
 
 	findOperatives(): SOperative[] {
-    return this.players.filter((player) => { player.role === Turn.op }) as SOperative[];
+    return this.players.filter(player => player.role === Turn.op) as SOperative[];
 	}
 
 	getPlayerById(id: string): SPlayer {
@@ -199,21 +163,22 @@ export class Game {
   }
 
   // set the clue and the initial number of guesses for operatives, switch turn to operatives
-  initializeClue(clue): void {
+  initializeClue(clue: Clue): void {
     this.clue = clue;
-    this.numGuesses = clue.num + 1;
-		Broadcaster.postClue(this.players, this.clue as Clue, this.currTeam);
 		this.turn = Turn.op;
+		this.numGuesses = clue.num + 1;
+
+		Broadcaster.postClue(this.players, this.clue, this.currTeam);
 		Broadcaster.switchTurn(this.players, this.currTeam, this.turn);
   }
 
-	selectCard(player, cardIndex): void {
+	selectCard(player: SOperative, cardIndex: number): void {
 		player.selectCard(this.board.cards[cardIndex]);
 		this.board.cards[cardIndex].votes.push(player.id);
 		this.broadcastUpdatedBoard();
 	}
 
-	deselectCard(player, cardIndex): void {
+	deselectCard(player: SOperative, cardIndex: number): void {
 		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.id);
 		this.board.cards[cardIndex].votes.splice(playerIndex, 1);
 		this.broadcastUpdatedBoard();
@@ -222,29 +187,32 @@ export class Game {
   // decrease number of guesses
   decrementGuesses(): void {
     this.numGuesses--;
-		if (this.numGuesses == 0) {
-			this.switchActiveTeam();
-		}
+		if (this.numGuesses == 0) { this.switchActiveTeam(); }
 		Broadcaster.updateNumGuesses(this.players, this.numGuesses);
   }
 
-	checkGuess(guessIndex): void {
+	checkGuess(guessIndex: number): void {
 		this.revealCard(guessIndex);
-		if (this.board.colors[guessIndex] === this.currTeam) { //correct guess
-			this.decrementGuesses();
-			this.updateScore(this.currTeam);
+
+		switch(this.board.colors[guessIndex]) {
+			case this.currTeam:
+				this.decrementGuesses();
+				this.updateScore(this.currTeam);
+				break;
+			case c.ASSASSIN:
+				this.endGame(gu.getOtherTeam(this.currTeam));
+				break;
+			case gu.getOtherTeam(this.currTeam):
+				this.updateScore(gu.getOtherTeam(this.currTeam));
+				// fall through
+			case c.NEUTRAL:
+				this.switchActiveTeam()
+				break;
+			default:
+				throw new Error(`There shouldn't be an extra card type: ${this.board.colors[guessIndex]}`);
 		}
-		else if (this.board.colors[guessIndex] == 3) { //assassin
-			this.endGame(((this.currTeam as Team) + 1) % 2);
-		}
-		else if (this.board.colors[guessIndex] == 2) { //neutral
-			this.switchActiveTeam();
-		}
-		else { // opposite team card
-			this.switchActiveTeam();
-			this.updateScore(((this.currTeam as Team) + 1) % 2);
-		}
-		Broadcaster.updateBoard(this.players, this.board);
+
+		this.broadcastUpdatedBoard();
 	}
 
 	switchActiveTeam(): void {
@@ -256,7 +224,7 @@ export class Game {
 	}
 
   // update this.score
-  updateScore(team): void {
+  updateScore(team: Team): void {
 		this.score[team]--;
 		if (this.score[team] == 0) {
 			this.endGame(team);
@@ -264,12 +232,12 @@ export class Game {
 		Broadcaster.updateScore(this.players, this.score);
   }
 
-	revealCard(guessIndex): void {
+	revealCard(guessIndex: number): void {
 		this.board.cards[guessIndex].revealed = true;
 		this.broadcastUpdatedBoard();
 	}
 
-	endGame(team): void {
+	endGame(team: Team): void {
 		Broadcaster.endGame(this.players, team);
 	}
 }
