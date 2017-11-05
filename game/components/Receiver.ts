@@ -141,6 +141,15 @@ export class Receiver {
 					}
 					break;
 
+				case "endTurn":
+					console.log('Case endTurn reached');
+
+					let sp: SPlayer = this.game.getPlayerById(message.id) as SPlayer;
+					if(RuleEnforcer.isPlayerTurn(this.game, sp)) {
+						this.game.switchActiveTeam();
+					}
+
+					break;
 				default:
 					console.log(`Whoops don't know what ${message} is`);
 			}
