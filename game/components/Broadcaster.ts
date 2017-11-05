@@ -86,7 +86,7 @@ export module Broadcaster {
 
 	export function updateNumGuesses(splayers: SPlayer[], guesses: number) {
 		broadcastToPlayers(splayers, {
-			action: "updateBoard",
+			action: "updateNumGuesses",
 			guesses: guesses,
 		});
 	}
