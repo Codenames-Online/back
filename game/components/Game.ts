@@ -132,7 +132,15 @@ export class Game {
 		this.broadcastUpdatedBoard();
 		Broadcaster.updateScore(this.players, this.score);
 		Broadcaster.startGame(this.players, this.currTeam, startingRoster);
-		Broadcaster.promptForClue(this.findSpymasters()[this.startTeam]);
+
+		
+		let spyMaster = this.findSpymasters()[this.startTeam];
+
+		console.log(JSON.stringify(spyMaster));
+		console.log("Starting team " + this.startTeam)
+		console.log("Curr team " + this.currTeam)
+
+		Broadcaster.promptForClue(spyMaster);
   }
 
 	// turn loiterers into players
@@ -155,7 +163,9 @@ export class Game {
   }
 
 	findSpymasters(): SSpymaster[] {		
-		return this.players.filter(player => player.role === Turn.spy);
+		return this.players.filter(player => player.role === Turn.spy).sort((p1, p2) => {
+			return p1.team < p2.team ? -1 : 1;
+		});
 	}
 
 	findOperatives(): SOperative[] {
