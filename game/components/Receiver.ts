@@ -107,7 +107,7 @@ export class Receiver {
 				case "sendMessage":
 					const player = this.game.getPlayerById(message.id);
 					if(!RuleEnforcer.isPlayerSpy(this.game, player)) {
-						Broadcaster.sendMessage(this.game.players, message.chat, player)
+						Broadcaster.sendMessage(this.game.players, message.text, player)
 					}
 					console.log('Case sendMessage reached');
 					break;
