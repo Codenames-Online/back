@@ -67,10 +67,6 @@ export function updateBoard(splayers: SPlayer[], board: [number, Card][]) {
 		});
 	}
 
-	export function updateNumGuesses(splayers: SPlayer[], clue: Clue) {
-		broadcastToPlayers(splayers, { action: "postClue", clue: clue });
-	}
-
 	export function startGame(splayers: SPlayer[], startTeam: Team, startingRoster) {
 		broadcastToPlayers(splayers, { 
 			action: "gameStarted", startTeam: startTeam, roster: startingRoster

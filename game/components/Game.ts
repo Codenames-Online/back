@@ -201,7 +201,9 @@ export class Game {
   decrementGuesses(): void {
     this.numGuesses--;
 		if (this.numGuesses == 0) { this.switchActiveTeam(); }
-		Broadcaster.updateNumGuesses(this.players, this.clue as Clue);
+
+		(this.clue as Clue).num--;
+		Broadcaster.postClue(this.players, this.clue as Clue, this.currTeam);
   }
 
 	guessAllowed(): void {
