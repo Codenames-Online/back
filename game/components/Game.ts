@@ -110,7 +110,7 @@ export class Game {
 				this.loiterers[i].team = team;
 			}
     }
-    
+
 		var roster = this.getRoster(this.loiterers);
 		Broadcaster.updateTeams(this.loiterers, roster);
 		if (RuleEnforcer.canStartGame(roster)) {
