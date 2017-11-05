@@ -6,10 +6,10 @@ import { Broadcaster } from './Broadcaster';
 
 export class Receiver {
 	wss: WebSocket.Server;
-	game;
+	game: Game;
 
 	// make game instance of Game class
-	constructor(ws: WebSocket.Server, game) {
+	constructor(ws: WebSocket.Server, game: Game) {
 		this.wss = ws;
 		this.game = game;
 
@@ -19,10 +19,7 @@ export class Receiver {
 	setupSocketServer() {
 		this.wss.on('connection', (socket, req) => {
 			socket.on('message', (message) => {
-				let data = JSON.parse(message.toString());
-				console.log(data);
-
-				this.handleMessage(data, socket);
+				this.handleMessage(JSON.parse(message.toString()), socket);
 			});
 
 			socket.on('close', (ws, req) => {
@@ -30,14 +27,16 @@ export class Receiver {
 				console.log('Closed connection');
 			});
 
-			socket.send('Hi there socket!');
+			// socket.send('Hi there socket!');
 		});
 	}
 
 	handleMessage(message: any, socket: WebSocket) {
+		console.log(message)
+		console.log(typeof message);
+
 		if(message.hasOwnProperty('action')) {
 			let action: string = message.action;
-			console.log(message);
 
 			switch(action) {
 				case "setName":

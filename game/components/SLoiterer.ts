@@ -13,4 +13,8 @@ export class SLoiterer {
     this.team = team;
     this.socket = socket;
   }
+
+  toJSON() {
+    return { name: this.name, id: this.id, team: this.team };
+  }
 }
