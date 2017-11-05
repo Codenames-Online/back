@@ -14,18 +14,29 @@ export class Game {
 	score: number[];
 	clue?: Clue;
 	numGuesses: number;
-	turn?: Turn;
+	turn: Turn;
 	board: Board;
 	players: SPlayer[];
 	loiterers: SLoiterer[];
 	startTeam: Team;
-	currTeam?: Team;
+	currTeam: Team;
 
   constructor() {
     this.numGuesses = 0;
 		this.loiterers = [];
 		this.players = [];
   }
+
+	broadcastUpdatedBoard() {
+		var spymasters = this.findSpymaster();
+		var operatives = this.findOperatives();
+		Broadcaster.updateBoard(operatives, this.board.cards.map(
+			(card, index) => {
+				return [card, card.revealed ? this.board.colors[index] : 4]
+			}
+		));
+		Broadcaster.updateBoard(spymasters, this.board);
+	}
 
 	// TODO: testing
 	// create roster of blue and red teams
@@ -128,11 +139,10 @@ export class Game {
 		this.score = [8,8];
 		this.score[this.startTeam] = 9;
   	this.turn = Turn.spy;
-		var spymasters = this.findSpymaster();
 		Broadcaster.updateScore(this.players, this.score);
-		Broadcaster.updateBoard(this.players, this.board);
+		this.broadcastUpdatedBoard();
+		var spymasters = this.findSpymaster();
 		Broadcaster.promptForClue(spymasters[this.startTeam]);
-		Broadcaster.assignColors(spymasters, this.board.colors);
   }
 
 	// turn loiterers into players
@@ -165,6 +175,14 @@ export class Game {
 		return spymasters
 	}
 
+	findOperatives() {
+		var operatives = this.players.filter((player) => {
+			player.role === Turn.op
+		})
+
+		return operatives
+	}
+
 	getPlayerById(id) {
 		for (var i = 0; i < this.players.length; i++) {
 			if (this.players[i].id === id) {
@@ -181,10 +199,22 @@ export class Game {
   initializeClue(clue) {
     this.clue = clue;
     this.numGuesses = clue.num + 1;
-		Broadcaster.postClue(this.players, this.clue as Clue);
+		Broadcaster.postClue(this.players, this.clue as Clue, this.currTeam);
 		this.turn = Turn.op;
-		Broadcaster.spyEndTurn(this.players);
+		Broadcaster.switchTurn(this.players, this.currTeam, this.turn);
   }
+
+	selectCard(player, cardIndex) {
+		player.selectCard(this.board.cards[cardIndex]);
+		this.board.cards[cardIndex].votes.push(player.id);
+		this.broadcastUpdatedBoard();
+	}
+
+	deselectCard(player, cardIndex) {
+		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.id);
+		this.board.cards[cardIndex].votes.splice(playerIndex, 1);
+		this.broadcastUpdatedBoard();
+	}
 
   // decrease number of guesses
   decrementGuesses() {

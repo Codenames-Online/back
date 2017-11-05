@@ -1,6 +1,6 @@
 import { Card } from './Card'
 import { Clue } from './Clue'
-import { Team } from '../constants/Constants'
+import { Team, Turn } from '../constants/Constants'
 import { Board } from './Board'
 import { SPlayer } from './SPlayer'
 import { SLoiterer } from './SLoiterer'
@@ -73,7 +73,7 @@ export module Broadcaster {
 	}
 
 	export function sendMessage(players: SPlayer[], chat: string, player) {
-		broadcastToPlayers(players, { 
+		broadcastToPlayers(players, {
 			action: "sendMessage",
 			chat: chat,
 			playerTeam: player.team,
@@ -98,14 +98,14 @@ export module Broadcaster {
 	}
 
 	export function promptForClue(spymaster: SSpymaster) {
-		sendToPlayer(spymaster, { 
+		sendToPlayer(spymaster, {
 			action: "promptForClue",
 		});
 	}
 
 	function broadcastToSloiterers(sloiterers: SLoiterer[], message: Object) {
 		for(let sloiterer of sloiterers) {
-			sendToPlayer(sloiterer, message);
+			sendToSloiterer(sloiterer, message);
 		}
 	}
 

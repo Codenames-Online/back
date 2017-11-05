@@ -29,8 +29,4 @@ export class Board {
     var cardColors = shuffle([0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3, this.startTeam.valueOf]);
     return cardColors
   }
-
-  findCard(word) {
-
-  }
 }

@@ -38,7 +38,7 @@ export class Receiver {
 		if(message.hasOwnProperty('action')) {
 			let action: string = message.action;
 			console.log(message);
-			
+
 			switch(action) {
 				case "setName":
 					console.log('Case setName reached');
@@ -71,17 +71,17 @@ export class Receiver {
 					break;
 
 				case "selectCard":
-					const player = this.game.getPlayerById(message.id);
-					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player)) {
-						this.game.selectCard(player, message.cardIndex);
+					const player1 = this.game.getPlayerById(message.id);
+					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player1)) {
+						this.game.selectCard(player1, message.cardIndex);
 					}
 					console.log('Case selectCard reached');
 					break;
 
 				case "deselectCard":
-					const player = this.game.getPlayerById(message.id);
-					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player)) {
-						this.game.deselectCard(player, message.cardIndex);
+					const player2 = this.game.getPlayerById(message.id);
+					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player2)) {
+						this.game.deselectCard(player2, message.cardIndex);
 					}
 					console.log('Case deselectCard reached');
 					break;
@@ -99,9 +99,9 @@ export class Receiver {
 					if(!RuleEnforcer.isPlayerSpy(this.game, player)) {
 						Broadcaster.sendMessage(this.game.players, message.chat, player)
 					}
-					console.log('Case sendMessage reached');	
+					console.log('Case sendMessage reached');
 					break;
-			
+
 				default:
 					console.log(`Whoops don't know what ${message} is`);
 			}
@@ -109,6 +109,6 @@ export class Receiver {
 	}
 
 	genericBounceBack() {
-		
+
 	}
 }

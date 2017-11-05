@@ -27,8 +27,8 @@ export module RuleEnforcer {
     return false
   }
 
-  export function isSelectableCard(card) {
-    return !card.revealed
+  export function isSelectableCard(game, cardIndex) {
+    return !game.board.cards[cardIndex].revealed
   }
 
   export function canStartGame(roster) {
