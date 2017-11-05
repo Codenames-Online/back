@@ -78,7 +78,7 @@ export module Broadcaster {
 	export function sendMessage(players: SPlayer[], chat: string, player) {
 		broadcastToPlayers(players, {
 			action: "sendMessage",
-			chat: chat,
+			text: chat,
 			playerTeam: player.team,
 			playerName: player.name
 		});

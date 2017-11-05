@@ -76,6 +76,9 @@ export class Game {
 		if (RuleEnforcer.canStartGame(roster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
+    else {
+      Broadcaster.toggleStartButton(this.loiterers, false);
+    }
 	}
 
 	// on socket close, remove person
