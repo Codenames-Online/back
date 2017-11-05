@@ -38,7 +38,16 @@ export module RuleEnforcer {
   }
 
   export function canSubmitGuess(game) {
-
+      var operatives = game.findOperatives().filter((op)=>{
+        op.team === game.currTeam
+      });
+      var selectedCard = operatives[0].selectedCard;
+      for (var op of operatives) {
+        if (op.selectedCard !== selectedCard) {
+          return [false, null]
+        }
+      }
+      var guessIndex = game.board.cards.indexOf(selectedCard);
+      return [true, guessIndex]
   }
-
 }

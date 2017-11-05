@@ -28,7 +28,7 @@ export class Game {
   }
 
 	broadcastUpdatedBoard() {
-		var spymasters = this.findSpymaster();
+		var spymasters = this.findSpymasters();
 		var operatives = this.findOperatives();
 		Broadcaster.updateBoard(operatives, this.board.cards.map(
 			(card, index) => {
@@ -141,7 +141,7 @@ export class Game {
   	this.turn = Turn.spy;
 		Broadcaster.updateScore(this.players, this.score);
 		this.broadcastUpdatedBoard();
-		var spymasters = this.findSpymaster();
+		var spymasters = this.findSpymasters();
 		Broadcaster.promptForClue(spymasters[this.startTeam]);
   }
 
@@ -164,7 +164,7 @@ export class Game {
 		this.loiterers = [];
   }
 
-	findSpymaster() {
+	findSpymasters() {
 		var spymasters : SSpymaster[] = [];
 		var roster = this.getRoster(this.players)
 		for (var player of roster) {
@@ -222,6 +222,7 @@ export class Game {
 		if (this.numGuesses == 0) {
 			this.switchActiveTeam();
 		}
+		Broadcaster.updateNumGuesses(this.players, this.numGuesses);
   }
 
 	checkGuess(guessIndex) {
@@ -240,6 +241,7 @@ export class Game {
 			this.switchActiveTeam();
 			this.updateScore(((this.currTeam as Team) + 1) % 2);
 		}
+		Broadcaster.updateBoard(this.players, this.board);
 	}
 
 	switchActiveTeam() {
@@ -249,6 +251,10 @@ export class Game {
 		else {
 			this.currTeam = Team.red;
 		}
+		this.turn = Turn.spy;
+		var spymasters = this.findSpymasters();
+		Broadcaster.promptForClue(spymasters[this.currTeam]);
+		Broadcaster.switchActiveTeam(this.players, this.currTeam, this.turn);
 	}
 
   // update this.score
@@ -257,14 +263,15 @@ export class Game {
 		if (this.score[team] == 0) {
 			this.endGame(team);
 		}
+		Broadcaster.updateScore(this.players, this.score);
   }
 
 	revealCard(guessIndex) {
 		this.board.cards[guessIndex].revealed = true;
-		Broadcaster.revealCard(this.players, this.board.cards[guessIndex]);
+		this.broadcastUpdatedBoard();
 	}
 
 	endGame(team) {
-		//Broadcaster.endGame(team);
+		//Broadcaster.endGame(this.players, team);
 	}
 }
