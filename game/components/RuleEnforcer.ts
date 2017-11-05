@@ -7,6 +7,9 @@ import { SLoiterer } from './SLoiterer';
 import { Team, Turn } from '../constants/Constants';
 
 export module RuleEnforcer {
+  export function isValidName(name) {
+    return (name.length > 0)
+  }
   export function isLegalClue(clue) {
     return words.check(clue.word)
   }

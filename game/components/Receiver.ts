@@ -41,7 +41,9 @@ export class Receiver {
 			switch(action) {
 				case "setName":
 					console.log('Case setName reached');
-					this.game.registerLoiterer(message.name, socket);
+					if (RuleEnforcer.isValidName(message.name)) {
+						this.game.registerLoiterer(message.name, socket);
+					}
 					break;
 
 				case "switchTeam":
