@@ -130,18 +130,19 @@ export class Game {
   }
 
 	// turn loiterers into players
-	setPlayerRoles() {
-		let foundSpy = [false, false];
+	setPlayerRoles(): void {
+		let foundSpy: [boolean, boolean] = [false, false];
+		let haveTeamSpy: boolean;
 		for (let loit of this.loiterers) {
-			let haveTeamSpy = foundSpy[loit.team];
-			
-			if(haveTeamSpy) { foundSpy[loit.team] = true; }
+			haveTeamSpy = foundSpy[loit.team];
 			let player = haveTeamSpy
 				? new SOperative(loit.name, loit.id, loit.team, loit.socket, Turn.op)
 				: new SSpymaster(loit.name, loit.id, loit.team, loit.socket, Turn.spy);
+
+			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
 			
-			this.players.push(player);	
-			Broadcaster.updateLoitererToPlayer(loit, player);	
+			this.players.push(player);
+			Broadcaster.updateLoitererToPlayer(loit, player);
 		}
 		
 		this.loiterers = [];
