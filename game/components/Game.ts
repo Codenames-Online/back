@@ -10,6 +10,19 @@ import { Broadcaster } from './Broadcaster';
 import { Team, Turn } from '../constants/Constants';
 import { RuleEnforcer } from './RuleEnforcer';
 
+class DataContainer {
+  name: string;
+  id: number;
+  team: Team;
+  // role: number;
+
+  constructor(name, id, team) {
+    this.name = name;
+    this.id = id;
+    this.team = team;
+  }
+}
+
 export class Game {
 	score: number[];
 	clue?: Clue;
@@ -44,7 +57,7 @@ export class Game {
 		const redTeam = arr.filter(person => person.team === Team.red)
     const blueTeam = arr.filter(person => person.team === Team.blue)
 		var roster = [blueTeam, redTeam];
-		return roster
+		return roster;
 	}
 
 	// adds new loiterer to play class
@@ -57,11 +70,31 @@ export class Game {
 			var team = Team.red;
 		}
 		var hash = crypto.createHash('md5');
-    const id = hash.update(Date.now()).digest('hex');
+    const id = hash.update(Date.now().toString()).digest('hex');
     let newLoiterer = new SLoiterer(name, id, team, socket);
     this.loiterers.push(newLoiterer);
-		var roster = this.getRoster(this.loiterers);
-		Broadcaster.updateTeams(this.loiterers, roster);
+    var roster = this.getRoster(this.loiterers);
+    let temp = roster;
+
+    // console.log("Loiterers length: " + this.loiterers.length);
+    // console.log("Roster length: " + roster.length);
+
+    // // TESTING
+
+    // let temp = roster.map((teamSloiterers) => {
+    //   return teamSloiterers.map((sloiterer: SLoiterer) => {
+    //     // return new DataContainer(sloiterer.name, sloiterer.id, sloiterer.team);
+    //     return sloiterer.name;
+    //   });
+    // });
+
+    // // TESTING
+
+    // console.log(temp.length);
+    // console.log(JSON.stringify(temp));
+
+
+		Broadcaster.updateTeams(this.loiterers, temp);
 		Broadcaster.updateLoiterer(newLoiterer);
 		if (RuleEnforcer.canStartGame(roster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
@@ -76,7 +109,8 @@ export class Game {
 				team = (team + 1) % 2;
 				this.loiterers[i].team = team;
 			}
-		}
+    }
+    
 		var roster = this.getRoster(this.loiterers);
 		Broadcaster.updateTeams(this.loiterers, roster);
 		if (RuleEnforcer.canStartGame(roster)) {

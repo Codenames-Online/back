@@ -19,4 +19,8 @@ export abstract class SPlayer {
     this.socket = socket;
     this.role = role;
   }
+
+  toJSON() {
+    return { name: this.name, id: this.id, team: this.team, role: this.role };
+  }
 }

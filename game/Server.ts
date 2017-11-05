@@ -1,5 +1,6 @@
 import WebSocket = require('ws')
 import { Receiver } from './components/Receiver'
+import { Game } from './components/Game';
 
 import http = require('http')
 import express = require('express')
@@ -26,6 +27,6 @@ app.use(express.static('static'));
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-let receiver = new Receiver(wss, 'TODO: Actually pass a game here');
+let receiver = new Receiver(wss, new Game());
 
 export default server;

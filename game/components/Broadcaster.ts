@@ -46,11 +46,10 @@ export module Broadcaster {
 	}
 
 	export function updateTeams(players, roster) {
-		broadcastToPlayers(players, {
-			action: "updateTeams",
+		broadcastToPlayers(players, { action: "updateTeams",
 			teams: {
 				blue: roster[0],
-				red: roster[1],
+				red: roster[1]
 			},
 		});
 	}
