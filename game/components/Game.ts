@@ -63,7 +63,7 @@ export class Game {
 	// adds new loiterer to play class
   registerLoiterer(name, socket) {
 		var roster = this.getRoster(this.loiterers);
-    if (roster[0].length < roster[1].length) {
+    if (roster[0].length <= roster[1].length) {
 			var team = Team.blue;
 		}
 		else {
