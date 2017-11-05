@@ -12,9 +12,8 @@ export module RuleEnforcer {
   }
 
   export function isPlayerTurn(game, player) {
-    var turn = game.turn;
     if (game.currTeam == player.team) {
-      if (turn == player.role) {
+      if (game.turn == player.role) {
         return true
       }
     }

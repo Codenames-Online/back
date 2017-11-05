@@ -166,16 +166,25 @@ export class Game {
 		return spymasters
 	}
 
+	getPlayerById(id) {
+		for (var i = 0; i < this.players.length; i++) {
+			if (this.players[i].id === id) {
+				return this.players[i]
+			}
+		}
+	}
+
   setStartTeam() {
   	this.startTeam = Math.round(Math.random()) ? Team.red : Team.blue ;
   }
 
-  // set the clue word and the initial number of guesses for operatives
-  // string, int ->
-	// TODO: bc string is now Clue
-  initializeClue(word, num) {
-    this.clue = word;
-    this.numGuesses = num + 1;
+  // set the clue and the initial number of guesses for operatives, switch turn to operatives
+  initializeClue(clue) {
+    this.clue = clue;
+    this.numGuesses = clue.num + 1;
+		Broadcaster.postClue(this.players, this.clue as Clue);
+		this.turn = Turn.op;
+		Broadcaster.spyEndTurn(this.players);
   }
 
   // decrease number of guesses
