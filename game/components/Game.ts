@@ -37,21 +37,15 @@ export class Game {
 	}
 
 	getSloitererTeams(sloiterers: SLoiterer[]): [SLoiterer[], SLoiterer[]] {
-		return [Team.red, Team.blue].map((teamColor) => {
-			return sloiterers.filter((loiterer) => {
-				return loiterer.team === teamColor;
-			});
-			// Typescript compiler doesn't understand mapping over Tuple can return tuple
-		}) as [SLoiterer[], SLoiterer[]];
+		let red = sloiterers.filter((sloiterer) => sloiterer.team === Team.red);
+		let blue = sloiterers.filter((sloiterer) => sloiterer.team === Team.blue);
+		return [blue, red];
 	}
 
 	getPlayerTeams(players: SPlayer[]): [SPlayer[], SPlayer[]] {
-		return [Team.red, Team.blue].map((teamColor) => {
-			return players.filter((player) => {
-				return player.team === teamColor;
-			});
-			// Typescript compiler doesn't understand mapping over Tuple can return tuple
-		}) as [SPlayer[], SPlayer[]];
+		let red = players.filter((player) => player.team === Team.red);
+		let blue = players.filter((player) => player.team === Team.blue);
+		return [blue, red];
 	}
 
 	// TODO: testing
@@ -63,27 +57,30 @@ export class Game {
 	}
 
 	getSloitererRoster(sloiterers: SLoiterer[]): [string[], string[]] {
-		return this.getSloitererTeams(sloiterers).map((sloitererTeam) => {
-			return sloitererTeam.map((sloiterer: SLoiterer) => {
-				return sloiterer.name;
-			})
-			// TSC I promise you this is valid
-		}) as [string[], string[]];
+		let teams = this.getSloitererTeams(sloiterers);
+		return [teams[0].map((sloiterer) => {
+			return sloiterer.name;
+		}), teams[1].map((sloiterer) => {
+			return sloiterer.name;
+		})];
 	}
 
 	getPlayerRoster(players: SPlayer[]): [string[], string[]] {
-		return this.getPlayerTeams(players).map((playerTeam) => {
-			return playerTeam.map((player: SPlayer) => {
+			let teams = this.getPlayerTeams(players);
+			return [teams[0].map((player) => {
 				return player.name;
-			})
-			// TSC I promise you this is valid
-		}) as [string[], string[]];
+			}), teams[1].map((player) => {
+				return player.name;
+			})];
 	}
 
 	// adds new loiterer to play class
   registerLoiterer(name, socket) {
-    let sloitererTeams: [SLoiterer[], SLoiterer[]] = this.getSloitererTeams(this.loiterers);
-    let team: Team = sloitererTeams[0].length <= sloitererTeams[1].length ? Team.blue : Team.red;
+		console.log(this.loiterers);
+		let sloitererTeams: [SLoiterer[], SLoiterer[]] = this.getSloitererTeams(this.loiterers);
+		console.log(sloitererTeams);
+		console.log(sloitererTeams[0].length <= sloitererTeams[1].length);
+		let team: Team = sloitererTeams[0].length <= sloitererTeams[1].length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
     let newLoiterer = new SLoiterer(name, id, team, socket);
