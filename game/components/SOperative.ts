@@ -1,7 +1,6 @@
 import { SPlayer } from "./SPlayer";
 import { Card } from "./Card";
 
-
 export class SOperative extends SPlayer {
   selected?: Card;
 
@@ -9,12 +8,6 @@ export class SOperative extends SPlayer {
     super(name, id, team, socket, role);
   }
 
-  selectCard(card) {
-    this.selected = card;
-  }
-
-  deselectCard(card) {
-    this.selected = undefined;
-  }
-
+  selectCard(card: Card) { this.selected = card; }
+  deselectCard() { this.selected = undefined; }
 }

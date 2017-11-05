@@ -2,7 +2,7 @@ export class Clue {
 	word: string;
 	num: number;
 
-	constructor(word, num) {
+	constructor(word: string, num: number) {
 		this.word = word;
 		this.num = num;
 	}

@@ -1,56 +1,52 @@
 var checker = require('check-word');
 var words = checker('en');
 
+import { Clue } from './Clue'
+import { SPlayer } from './SPlayer'
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
 import { Team, Turn } from '../constants/Constants';
+import { Game } from './Game'
 
 export module RuleEnforcer {
   export function isValidName(name) {
     return (name.length > 0)
   }
-  export function isLegalClue(clue) {
-    return words.check(clue.word)
+  
+  export function isLegalClue(clue: Clue): boolean {
+    return words.check(clue.word);
   }
 
-  export function isPlayerTurn(game, player) {
-    if (game.currTeam == player.team) {
-      if (game.turn == player.role) {
-        return true
-      }
-    }
-    return false
+  export function isPlayerTurn(game: Game, player: SPlayer) {
+    return game.currTeam === player.team && game.turn === player.role;
   }
 
-  export function isPlayerSpy(game, player) {
-    if (Turn.spy === player.role) {
-      return true
-    }
-    return false
+  export function isPlayerSpy(game: Game, player: SPlayer): boolean {
+    return Turn.spy === player.role;
   }
 
-  export function isSelectableCard(game, cardIndex) {
+  export function isSelectableCard(game: Game, cardIndex: number): boolean {
     return !game.board.cards[cardIndex].revealed
   }
 
   export function canStartGame(roster) {
-    var blueTeam = roster[0]
-    var redTeam = roster[1]
-    return (blueTeam.length >= 2 && redTeam.length >= 2)
+    let blueTeam = roster[0];
+    let redTeam = roster[1];
+    return (blueTeam.length >= 2 && redTeam.length >= 2);
   }
 
   export function canSubmitGuess(game) {
-      var operatives = game.findOperatives().filter((op)=>{
+      let operatives = game.findOperatives().filter((op)=>{
         op.team === game.currTeam
       });
-      var selectedCard = operatives[0].selectedCard;
+      let selectedCard = operatives[0].selectedCard;
       for (var op of operatives) {
         if (op.selectedCard !== selectedCard) {
           return [false, null]
         }
       }
-      var guessIndex = game.board.cards.indexOf(selectedCard);
+      let guessIndex = game.board.cards.indexOf(selectedCard);
       return [true, guessIndex]
   }
 }

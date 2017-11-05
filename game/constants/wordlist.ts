@@ -1,4 +1,4 @@
-export var words = [
+export var words: string[] = [
   "AFRICA",
   "AGENT",
   "AIR",

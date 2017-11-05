@@ -4,6 +4,8 @@ import { Game } from './Game'
 import { RuleEnforcer } from './RuleEnforcer';
 import { Broadcaster } from './Broadcaster';
 
+import { SPlayer } from './SPlayer'
+
 export class Receiver {
 	wss: WebSocket.Server;
 	game: Game;
@@ -26,8 +28,6 @@ export class Receiver {
 				this.game.removePerson(socket);
 				console.log('Closed connection');
 			});
-
-			// socket.send('Hi there socket!');
 		});
 	}
 
@@ -60,7 +60,8 @@ export class Receiver {
 
 				case "sendClue":
 					console.log('Case sendClue reached');
-					if(RuleEnforcer.isLegalClue(message.clue) && RuleEnforcer.isPlayerTurn(this.game, this.game.getPlayerById(message.id))) {
+					if(RuleEnforcer.isLegalClue(message.clue) && 
+						RuleEnforcer.isPlayerTurn(this.game, this.game.getPlayerById(message.id))) {
 						this.game.initializeClue(message.clue);
 					}
 					else {

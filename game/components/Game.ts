@@ -1,7 +1,6 @@
-var crypto = require('crypto');
-var _ = require('lodash')
-import { Board } from './Board';
+import * as _ from 'lodash'
 import { Clue } from './Clue';
+import { Board } from './Board';
 import { SPlayer } from './SPlayer';
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
@@ -30,12 +29,10 @@ export class Game {
 	broadcastUpdatedBoard() {
 		var spymasters = this.findSpymasters();
     var operatives = this.findOperatives();
-
-		Broadcaster.updateBoard(operatives, this.board.cards.map(
-			(card, index) => {
+    
+		Broadcaster.updateBoard(operatives, this.board.cards.map((card, index) => {
 				return [card, card.revealed ? this.board.colors[index] : 4]
-			}
-		));
+    }));
 		Broadcaster.updateBoard(spymasters, this.board);
 	}
 
@@ -49,21 +46,15 @@ export class Game {
 
 	// adds new loiterer to play class
   registerLoiterer(name, socket) {
-		var roster = this.getRoster(this.loiterers);
-    if (roster[0].length <= roster[1].length) {
-			var team = Team.blue;
-		}
-		else {
-			var team = Team.red;
-		}
-		var hash = crypto.createHash('md5');
-    const id = hash.update(Date.now().toString()).digest('hex');
+    var roster = this.getRoster(this.loiterers);    
+    let team: Team = roster[0].length <= roster[1].length ? Team.blue : Team.red;
+		let id = Date.now().toString(36);
+
     let newLoiterer = new SLoiterer(name, id, team, socket);
     this.loiterers.push(newLoiterer);
-    var roster = this.getRoster(this.loiterers);
-    let temp = roster;
+    roster = this.getRoster(this.loiterers);
 
-		Broadcaster.updateTeams(this.loiterers, temp);
+		Broadcaster.updateTeams(this.loiterers, roster);
 		Broadcaster.updateLoiterer(newLoiterer);
 		if (RuleEnforcer.canStartGame(roster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
@@ -169,8 +160,9 @@ export class Game {
     return this.players.filter((player) => { player.role === Turn.op }) as SOperative[];
 	}
 
-	getPlayerById(id) {
-    return this.players.find((player) => { return player.id === id; });
+	getPlayerById(id: string): SPlayer {
+    // TODO: REALLLLLLLLY SHOULDNT CAST LIKE THIS
+    return this.players.find((player) => { return player.id === id; }) as SPlayer;
 	}
 
   setStartTeam(): void {
@@ -227,12 +219,7 @@ export class Game {
 	}
 
 	switchActiveTeam(): void {
-		if (this.currTeam == Team.red) {
-			this.currTeam = Team.blue;
-		}
-		else {
-			this.currTeam = Team.red;
-		}
+    this.currTeam = this.currTeam === Team.red ? Team.blue : Team.red;
 		this.turn = Turn.spy;
 		var spymasters = this.findSpymasters();
 		Broadcaster.promptForClue(spymasters[this.currTeam]);
