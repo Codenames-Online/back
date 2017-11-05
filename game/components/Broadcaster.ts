@@ -17,24 +17,24 @@ export module Broadcaster {
 		player.socket.send(JSON.stringify(message));
 	}
 
-	export function toggleCard(players: SPlayer[], card: Card, id: number) {
-		broadcastToPlayers(players, { action: "toggleCard", card: card, id: id });
-	}
-
 	export function revealCard(players: SPlayer[], card: Card) {
 		broadcastToPlayers(players, { action: "revealCard", card: card });
 	}
 
-	export function opEndTurn(players: SPlayer[]) {
-		broadcastToPlayers(players, { action: "opEndTurn" });
+	export function switchTurn(players: SPlayer[], team: Team, turn: Turn) {
+		broadcastToPlayers(players, {
+			action: "switchTurn",
+			team: team,
+			turn: turn,
+		});
 	}
 
-	export function spyEndTurn(players: SPlayer[]) {
-		broadcastToPlayers(players, { action: "spyEndTurn" });
-	}
-
-	export function postClue(players: SPlayer[], clue: Clue) {
-		broadcastToPlayers(players, { action: "postClue", clue: clue });
+	export function postClue(players: SPlayer[], clue: Clue, team: Team) {
+		broadcastToPlayers(players, {
+			action: "postClue",
+			clue: clue,
+			team: team
+		});
 	}
 
 	export function generateCards(players: SPlayer[], board: Board) {
@@ -97,16 +97,9 @@ export module Broadcaster {
 		});
 	}
 
-	export function assignColors(spymasters: SSpymaster[], boardColors: number[]) {
-		broadcastToPlayers(spymasters, {
-			action: "addMessage",
-			boardColors: boardColors
-		});
-	}
-
 	export function promptForClue(spymaster: SSpymaster) {
 		sendToPlayer(spymaster, { 
-			action: "promptForClue"
+			action: "promptForClue",
 		});
 	}
 

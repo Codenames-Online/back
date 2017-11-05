@@ -71,13 +71,21 @@ export class Receiver {
 					break;
 
 				case "selectCard":
+					const player = this.game.getPlayerById(message.id);
+					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player)) {
+						this.game.selectCard(player, message.cardIndex);
+					}
 					console.log('Case selectCard reached');
-					throw new Error("Need to implement selectCard on Game");
-					// break;
+					break;
+
 				case "deselectCard":
+					const player = this.game.getPlayerById(message.id);
+					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player)) {
+						this.game.deselectCard(player, message.cardIndex);
+					}
 					console.log('Case deselectCard reached');
-					throw new Error("Need to implement deselectCard on Game");
-					// break;
+					break;
+
 				case "submitGuess":
 					console.log('Case submitGuess reached');
 					throw new Error("Need to implement submitGuess on Game");
