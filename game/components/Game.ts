@@ -58,7 +58,7 @@ export class Game {
 
 		Broadcaster.updateLoiterer(newLoiterer);
 		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
-		
+
 		if (RuleEnforcer.canStartGame(sloitererRoster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
@@ -96,7 +96,7 @@ export class Game {
 				if (_.isEqual(this.loiterers[i].socket, socket)) { index = i; }
 			}
 			if (index > -1) { this.loiterers.splice(index, 1); }
-			
+
 			roster = gu.getSloitererRoster(this.loiterers);
 			Broadcaster.updateTeams(this.loiterers, roster);
 		}
@@ -124,16 +124,16 @@ export class Game {
 		this.score = [8,8];
 		this.score[this.startTeam] = 9;
 		this.turn = Turn.spy;
-		
+
 		let startingRoster = this.players.map((player) => {
 			return { name: player.name, role: player.role, team: player.team }
 		});
-		
+
 		this.broadcastUpdatedBoard();
 		Broadcaster.updateScore(this.players, this.score);
 		Broadcaster.startGame(this.players, this.currTeam, startingRoster);
 
-		
+
 		let spyMaster = this.findSpymasters()[this.startTeam];
 		Broadcaster.promptForClue(spyMaster);
   }
@@ -149,15 +149,15 @@ export class Game {
 				: new SSpymaster(loit.name, loit.id, loit.team, loit.socket, Turn.spy);
 
 			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
-			
+
 			this.players.push(player);
 			Broadcaster.updateLoitererToPlayer(loit, player);
 		}
-		
+
 		this.loiterers = [];
   }
 
-	findSpymasters(): SSpymaster[] {		
+	findSpymasters(): SSpymaster[] {
 		return this.players.filter(player => player.role === Turn.spy).sort((p1, p2) => {
 			return p1.team < p2.team ? -1 : 1;
 		});
@@ -188,27 +188,27 @@ export class Game {
 		Broadcaster.postClue(this.players, this.clue, this.currTeam);
   }
 
-	selectCard(player: SOperative, cardIndex: number): void {
-		player.selectCard(this.board.cards[cardIndex]);
-		this.board.cards[cardIndex].votes.push(player.name);
-		this.broadcastUpdatedBoard();
-	}
-
-	deselectCard(player: SOperative, cardIndex: number): void {
-		Broadcaster.allowGuess(gu.getPlayerTeams(this.players)[this.currTeam], false);
-
+	// toggle card (select OR deselect)
+	toggleCard(player: SOperative, cardIndex: number): void {
 		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.name);
-		this.board.cards[cardIndex].votes.splice(playerIndex, 1);
+		if (playerIndex !== -1) {
+			player.deselectCard();
+			this.board.cards[cardIndex].votes.splice(playerIndex, 1);
+		}
+		else {
+			player.selectCard(this.board.cards[cardIndex]);
+			this.board.cards[cardIndex].votes.push(player.name);
+		}
 		this.broadcastUpdatedBoard();
 	}
 
   // decrease number of guesses
   decrementGuesses(): void {
     this.numGuesses--;
-		if (this.numGuesses == 0) { this.switchActiveTeam(); }
-
 		(this.clue as Clue).num--;
 		Broadcaster.postClue(this.players, this.clue as Clue, this.currTeam);
+
+		if (this.numGuesses == 0) { this.switchActiveTeam(); }
   }
 
 	guessAllowed(): void {
@@ -243,8 +243,8 @@ export class Game {
     this.currTeam = this.currTeam === Team.red ? Team.blue : Team.red;
 		this.turn = Turn.spy;
 		var spymasters = this.findSpymasters();
-		Broadcaster.promptForClue(spymasters[this.currTeam]);
 		Broadcaster.switchActiveTeam(this.players, this.currTeam, this.turn);
+		Broadcaster.promptForClue(spymasters[this.currTeam]);
 	}
 
   // update this.score
