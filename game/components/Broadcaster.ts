@@ -77,6 +77,10 @@ export function updateBoard(splayers: SPlayer[], board: [number, Card][]) {
 
 	// PRIVATE
 
+	export function allowGuess(players: SPlayer[], bool: boolean) {
+		broadcastToPlayers(players, { action: "allowGuess", bool: bool });
+	}
+
 	export function updateLoiterer(sloiterer: SLoiterer) {
 		sendToSloiterer(sloiterer, { action: "updateLoiterer", person: sloiterer });
 	}

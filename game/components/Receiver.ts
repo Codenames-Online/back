@@ -79,7 +79,7 @@ export class Receiver {
 						&& RuleEnforcer.isPlayerTurn(this.game, sop)
 						&& !RuleEnforcer.isPlayerSpy(this.game, sop)) {
 						let previousSelection = this.game.board.cards.findIndex((card: Card) => {
-							return card.votes.indexOf(message.id) !== -1;
+							return card.votes.indexOf(sop.name) !== -1;
 						});
 
 						console.log(previousSelection);
@@ -89,13 +89,22 @@ export class Receiver {
 
 						this.game.selectCard(sop, message.cardIndex);
 					}
+
+					let [ canGuess, index ] = RuleEnforcer.canSubmitGuess(this.game);
+					if(canGuess
+						&& !RuleEnforcer.isPlayerSpy(this.game, sop)
+						&& RuleEnforcer.isPlayerTurn(this.game, sop)) {
+						// if made it inside we know index is valid
+						this.game.guessAllowed();
+					}
+
 					break;
 				}
 				case "deselectCard": {
 					console.log('Case deselectCard reached');
 					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
 					let previousSelection = this.game.board.cards.findIndex((card: Card) => {
-						return card.votes.indexOf(message.id) !== -1;
+						return card.votes.indexOf(sop.name) !== -1;
 					});
 					if(previousSelection === message.cardIndex
 						&& RuleEnforcer.isSelectableCard(this.game, message.cardIndex)
@@ -107,16 +116,12 @@ export class Receiver {
 				}
 				case "submitGuess":
 					console.log('Case submitGuess reached');
-					
-					const submittingPlayer = this.game.getPlayerById(message.id);
-					let [ canGuess, index ] = RuleEnforcer.canSubmitGuess(this.game);
-					
-					if(canGuess
-						&& !RuleEnforcer.isPlayerSpy(this.game, submittingPlayer)
-						&& RuleEnforcer.isPlayerTurn(this.game, submittingPlayer)) {
-						// if made it inside we know index is valid
-						this.game.checkGuess(index as number);
-					}
+					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
+					let currSelection = this.game.board.cards.findIndex((card: Card) => {
+						return card.votes.indexOf(sop.name) !== -1;
+					});
+
+					this.game.checkGuess(currSelection as number);
 					break;
 
 				case "endGame":

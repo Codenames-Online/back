@@ -178,12 +178,14 @@ export class Game {
 
 	selectCard(player: SOperative, cardIndex: number): void {
 		player.selectCard(this.board.cards[cardIndex]);
-		this.board.cards[cardIndex].votes.push(player.id);
+		this.board.cards[cardIndex].votes.push(player.name);
 		this.broadcastUpdatedBoard();
 	}
 
 	deselectCard(player: SOperative, cardIndex: number): void {
-		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.id);
+		Broadcaster.allowGuess(gu.getPlayerTeams(this.players)[this.currTeam], false);
+
+		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.name);
 		this.board.cards[cardIndex].votes.splice(playerIndex, 1);
 		this.broadcastUpdatedBoard();
 	}
@@ -194,6 +196,10 @@ export class Game {
 		if (this.numGuesses == 0) { this.switchActiveTeam(); }
 		Broadcaster.updateNumGuesses(this.players, this.numGuesses);
   }
+
+	guessAllowed(): void {
+		Broadcaster.allowGuess(gu.getPlayerTeams(this.players)[this.currTeam], true);
+	}
 
 	checkGuess(guessIndex: number): void {
 		this.revealCard(guessIndex);
