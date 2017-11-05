@@ -1,19 +1,25 @@
 var crypto =  require('crypto');
 import { Board } from './Board';
+<<<<<<< HEAD
+=======
+import { Clue } from './Clue';
+>>>>>>> master
 import { SPlayer } from './SPlayer';
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
+import { Broadcaster } from './Broadcaster';
 import { Team, Turn } from '../constants/Constants';
 
 export class Game {
-	private score: number;
-	private clue: string;
-	private numGuesses: number;
-	private turn: Turn;
-	private board: Board;
-	private players: SPlayer[];
-	private startTeam?: Team;
+	score: number[];
+	clue: Clue;
+	numGuesses: number;
+	turn: Turn;
+	board: Board;
+	players: SPlayer[];
+	startTeam?: Team;
+	currTeam?: Team;
 
   constructor() {
     this.numGuesses = 0;
@@ -22,6 +28,7 @@ export class Game {
 
   // set the clue word and the initial number of guesses for operatives
   // string, int ->
+	// TODO: bc string is now Clue
   initializeClue(word, num) {
     this.clue = word;
     this.numGuesses = num + 1;
@@ -30,11 +37,42 @@ export class Game {
   // decrease number of guesses
   // -> int
   decrementGuesses() {
-    return this.numGuesses--;
+    this.numGuesses--;
+		if (this.numGuesses == 0) {
+			this.switchActiveTeam();
+		}
   }
+
+	checkGuess(guessIndex) {
+		this.revealCard(guessIndex);
+		if (this.board.colors[guessIndex] === this.currTeam) { //correct guess
+			this.decrementGuesses();
+			this.updateScore(this.currTeam);
+		}
+		else if (this.board.colors[guessIndex] == 3) { //assassin
+			this.endGame(((this.currTeam as Team) + 1) % 2);
+		}
+		else if (this.board.colors[guessIndex] == 2) { //neutral
+			this.switchActiveTeam();
+		}
+		else { // opposite team card
+			this.switchActiveTeam();
+			this.updateScore(((this.currTeam as Team) + 1) % 2);
+		}
+	}
+
+	switchActiveTeam() {
+		if (this.currTeam == Team.red) {
+			this.currTeam = Team.blue;
+		}
+		else {
+			this.currTeam = Team.red;
+		}
+	}
 
   // adds new loiterer to play class
   // string ->
+	// TODO: separate sloiterer array
   registerPlayer(name, socket) {
     let team = this.whichTeam();
     const hash = crypto.createHash('md5');
@@ -69,20 +107,13 @@ export class Game {
   	this.setPlayerRoles();
   	this.setStartTeam();
     this.board = new Board(this.startTeam);
+		this.currTeam = this.startTeam;
   	this.turn = Turn.spy;
   }
 
   setPlayerRoles() {
-    const redTeam : SPlayer[] = [];
-    const blueTeam : SPlayer[] = [];
-    for(let player of this.players) {
-      if(player.team === Team.blue) {
-        blueTeam.push(player);
-      }
-      else {
-        redTeam.push(player);
-      }
-    }
+    const redTeam = this.players.filter(player => player.team === Team.red)
+    const blueTeam = this.players.filter(player => player.team === Team.blue)
 
     if(redTeam.length < 2 || blueTeam.length < 2) {
       throw new Error("Not enough players");
@@ -118,6 +149,18 @@ export class Game {
 
   // update this.score
   updateScore(team) {
-
+		this.score[team]--;
+		if (this.score[team] == 0) {
+			this.endGame(team);
+		}
   }
+
+	revealCard(guessIndex) {
+		this.board.cards[guessIndex].revealed = true;
+		Broadcaster.revealCard(this.players, this.board.cards[guessIndex]);
+	}
+
+	endGame(team) {
+		//Broadcaster.endGame(team);
+	}
 }
