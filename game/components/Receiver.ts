@@ -2,6 +2,7 @@ import url = require('url')
 import WebSocket = require('ws')
 import { Game } from './Game'
 import { RuleEnforcer } from './RuleEnforcer';
+import { Broadcaster } from './Broadcaster';
 
 export class Receiver {
 	wss: WebSocket.Server;
@@ -62,10 +63,10 @@ export class Receiver {
 						this.game.initializeClue(message.clue);
 					}
 					else {
-						message = {
+						const promptAgain = {
 							action: "invalidClue",
 						}
-						socket.send(JSON.stringify(message));
+						socket.send(JSON.stringify(promptAgain));
 					}
 					break;
 
@@ -86,9 +87,12 @@ export class Receiver {
 					throw new Error("Need to implement selectCard on Game");
 					// break;
 				case "sendMessage":
-					// console.log('Case sendMessage reached');	
-					throw new Error("Need to implement sendMessage on Game (Chat?)");
-					// break;
+					const player = this.game.getPlayerById(message.id);
+					if(!RuleEnforcer.isPlayerSpy(this.game, player)) {
+						Broadcaster.sendMessage(this.game.players, message.chat, player)
+					}
+					console.log('Case sendMessage reached');	
+					break;
 			
 				default:
 					console.log(`Whoops don't know what ${message} is`);

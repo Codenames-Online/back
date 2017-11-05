@@ -72,8 +72,13 @@ export module Broadcaster {
 		});
 	}
 
-	export function addMessage(players: SPlayer[], message: string) {
-		broadcastToPlayers(players, { action: "addMessage", message: message });
+	export function sendMessage(players: SPlayer[], chat: string, player) {
+		broadcastToPlayers(players, { 
+			action: "sendMessage",
+			chat: chat,
+			playerTeam: player.team,
+			playerName: player.name
+		});
 	}
 
 	// PRIVATE
