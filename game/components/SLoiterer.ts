@@ -3,7 +3,7 @@ import WebSocket = require('ws')
 
 export class SLoiterer {
   name: string;
-  id: number;
+  id: string;
   team: Team;
   socket: WebSocket;
 

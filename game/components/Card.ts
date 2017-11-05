@@ -1,10 +1,10 @@
 export class Card {
   word: string;
-  votes: number;
+  votes: string[];
   revealed: boolean;
 
   constructor(word) {
-    this.votes = 0;
+    this.votes = [];
     this.revealed = false;
     this.word = word;
   }

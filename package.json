@@ -23,6 +23,7 @@
     "body-parser": "^1.18.2",
     "crypto": "^1.0.1",
     "express": "^4.16.2",
+    "lodash": "^4.17.4",
     "shuffle-array": "^1.0.1",
     "ts-node": "^3.3.0",
     "typescript": "^2.6.1",

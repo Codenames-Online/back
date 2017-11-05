@@ -1,4 +1,5 @@
-var crypto =  require('crypto');
+var crypto = require('crypto');
+var _ = require('lodash')
 import { Board } from './Board';
 import { Clue } from './Clue';
 import { SPlayer } from './SPlayer';
@@ -7,21 +8,96 @@ import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
 import { Broadcaster } from './Broadcaster';
 import { Team, Turn } from '../constants/Constants';
+import { RuleEnforcer } from './RuleEnforcer';
 
 export class Game {
 	score: number[];
-	clue: Clue;
+	clue?: Clue;
 	numGuesses: number;
-	turn: Turn;
+	turn?: Turn;
 	board: Board;
 	players: SPlayer[];
+	loiterers: SLoiterer[];
 	startTeam?: Team;
 	currTeam?: Team;
 
   constructor() {
     this.numGuesses = 0;
-    // needs to change from being hardcoded
+		this.loiterers = [];
+		this.players = [];
   }
+
+	// TODO: testing
+	// create roster of blue and red teams
+	getRoster(arr) {
+		const redTeam = arr.filter(person => person.team === Team.red)
+    const blueTeam = arr.filter(person => person.team === Team.blue)
+		var roster = [blueTeam, redTeam];
+		return roster
+	}
+
+	// adds new loiterer to play class
+  registerLoiterer(name, socket) {
+    let team = this.whichTeam();
+		var hash = crypto.createHash('md5');
+    const id = hash.update(Date.now()).digest('hex');
+    let newLoiterer = new SLoiterer(name, id, team, socket);
+    this.loiterers.push(newLoiterer);
+		var roster = this.getRoster(this.loiterers);
+		Broadcaster.updateTeams(this.loiterers, roster);
+		Broadcaster.updateLoiterer(newLoiterer);
+		if (RuleEnforcer.canStartGame(roster)) {
+			Broadcaster.toggleStartButton(this.loiterers, true);
+		}
+  }
+
+	// switches player team
+	switchLoitererTeam(id) {
+		for (var i = 0; i < this.loiterers.length; i++) {
+			if (this.loiterers[i].id === id) {
+				var team = this.loiterers[i].team
+				team = (team + 1) % 2;
+				this.loiterers[i].team = team;
+			}
+		}
+		var roster = this.getRoster(this.loiterers);
+		Broadcaster.updateTeams(this.loiterers, roster);
+		if (RuleEnforcer.canStartGame(roster)) {
+			Broadcaster.toggleStartButton(this.loiterers, true);
+		}
+	}
+
+	// on socket close, remove loiterer or person
+	removePerson(socket) {
+		var index = -1
+		if (this.players.length == 0) {
+			for (var i = 0; i < this.loiterers.length; i++) {
+				if (_.isEqual(this.loiterers[i].socket, socket)) {
+					index = i;
+				}
+			}
+			if (index > -1) {
+				this.loiterers.splice(index, 1);
+			}
+			var roster = this.getRoster(this.loiterers);
+			Broadcaster.updateTeams(this.loiterers, roster);
+		}
+		else {
+			for (var i = 0; i < this.players.length; i++) {
+				if (_.isEqual(this.players[i].socket, socket)) {
+					index = i;
+				}
+			}
+			if (index > -1) {
+				this.players.splice(index, 1);
+			}
+			var roster = this.getRoster(this.players);
+			Broadcaster.updateTeams(this.players, roster);
+		}
+		if (!RuleEnforcer.canStartGame(roster)) {
+			Broadcaster.toggleStartButton(this.loiterers, false);
+		}
+	}
 
   // set the clue word and the initial number of guesses for operatives
   // string, int ->
@@ -30,6 +106,8 @@ export class Game {
     this.clue = word;
     this.numGuesses = num + 1;
   }
+
+
 
   // decrease number of guesses
   // -> int
@@ -67,17 +145,6 @@ export class Game {
 		}
 	}
 
-  // adds new loiterer to play class
-  // string ->
-	// TODO: separate sloiterer array
-  registerPlayer(name, socket) {
-    let team = this.whichTeam();
-    const hash = crypto.createHash('md5');
-    const id = hash.update(Date.now()).digest('hex');
-    let newLoiterer = new SLoiterer(name, id, team, socket);
-    this.players.push(newLoiterer);
-  }
-
   // identify which team has fewer players
   // -> Enum Team
   whichTeam() {
@@ -109,8 +176,10 @@ export class Game {
   }
 
   setPlayerRoles() {
-    const redTeam = this.players.filter(player => player.team === Team.red)
-    const blueTeam = this.players.filter(player => player.team === Team.blue)
+		var roster = this.getRoster(this.loiterers);
+		var blueTeam = roster[0];
+		var redTeam = roster[1];
+		this.loiterers = [];
 
     if(redTeam.length < 2 || blueTeam.length < 2) {
       throw new Error("Not enough players");
@@ -119,23 +188,18 @@ export class Game {
 		//type checker stupid
     const redPlayer = redTeam.pop() as SPlayer;
     const bluePlayer = blueTeam.pop() as SPlayer;
-    let i = 0;
-    this.players[i] = new SSpymaster(redPlayer.name, redPlayer.id, redPlayer.team, redPlayer.socket);
-    i++;
+    this.players.push(new SSpymaster(redPlayer.name, redPlayer.id, redPlayer.team, redPlayer.socket));
 
     while(redTeam.length > 0) {
       const redPlayer = redTeam.pop() as SPlayer;
-      this.players[i] = new SOperative(redPlayer.name, redPlayer.id, redPlayer.team, redPlayer.socket)
-      i++;
+      this.players.push(new SOperative(redPlayer.name, redPlayer.id, redPlayer.team, redPlayer.socket));
     }
 
-    this.players[i] = new SSpymaster(bluePlayer.name, bluePlayer.id, bluePlayer.team, bluePlayer.socket);
-		i++;
+    this.players.push(new SSpymaster(bluePlayer.name, bluePlayer.id, bluePlayer.team, bluePlayer.socket));
 
     while(blueTeam.length > 0) {
       const bluePlayer = blueTeam.pop() as SPlayer;
-      this.players[i] = new SOperative(bluePlayer.name, bluePlayer.id, bluePlayer.team, bluePlayer.socket)
-      i++;
+      this.players.push(new SOperative(bluePlayer.name, bluePlayer.id, bluePlayer.team, bluePlayer.socket));
     }
 
   }
