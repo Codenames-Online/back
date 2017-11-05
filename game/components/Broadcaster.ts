@@ -59,6 +59,20 @@ export module Broadcaster {
 		});
 	}
 
+
+	export function toggleStartButton(players, canEnable: boolean) {
+		broadcastToPlayers(players, {
+			action: "toggleStartButton",
+			enable: canEnable,
+		});
+	}
+
+	export function addMessage(players: SPlayer[], message: string) {
+		broadcastToPlayers(players, { action: "addMessage", message: message });
+	}
+
+	// PRIVATE
+
 	export function updateLoiterer(sloiterer) {
 		sendToPlayer(sloiterer, {
 			action: "updateLoiterer",
@@ -66,17 +80,12 @@ export module Broadcaster {
 		});
 	}
 
-	export function enableStartGame(players) {
-		broadcastToPlayers(players, {
-			action: "enableStartGame",
-			enable: true,
+	export function updateLoiterToPlayer(sloiterer, splayer) {
+		sendToPlayer(sloiterer, {
+			action: "updateLoitererToPlayer",
+			player: splayer,
 		});
 	}
-	export function addMessage(players: SPlayer[], message: string) {
-		broadcastToPlayers(players, { action: "addMessage", message: message });
-	}
-
-	// PRIVATE
 
 	export function assignColors(spymasters: SSpymaster[], board: Board) {
 		broadcastToPlayers(spymasters, { action: "addMessage", board: Board });

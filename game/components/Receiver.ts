@@ -24,6 +24,7 @@ export class Receiver {
 			});
 
 			socket.on('close', (ws, req) => {
+				this.game.removePerson(socket);
 				console.log('Closed connection');
 			});
 
@@ -39,17 +40,19 @@ export class Receiver {
 			switch(action) {
 				case "setName":
 					console.log('Case setName reached');
-					this.game.registerPlayer(message.name, socket);
+					this.game.registerLoiterer(message.name, socket);
 					break;
+
 				case "switchTeam":
+					this.game.switchLoitererTeam(message.id);
 					console.log('Case switchTeam reached');
-					throw new Error("Need to implement switchTeam on Game");
-					// break;
+					break;
+
 				case "startGame":
 					console.log('Case startGame reached');
 					this.game.startGame();
-
 					break;
+
 				case "selectCard":
 					console.log('Case selectCard reached');
 					throw new Error("Need to implement selectCard on Game");
