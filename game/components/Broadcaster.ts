@@ -96,8 +96,8 @@ export module Broadcaster {
 		});
 	}
 
-	export function assignColors(spymasters: SSpymaster[], board: Board) {
-		broadcastToPlayers(spymasters, { action: "addMessage", board: Board });
+	export function assignColors(spymasters: SSpymaster[], boardColors: number[]) {
+		broadcastToPlayers(spymasters, { action: "addMessage", boardColors: boardColors });
 	}
 
 	export function promptForClue(spymaster: SSpymaster) {
