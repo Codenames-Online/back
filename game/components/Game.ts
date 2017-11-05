@@ -29,7 +29,7 @@ export class Game {
 	broadcastUpdatedBoard() {
 		var spymasters = this.findSpymasters();
     var operatives = this.findOperatives();
-    
+
 		Broadcaster.updateBoard(operatives, this.board.cards.map((card, index) => {
 				return [card, card.revealed ? this.board.colors[index] : 4]
     }));
@@ -46,7 +46,7 @@ export class Game {
 
 	// adds new loiterer to play class
   registerLoiterer(name, socket) {
-    var roster = this.getRoster(this.loiterers);    
+    var roster = this.getRoster(this.loiterers);
     let team: Team = roster[0].length <= roster[1].length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 

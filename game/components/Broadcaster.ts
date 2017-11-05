@@ -70,7 +70,7 @@ export module Broadcaster {
 
 	export function updateScore(splayers: SPlayer[], score: number[]) {
 		broadcastToPlayers(splayers, {
-			action: "updateBoard",
+			action: "updateScore",
 			score: score,
 		});
 	}
