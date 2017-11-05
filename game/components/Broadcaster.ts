@@ -59,7 +59,7 @@ export module Broadcaster {
 		// broadcast(players, { action: "updateScore" });
 	}
 
-	
+
 
 	export function addMessage (players: SPlayer[], message: string) {
 		broadcastToPlayers(players, { action: "addMessage", message: message });

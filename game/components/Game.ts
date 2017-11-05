@@ -1,5 +1,6 @@
 var crypto =  require('crypto');
 import { Board } from './Board';
+import { Clue } from './Clue';
 import { SPlayer } from './SPlayer';
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
@@ -9,7 +10,7 @@ import { Team, Turn } from '../constants/Constants';
 
 export class Game {
 	score: number[];
-	clue: string;
+	clue: Clue;
 	numGuesses: number;
 	turn: Turn;
 	board: Board;
@@ -24,6 +25,7 @@ export class Game {
 
   // set the clue word and the initial number of guesses for operatives
   // string, int ->
+	// TODO: bc string is now Clue
   initializeClue(word, num) {
     this.clue = word;
     this.numGuesses = num + 1;
@@ -40,14 +42,14 @@ export class Game {
 
 	checkGuess(guessIndex) {
 		this.revealCard(guessIndex);
-		if (this.board.cards[guessIndex].color === this.currTeam) { //correct guess
+		if (this.board.colors[guessIndex] === this.currTeam) { //correct guess
 			this.decrementGuesses();
 			this.updateScore(this.currTeam);
 		}
-		else if (this.board.cards[guessIndex].color == 3) { //assassin
+		else if (this.board.colors[guessIndex] == 3) { //assassin
 			this.endGame(((this.currTeam as Team) + 1) % 2);
 		}
-		else if (this.board.cards[guessIndex].color == 2) { //neutral
+		else if (this.board.colors[guessIndex] == 2) { //neutral
 			this.switchActiveTeam();
 		}
 		else { // opposite team card
@@ -67,6 +69,7 @@ export class Game {
 
   // adds new loiterer to play class
   // string ->
+	// TODO: separate sloiterer array
   registerPlayer(name, socket) {
     let team = this.whichTeam();
     const hash = crypto.createHash('md5');
@@ -151,7 +154,7 @@ export class Game {
 
 	revealCard(guessIndex) {
 		this.board.cards[guessIndex].revealed = true;
-		//Broadcaster.revealCard(this.board.cards[guessIndex].color);
+		Broadcaster.revealCard(this.players, this.board.cards[guessIndex]);
 	}
 
 	endGame(team) {
