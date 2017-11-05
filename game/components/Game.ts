@@ -1,9 +1,6 @@
 var crypto =  require('crypto');
 import { Board } from './Board';
-<<<<<<< HEAD
-=======
 import { Clue } from './Clue';
->>>>>>> master
 import { SPlayer } from './SPlayer';
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
