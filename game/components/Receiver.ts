@@ -63,13 +63,17 @@ export class Receiver {
 				case "sendClue":
 					console.log('Case sendClue reached');
 					let legalClue: boolean = RuleEnforcer.isLegalClue(message.clue);
+					let isWordOnBoard: boolean = RuleEnforcer.isWordOnBoard(message.clue, this.game.board.cards);
 					let theirTurn: boolean = RuleEnforcer.isPlayerTurn(this.game, this.game.getPlayerById(message.id));
 					let validNum: boolean = RuleEnforcer.isValidNum(message.clue)
-					if(legalClue && theirTurn && validNum) {
+					if(legalClue && !isWordOnBoard && theirTurn && validNum) {
 						this.game.initializeClue(message.clue);
 					} else {
-						if(!legalClue) {
-							socket.send(JSON.stringify({ action: "invalidClueWord", }));
+						if(isWordOnBoard){
+							socket.send(JSON.stringify({ action: "invalidClueWord", reason: "wordOnBoard"}));
+						}
+						else if(!legalClue) {
+							socket.send(JSON.stringify({ action: "invalidClueWord", reason: "notWord"}));
 						}
 						else if(!validNum) {
 							socket.send(JSON.stringify({ action: "invalidClueNum", }));

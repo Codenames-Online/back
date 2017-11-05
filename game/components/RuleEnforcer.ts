@@ -11,7 +11,7 @@ import { Team, Turn } from '../constants/Constants';
 import { Game } from './Game'
 
 export module RuleEnforcer {
-  export function isValidName(name) { return name.length > 0; }
+  export function isValidName(name) { return name.length > 0 ; }
   
   export function isValidNum(clue) {
     return clue.num >= 0 && clue.num <= 9;
@@ -19,6 +19,10 @@ export module RuleEnforcer {
 
   export function isLegalClue(clue: Clue): boolean {
     return words.check(clue.word.toLocaleLowerCase());
+  }
+
+  export function isWordOnBoard(clue: Clue, cards: Card[]): boolean {
+    return cards.filter(card => card.word.toLocaleLowerCase() === clue.word.toLocaleLowerCase()).length > 0;
   }
 
   export function isPlayerTurn(game: Game, player: SPlayer) {
