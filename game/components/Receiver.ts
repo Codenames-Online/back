@@ -52,7 +52,7 @@ export class Receiver {
 					break;
 
 				case "startGame":
-					if(RuleEnforcer.canStartGame(this.game.getRoster(this.game.loiterers))) {
+					if(RuleEnforcer.canStartGame(this.game.getSloitererRoster(this.game.loiterers))) {
 						this.game.startGame();
 					};
 					console.log('Case startGame reached');

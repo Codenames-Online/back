@@ -36,27 +36,63 @@ export class Game {
 		Broadcaster.updateBoard(spymasters, this.board);
 	}
 
+	getSloitererTeams(sloiterers: SLoiterer[]): [SLoiterer[], SLoiterer[]] {
+		return [Team.red, Team.blue].map((teamColor) => {
+			return sloiterers.filter((loiterer) => {
+				return loiterer.team === teamColor;
+			});
+			// Typescript compiler doesn't understand mapping over Tuple can return tuple
+		}) as [SLoiterer[], SLoiterer[]];
+	}
+
+	getPlayerTeams(players: SPlayer[]): [SPlayer[], SPlayer[]] {
+		return [Team.red, Team.blue].map((teamColor) => {
+			return players.filter((player) => {
+				return player.team === teamColor;
+			});
+			// Typescript compiler doesn't understand mapping over Tuple can return tuple
+		}) as [SPlayer[], SPlayer[]];
+	}
+
 	// TODO: testing
 	// create roster of blue and red teams
-	getRoster(players) { //: [SPlayer[], SPlayer[]] {
+	getRoster(players) { //: [SPlayer[], SPlayer[]] {	
 		const redTeam = players.filter(person => person.team === Team.red)
     const blueTeam = players.filter(person => person.team === Team.blue)
 		return [blueTeam, redTeam];
 	}
 
+	getSloitererRoster(sloiterers: SLoiterer[]): [string[], string[]] {
+		return this.getSloitererTeams(sloiterers).map((sloitererTeam) => {
+			return sloitererTeam.map((sloiterer: SLoiterer) => {
+				return sloiterer.name;
+			})
+			// TSC I promise you this is valid
+		}) as [string[], string[]];
+	}
+
+	getPlayerRoster(players: SPlayer[]): [string[], string[]] {
+		return this.getPlayerTeams(players).map((playerTeam) => {
+			return playerTeam.map((player: SPlayer) => {
+				return player.name;
+			})
+			// TSC I promise you this is valid
+		}) as [string[], string[]];
+	}
+
 	// adds new loiterer to play class
   registerLoiterer(name, socket) {
-    var roster = this.getRoster(this.loiterers);
-    let team: Team = roster[0].length <= roster[1].length ? Team.blue : Team.red;
+    let sloitererTeams: [SLoiterer[], SLoiterer[]] = this.getSloitererTeams(this.loiterers);
+    let team: Team = sloitererTeams[0].length <= sloitererTeams[1].length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
     let newLoiterer = new SLoiterer(name, id, team, socket);
     this.loiterers.push(newLoiterer);
-    roster = this.getRoster(this.loiterers);
+    let sloitererRoster = this.getSloitererRoster(this.loiterers);
 
-		Broadcaster.updateTeams(this.loiterers, roster);
+		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
 		Broadcaster.updateLoiterer(newLoiterer);
-		if (RuleEnforcer.canStartGame(roster)) {
+		if (RuleEnforcer.canStartGame(sloitererRoster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
   }
@@ -71,9 +107,10 @@ export class Game {
 			}
     }
 
-		var roster = this.getRoster(this.loiterers);
-		Broadcaster.updateTeams(this.loiterers, roster);
-		if (RuleEnforcer.canStartGame(roster)) {
+		let sloitererRoster = this.getSloitererRoster(this.loiterers);
+
+		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
+		if (RuleEnforcer.canStartGame(sloitererRoster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
     else {
@@ -84,6 +121,8 @@ export class Game {
 	// on socket close, remove person
 	removePerson(socket) {
 		var index = -1
+		let roster: [string[], string[]];
+
 		if (this.players.length == 0) {
 			for (var i = 0; i < this.loiterers.length; i++) {
 				if (_.isEqual(this.loiterers[i].socket, socket)) {
@@ -93,7 +132,7 @@ export class Game {
 			if (index > -1) {
 				this.loiterers.splice(index, 1);
 			}
-			var roster = this.getRoster(this.loiterers);
+			roster = this.getSloitererRoster(this.loiterers);
 			Broadcaster.updateTeams(this.loiterers, roster);
 		}
 		else {
@@ -105,9 +144,10 @@ export class Game {
 			if (index > -1) {
 				this.players.splice(index, 1);
 			}
-			var roster = this.getRoster(this.players);
+			roster = this.getPlayerRoster(this.players);
 			Broadcaster.updateTeams(this.players, roster);
 		}
+
 		if (!RuleEnforcer.canStartGame(roster)) {
 			Broadcaster.toggleStartButton(this.loiterers, false);
 		}
@@ -149,8 +189,8 @@ export class Game {
 
 	findSpymasters(): SSpymaster[] {
 		var spymasters = new Array<SSpymaster>(2);
-		var roster = this.getRoster(this.players)
-		var players = roster[0].concat(roster[1]);
+		var playerTeams = this.getPlayerTeams(this.players)
+		var players = playerTeams[0].concat(playerTeams[1]);
 		for (var player of players) {
 			if (player.role === Turn.spy) {
 				spymasters[player.team] = player;

@@ -17,6 +17,16 @@ export module Broadcaster {
 		player.socket.send(JSON.stringify(message));
 	}
 
+	function broadcastToSloiterers(sloiterers: SLoiterer[], message: Object) {
+		for(let sloiterer of sloiterers) {
+			sendToSloiterer(sloiterer, message);
+		}
+	}
+
+	function sendToSloiterer(sloiterer: SLoiterer, message: Object) {
+		sloiterer.socket.send(JSON.stringify(message));
+	}
+
 	export function switchTurn(players: SPlayer[], team: Team, turn: Turn) {
 		broadcastToPlayers(players, {
 			action: "switchTurn",
@@ -45,8 +55,8 @@ export module Broadcaster {
 		broadcastToPlayers(players, { action: "generateCards", board: Board });
 	}
 
-	export function updateTeams(players, roster) {
-		broadcastToPlayers(players, { action: "updateTeams",
+	export function updateTeams(sloiterers: SLoiterer[], roster: [string[], string[]]) {
+		broadcastToSloiterers(sloiterers, { action: "updateTeams",
 			teams: {
 				blue: roster[0],
 				red: roster[1]

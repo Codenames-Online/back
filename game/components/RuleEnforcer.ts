@@ -30,9 +30,9 @@ export module RuleEnforcer {
     return !game.board.cards[cardIndex].revealed
   }
 
-  export function canStartGame(roster) {
-    let blueTeam = roster[0];
-    let redTeam = roster[1];
+  export function canStartGame(sloitererRoster: [string[], string[]]) {
+    let redTeam = sloitererRoster[1];
+    let blueTeam = sloitererRoster[0];
     return (blueTeam.length >= 2 && redTeam.length >= 2);
   }
 
