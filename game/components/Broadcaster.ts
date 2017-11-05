@@ -92,6 +92,11 @@ export module Broadcaster {
 		});
 	}
 
+	export function endGame(splayers: SPlayer[]) {
+		broadcastToPlayers(splayers, {
+			action: "endGame",
+		});
+	}
 
 	// PRIVATE
 
@@ -113,19 +118,5 @@ export module Broadcaster {
 		sendToPlayer(spymaster, {
 			action: "promptForClue",
 		});
-	}
-
-	function broadcastToSloiterers(sloiterers: SLoiterer[], message: Object) {
-		for(let sloiterer of sloiterers) {
-			sendToSloiterer(sloiterer, message);
-		}
-	}
-
-	function sendToSloiterer(sloiterer: SLoiterer, message: Object) {
-		sloiterer.socket.send(JSON.stringify(message));
-	}
-
-	export function nameSet(sloiterer: SLoiterer, id: number, name: string) {
-		sendToSloiterer(sloiterer, { action: "nameSet", id: id, name: name});
 	}
 }

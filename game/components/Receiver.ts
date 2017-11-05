@@ -97,10 +97,11 @@ export class Receiver {
 					console.log('Case submitGuess reached');
 					break;
 
-				case "endTurn":
+				case "endGame":
+
 					console.log('Case endTurn reached');
-					throw new Error("Need to implement selectCard on Game");
-					// break;
+					break;
+
 				case "sendMessage":
 					const player = this.game.getPlayerById(message.id);
 					if(!RuleEnforcer.isPlayerSpy(this.game, player)) {
