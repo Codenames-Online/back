@@ -49,7 +49,13 @@ export class Game {
 
 	// adds new loiterer to play class
   registerLoiterer(name, socket) {
-    let team = this.whichTeam();
+		var roster = this.getRoster(this.loiterers);
+    if (roster[0].length < roster[1].length) {
+			var team = Team.blue;
+		}
+		else {
+			var team = Team.red;
+		}
 		var hash = crypto.createHash('md5');
     const id = hash.update(Date.now()).digest('hex');
     let newLoiterer = new SLoiterer(name, id, team, socket);
@@ -61,26 +67,6 @@ export class Game {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
   }
-
-	// identify which team has fewer players
-	whichTeam() {
-		if(this.getLengthOfTeam(Team.red) >= this.getLengthOfTeam(Team.blue)) {
-			return Team.blue;
-		}
-		return Team.red;
-	}
-
-	// needs testing
-	// find length of team
-	getLengthOfTeam(team) {
-		let count = 0;
-		for(var player of this.players) {
-			if(player.team === team) {
-				count++;
-			}
-		}
-		return count;
-	}
 
 	// switches loiterer team
 	switchLoitererTeam(id) {
