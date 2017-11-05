@@ -18,7 +18,7 @@ export class Game {
 	board: Board;
 	players: SPlayer[];
 	loiterers: SLoiterer[];
-	startTeam?: Team;
+	startTeam: Team;
 	currTeam?: Team;
 
   constructor() {
@@ -51,7 +51,27 @@ export class Game {
 		}
   }
 
-	// switches player team
+	// identify which team has fewer players
+	whichTeam() {
+		if(this.getLengthOfTeam(Team.red) >= this.getLengthOfTeam(Team.blue)) {
+			return Team.blue;
+		}
+		return Team.red;
+	}
+
+	// needs testing
+	// find length of team
+	getLengthOfTeam(team) {
+		let count = 0;
+		for(var player of this.players) {
+			if(player.team === team) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	// switches loiterer team
 	switchLoitererTeam(id) {
 		for (var i = 0; i < this.loiterers.length; i++) {
 			if (this.loiterers[i].id === id) {
@@ -67,7 +87,7 @@ export class Game {
 		}
 	}
 
-	// on socket close, remove loiterer or person
+	// on socket close, remove person
 	removePerson(socket) {
 		var index = -1
 		if (this.players.length == 0) {
@@ -99,6 +119,53 @@ export class Game {
 		}
 	}
 
+	// start button clicked -- set up game!
+	startGame() {
+  	this.setPlayerRoles();
+  	this.setStartTeam();
+    this.board = new Board(this.startTeam);
+		this.currTeam = this.startTeam;
+		this.score = [8,8];
+		this.score[this.startTeam] = 9;
+  	this.turn = Turn.spy;
+		Broadcaster.updateScore(this.players, this.score);
+		Broadcaster.updateBoard(this.players, this.board);
+		var spy = this.findSpymaster(this.startTeam);
+		Broadcaster.promptForClue(spy);
+  }
+
+	// turn loiterers into players
+	setPlayerRoles() {
+		var foundSpy = [false, false];
+		for (var loiterer of this.loiterers) {
+			if (foundSpy[loiterer.team]) {
+				var operative = new SOperative(loiterer.name, loiterer.id, loiterer.team, loiterer.socket, Turn.op);
+				this.players.push(operative);
+				Broadcaster.updateLoiterToPlayer(loiterer, operative);
+			}
+			else {
+				var spy= new SSpymaster(loiterer.name, loiterer.id, loiterer.team, loiterer.socket, Turn.spy);
+				this.players.push(spy);
+				Broadcaster.updateLoiterToPlayer(loiterer, spy);
+				foundSpy[loiterer.team] = true;
+			}
+		}
+		this.loiterers = [];
+  }
+
+	findSpymaster(team) {
+		var roster = this.getRoster(this.players)
+		for (var player of roster[team]) {
+			if (player.role === Turn.spy) {
+				return player
+			}
+		}
+	}
+
+  setStartTeam() {
+  	this.startTeam = Math.round(Math.random()) ? Team.red : Team.blue ;
+  }
+
   // set the clue word and the initial number of guesses for operatives
   // string, int ->
 	// TODO: bc string is now Clue
@@ -106,8 +173,6 @@ export class Game {
     this.clue = word;
     this.numGuesses = num + 1;
   }
-
-
 
   // decrease number of guesses
   // -> int
@@ -144,69 +209,6 @@ export class Game {
 			this.currTeam = Team.red;
 		}
 	}
-
-  // identify which team has fewer players
-  // -> Enum Team
-  whichTeam() {
-    if(this.getLengthOfTeam(Team.red) >= this.getLengthOfTeam(Team.blue)) {
-      return Team.blue;
-    }
-    return Team.red;
-  }
-
-  // needs testing
-  // find length of team
-  // Enum Team -> int
-  getLengthOfTeam(team) {
-    let count = 0;
-    for(var player of this.players) {
-      if(player.team === team) {
-        count++;
-      }
-    }
-    return count;
-  }
-
-  startGame() {
-  	this.setPlayerRoles();
-  	this.setStartTeam();
-    this.board = new Board(this.startTeam);
-		this.currTeam = this.startTeam;
-  	this.turn = Turn.spy;
-  }
-
-  setPlayerRoles() {
-		var roster = this.getRoster(this.loiterers);
-		var blueTeam = roster[0];
-		var redTeam = roster[1];
-		this.loiterers = [];
-
-    if(redTeam.length < 2 || blueTeam.length < 2) {
-      throw new Error("Not enough players");
-    }
-
-		//type checker stupid
-    const redPlayer = redTeam.pop() as SPlayer;
-    const bluePlayer = blueTeam.pop() as SPlayer;
-    this.players.push(new SSpymaster(redPlayer.name, redPlayer.id, redPlayer.team, redPlayer.socket));
-
-    while(redTeam.length > 0) {
-      const redPlayer = redTeam.pop() as SPlayer;
-      this.players.push(new SOperative(redPlayer.name, redPlayer.id, redPlayer.team, redPlayer.socket));
-    }
-
-    this.players.push(new SSpymaster(bluePlayer.name, bluePlayer.id, bluePlayer.team, bluePlayer.socket));
-
-    while(blueTeam.length > 0) {
-      const bluePlayer = blueTeam.pop() as SPlayer;
-      this.players.push(new SOperative(bluePlayer.name, bluePlayer.id, bluePlayer.team, bluePlayer.socket));
-    }
-
-  }
-
-  setStartTeam() {
-  	this.startTeam = Math.round(Math.random()) ? Team.red : Team.blue ;
-  }
 
   // update this.score
   updateScore(team) {

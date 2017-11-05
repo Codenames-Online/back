@@ -14,10 +14,7 @@ export module RuleEnforcer {
   export function isPlayerTurn(game, player) {
     var turn = game.turn;
     if (game.currTeam == player.team) {
-      if (turn == Turn.op && player.constructor.name == SOperative) {
-        return true
-      }
-      if (turn == Turn.spy && player.constructor.name == SSpymaster) {
+      if (turn == player.role) {
         return true
       }
     }

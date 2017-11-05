@@ -100,7 +100,7 @@ export module Broadcaster {
 		broadcastToPlayers(spymasters, { action: "addMessage", board: Board });
 	}
 
-	export function promptForClue(spymaster: SSpymaster, message: string) {
+	export function promptForClue(spymaster: SSpymaster) {
 		sendToPlayer(spymaster, { action: "promptForClue" });
 	}
 

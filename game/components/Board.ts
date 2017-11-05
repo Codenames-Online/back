@@ -26,7 +26,7 @@ export class Board {
   }
 
   generateColors() {
-    var cardColors = shuffle([0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3, Math.round(Math.random())]);
+    var cardColors = shuffle([0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3, this.startTeam.valueOf]);
     return cardColors
   }
 
