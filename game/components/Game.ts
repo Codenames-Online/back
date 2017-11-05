@@ -135,12 +135,12 @@ export class Game {
 			if (foundSpy[loiterer.team]) {
 				var operative = new SOperative(loiterer.name, loiterer.id, loiterer.team, loiterer.socket, Turn.op);
 				this.players.push(operative);
-				Broadcaster.updateLoiterToPlayer(loiterer, operative);
+				Broadcaster.updateLoitererToPlayer(loiterer, operative);
 			}
 			else {
 				var spy= new SSpymaster(loiterer.name, loiterer.id, loiterer.team, loiterer.socket, Turn.spy);
 				this.players.push(spy);
-				Broadcaster.updateLoiterToPlayer(loiterer, spy);
+				Broadcaster.updateLoitererToPlayer(loiterer, spy);
 				foundSpy[loiterer.team] = true;
 			}
 		}

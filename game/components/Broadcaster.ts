@@ -107,7 +107,7 @@ export module Broadcaster {
 		});
 	}
 
-	export function updateLoiterToPlayer(sloiterer, splayer) {
+	export function updateLoitererToPlayer(sloiterer, splayer) {
 		sendToPlayer(sloiterer, {
 			action: "updateLoitererToPlayer",
 			player: splayer,
