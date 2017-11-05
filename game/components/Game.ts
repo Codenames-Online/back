@@ -89,7 +89,7 @@ export class Game {
 
 
 		Broadcaster.updateTeams(this.loiterers, temp);
-		// Broadcaster.updateLoiterer(newLoiterer);
+		Broadcaster.updateLoiterer(newLoiterer);
 		if (RuleEnforcer.canStartGame(roster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
