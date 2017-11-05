@@ -46,7 +46,8 @@ export class Game {
 	}
 
 	// adds new loiterer to play class
-  registerLoiterer(name: string, socket: WebSocket) {
+	// TODO: Weird typing issue between here and Receiver
+  registerLoiterer(name: string, socket) {
 		let sloitererTeams: [SLoiterer[], SLoiterer[]] = gu.getSloitererTeams(this.loiterers);
 		let team: Team = sloitererTeams[Team.blue].length <= sloitererTeams[Team.red].length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
@@ -84,7 +85,8 @@ export class Game {
 	}
 
 	// on socket close, remove person
-	removePerson(socket: WebSocket) {
+	// TODO: Weird typing between here and receiver
+	removePerson(socket) {
 		var index = -1
 		let roster: [string[], string[]];
 
@@ -102,7 +104,7 @@ export class Game {
 				if (_.isEqual(this.players[i].socket, socket)) { index = i; }
 			}
 			if (index > -1) { this.players.splice(index, 1); }
-			
+
 			roster = gu.getPlayerRoster(this.players);
 			Broadcaster.updateTeams(this.players, roster);
 		}

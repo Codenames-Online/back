@@ -1,18 +1,20 @@
+import ws = require('ws')
 import url = require('url')
-import WebSocket = require('ws')
-import { Game } from './Game'
-import { RuleEnforcer } from './RuleEnforcer';
-import { Broadcaster } from './Broadcaster';
 
+import { Game } from './Game'
 import { SPlayer } from './SPlayer'
+import { SOperative } from './SOperative'
+import { Broadcaster } from './Broadcaster';
+import { RuleEnforcer } from './RuleEnforcer';
+import { GameUtility as gu } from './GameUtility'
 
 export class Receiver {
-	wss: WebSocket.Server;
+	wss: ws.Server;
 	game: Game;
 
 	// make game instance of Game class
-	constructor(ws: WebSocket.Server, game: Game) {
-		this.wss = ws;
+	constructor(socketServer: ws.Server, game: Game) {
+		this.wss = socketServer;
 		this.game = game;
 
 		this.setupSocketServer();
@@ -24,14 +26,14 @@ export class Receiver {
 				this.handleMessage(JSON.parse(message.toString()), socket);
 			});
 
-			socket.on('close', (ws, req) => {
+			socket.on('close', (req) => {
 				this.game.removePerson(socket);
 				console.log('Closed connection');
 			});
 		});
 	}
 
-	handleMessage(message: any, socket: WebSocket) {
+	handleMessage(message: any, socket: ws) {
 		console.log(message)
 		console.log(typeof message);
 
@@ -52,7 +54,7 @@ export class Receiver {
 					break;
 
 				case "startGame":
-					if(RuleEnforcer.canStartGame(this.game.getSloitererRoster(this.game.loiterers))) {
+					if(RuleEnforcer.canStartGame(gu.getSloitererRoster(this.game.loiterers))) {
 						this.game.startGame();
 					};
 					console.log('Case startGame reached');
@@ -73,7 +75,7 @@ export class Receiver {
 					break;
 
 				case "selectCard":
-					const player1 = this.game.getPlayerById(message.id);
+					let player1: SOperative = this.game.getPlayerById(message.id) as SOperative;
 					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player1)) {
 						this.game.selectCard(player1, message.cardIndex);
 					}
@@ -81,7 +83,7 @@ export class Receiver {
 					break;
 
 				case "deselectCard":
-					const player2 = this.game.getPlayerById(message.id);
+					let player2: SOperative = this.game.getPlayerById(message.id) as SOperative;
 					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex) && !RuleEnforcer.isPlayerSpy(this.game, player2)) {
 						this.game.deselectCard(player2, message.cardIndex);
 					}
