@@ -272,6 +272,6 @@ export class Game {
 	}
 
 	endGame(team) {
-		//Broadcaster.endGame(this.players, team);
+		Broadcaster.endGame(this.players, team);
 	}
 }
