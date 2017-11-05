@@ -58,7 +58,7 @@ export class Receiver {
 
 				case "sendClue":
 					console.log('Case sendClue reached');
-					if(isLegalClue(message.clue) && isPlayerTurn(this.game, this.game.getPlayerById(message.id))) {
+					if(RuleEnforcer.isLegalClue(message.clue) && RuleEnforcer.isPlayerTurn(this.game, this.game.getPlayerById(message.id))) {
 						this.game.initializeClue(message.clue);
 					}
 					else {
