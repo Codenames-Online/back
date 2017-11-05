@@ -83,7 +83,7 @@ export class Receiver {
 						});
 
 						console.log(previousSelection);
-						if(previousSelection && previousSelection !== -1) {
+						if(previousSelection !== -1) {
 							this.game.deselectCard(sop, previousSelection);
 						}
 
