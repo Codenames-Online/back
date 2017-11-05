@@ -30,7 +30,7 @@ export class Game {
 	broadcastUpdatedBoard() {
 		var spymasters = this.findSpymasters();
     var operatives = this.findOperatives();
-    
+
 		Broadcaster.updateBoard(operatives, this.board.cards.map(
 			(card, index) => {
 				return [card, card.revealed ? this.board.colors[index] : 4]
@@ -154,14 +154,14 @@ export class Game {
   }
 
 	findSpymasters(): SSpymaster[] {
-		var spymasters : SSpymaster[] = [];
+		var spymasters = new Array<SSpymaster>(2);
 		var roster = this.getRoster(this.players)
-		for (var player of roster) {
+		var players = roster[0].concat(roster[1]);
+		for (var player of players) {
 			if (player.role === Turn.spy) {
 				spymasters[player.team] = player;
 			}
     }
-    
     return spymasters;
 	}
 
