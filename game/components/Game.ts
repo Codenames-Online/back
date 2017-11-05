@@ -172,8 +172,8 @@ export class Game {
 		this.turn = Turn.op;
 		this.numGuesses = clue.num + 1;
 
-		Broadcaster.postClue(this.players, this.clue, this.currTeam);
 		Broadcaster.switchTurn(this.players, this.currTeam, this.turn);
+		Broadcaster.postClue(this.players, this.clue, this.currTeam);
   }
 
 	selectCard(player: SOperative, cardIndex: number): void {

@@ -24,27 +24,15 @@ export module Broadcaster {
 	}
 
 	export function switchTurn(players: SPlayer[], team: Team, turn: Turn) {
-		broadcastToPlayers(players, {
-			action: "switchTurn",
-			team: team,
-			turn: turn,
-		});
+		broadcastToPlayers(players, { action: "switchTurn", team: team, turn: turn });
 	}
 
 	export function switchActiveTeam(players: SPlayer[], team: Team, turn: Turn) {
-		broadcastToPlayers(players, {
-			action: "switchActiveTeam",
-			team: team,
-			turn: turn,
-		});
+		broadcastToPlayers(players, { action: "switchActiveTeam", team: team, turn: turn });
 	}
 
 	export function postClue(players: SPlayer[], clue: Clue, team: Team) {
-		broadcastToPlayers(players, {
-			action: "postClue",
-			clue: clue,
-			team: team
-		});
+		broadcastToPlayers(players, { action: "postClue", clue: clue, team: team });
 	}
 
 	export function generateCards(players: SPlayer[], board: Board) {
@@ -52,30 +40,22 @@ export module Broadcaster {
 	}
 
 	export function updateTeams(sloiterers: SLoiterer[], roster: [string[], string[]]) {
-		broadcastToSloiterers(sloiterers, { action: "updateTeams",
+		broadcastToSloiterers(sloiterers, { 
+			action: "updateTeams",
 			teams: { blue: roster[Team.blue], red: roster[Team.red] },
 		});
 	}
 
 	export function toggleStartButton(sloiterers: SLoiterer[], canEnable: boolean) {
-		broadcastToSloiterers(sloiterers, {
-			action: "toggleStartButton",
-			enable: canEnable,
-		});
+		broadcastToSloiterers(sloiterers, { action: "toggleStartButton", enable: canEnable });
 	}
 
 export function updateBoard(splayers: SPlayer[], board: [number, Card][]) {
-		broadcastToPlayers(splayers, {
-			action: "updateBoard",
-			board: board,
-		});
+		broadcastToPlayers(splayers, { action: "updateBoard", board: board });
 	}
 
 	export function updateScore(splayers: SPlayer[], score: number[]) {
-		broadcastToPlayers(splayers, {
-			action: "updateScore",
-			score: score,
-		});
+		broadcastToPlayers(splayers, { action: "updateScore", score: score });
 	}
 
 	export function sendMessage(players: SPlayer[], chat: string, player) {
@@ -88,36 +68,24 @@ export function updateBoard(splayers: SPlayer[], board: [number, Card][]) {
 	}
 
 	export function updateNumGuesses(splayers: SPlayer[], guesses: number) {
-		broadcastToPlayers(splayers, {
-			action: "updateNumGuesses",
-			guesses: guesses,
-		});
+		broadcastToPlayers(splayers, { action: "updateNumGuesses", guesses: guesses });
 	}
 
 	export function endGame(splayers: SPlayer[], team: Team) {
-		broadcastToPlayers(splayers, {
-			action: "endGame",
-			team: team,
-		});
+		broadcastToPlayers(splayers, { action: "endGame", team: team });
 	}
 
 	// PRIVATE
 
 	export function updateLoiterer(sloiterer: SLoiterer) {
-		sendToSloiterer(sloiterer, {
-			action: "updateLoiterer",
-			person: sloiterer,
-		});
+		sendToSloiterer(sloiterer, { action: "updateLoiterer", person: sloiterer });
 	}
 
 	export function updateLoitererToPlayer(sloiterer: SLoiterer, splayer: SPlayer) {
-		sendToSloiterer(sloiterer, {
-			action: "updateLoitererToPlayer",
-			player: splayer,
-		});
+		sendToSloiterer(sloiterer, { action: "updateLoitererToPlayer", player: splayer });
 	}
 
 	export function promptForClue(spymaster: SSpymaster) {
-		sendToPlayer(spymaster, { action: "promptForClue", });
+		sendToPlayer(spymaster, { action: "promptForClue" });
 	}
 }

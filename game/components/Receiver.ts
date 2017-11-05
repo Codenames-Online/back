@@ -35,7 +35,6 @@ export class Receiver {
 
 	handleMessage(message: any, socket: ws) {
 		console.log(message)
-		console.log(typeof message);
 
 		if(message.hasOwnProperty('action')) {
 			let action: string = message.action;
@@ -62,14 +61,12 @@ export class Receiver {
 
 				case "sendClue":
 					console.log('Case sendClue reached');
-					if(RuleEnforcer.isLegalClue(message.clue) && 
-						RuleEnforcer.isPlayerTurn(this.game, this.game.getPlayerById(message.id))) {
+					let legalClue: boolean = RuleEnforcer.isLegalClue(message.clue);
+					let theirTurn: boolean = RuleEnforcer.isPlayerTurn(this.game, this.game.getPlayerById(message.id));
+					if(legalClue && theirTurn) {
 						this.game.initializeClue(message.clue);
-					}
-					else {
-						const promptAgain = {
-							action: "invalidClue",
-						}
+					} else {
+						const promptAgain = { action: "invalidClue", }
 						socket.send(JSON.stringify(promptAgain));
 					}
 					break;
@@ -91,36 +88,35 @@ export class Receiver {
 					break;
 
 				case "submitGuess":
-					const submittingPlayer = this.game.getPlayerById(message.id);
-					const submitGuess = RuleEnforcer.canSubmitGuess(this.game);
-					if(!RuleEnforcer.isPlayerSpy(this.game, submittingPlayer) &&
-						!RuleEnforcer.isPlayerTurn(this.game, submittingPlayer) &&
-						submitGuess[0]) {
-						this.game.checkGuess(submitGuess[1]);
-					}
 					console.log('Case submitGuess reached');
+					
+					const submittingPlayer = this.game.getPlayerById(message.id);
+					let [ canGuess, index ] = RuleEnforcer.canSubmitGuess(this.game);
+					
+					if(canGuess
+						&& !RuleEnforcer.isPlayerSpy(this.game, submittingPlayer)
+						&& RuleEnforcer.isPlayerTurn(this.game, submittingPlayer)) {
+						// if made it inside we know index is valid
+						this.game.checkGuess(index as number);
+					}
 					break;
 
 				case "endGame":
-
 					console.log('Case endTurn reached');
 					break;
 
 				case "sendMessage":
+					console.log('Case sendMessage reached');
+
 					const player = this.game.getPlayerById(message.id);
 					if(!RuleEnforcer.isPlayerSpy(this.game, player)) {
 						Broadcaster.sendMessage(this.game.players, message.text, player)
 					}
-					console.log('Case sendMessage reached');
 					break;
 
 				default:
 					console.log(`Whoops don't know what ${message} is`);
 			}
 		}
-	}
-
-	genericBounceBack() {
-
 	}
 }
