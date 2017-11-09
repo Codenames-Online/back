@@ -179,10 +179,11 @@ export class Game {
   // set the clue and the initial number of guesses for operatives, switch turn to operatives
   initializeClue(clue: Clue): void {
 		this.clue = clue;
-		this.clue.num = Number(clue.num) + 1;
+		this.clue.num = Number(clue.num);
+		this.clue.guesses = Number(clue.num) + 1;
 		console.log("Clue num after: " + this.clue.num);
 		this.turn = Turn.op;
-		this.numGuesses = clue.num;
+		this.numGuesses = clue.guesses;
 
 		Broadcaster.switchTurn(this.players, this.currTeam, this.turn);
 		Broadcaster.postClue(this.players, this.clue, this.currTeam);
@@ -205,7 +206,7 @@ export class Game {
   // decrease number of guesses
   decrementGuesses(): void {
     this.numGuesses--;
-		(this.clue as Clue).num--;
+		(this.clue as Clue).guesses--;
 		Broadcaster.postClue(this.players, this.clue as Clue, this.currTeam);
 
 		if (this.numGuesses == 0) { this.switchActiveTeam(); }
