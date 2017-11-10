@@ -1,3 +1,1 @@
-"scripts": {
-  "web": "npm run ts-node game/index.ts"
-}
+  web: npm run ts-node game/index.ts
