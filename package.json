@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/nathanshelly/codenames#readme",
   "dependencies": {
+    "@types/node": "^8.0.50",
     "express": "^4.16.2",
     "lodash": "^4.17.4",
     "ts-node": "^3.3.0",
