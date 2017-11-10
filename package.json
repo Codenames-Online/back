@@ -5,7 +5,8 @@
   "main": "lib/index",
   "types": "lib/index",
   "engines": {
-    "node": "6.5.0"
+    "node": "6.5.0",
+    "npm": "3.x"
   },
   "scripts": {
     "tsc": "tsc",
