@@ -4,6 +4,9 @@
   "description": "Dead names: Not codenames - wildnames - catnames - codenames in the wild",
   "main": "lib/index",
   "types": "lib/index",
+  "engines": {
+    "node": "6.5.0"
+  },
   "scripts": {
     "tsc": "tsc",
     "ts-node": "ts-node",
