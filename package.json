@@ -4,6 +4,10 @@
   "description": "Dead names: Not codenames - wildnames - catnames - codenames in the wild",
   "main": "lib/index",
   "types": "lib/index",
+  "engines": {
+    "node": "6.5.0",
+    "npm": "3.x"
+  },
   "scripts": {
     "tsc": "tsc",
     "ts-node": "ts-node",
@@ -20,8 +24,14 @@
   },
   "homepage": "https://github.com/nathanshelly/codenames#readme",
   "dependencies": {
+    "@types/express": "^4.0.39",
+    "@types/lodash": "^4.14.81",
+    "@types/morgan": "^1.7.35",
+    "@types/node": "^8.0.50",
+    "check-word": "^1.1.0",
     "express": "^4.16.2",
     "lodash": "^4.17.4",
+    "morgan": "^1.9.0",
     "ts-node": "^3.3.0",
     "typescript": "^2.6.1",
     "ws": "^3.3.0"
