@@ -1,27 +1,27 @@
-import { shuffle, sampleSize } from 'lodash'
 import { Card } from "./Card";
-import { Team } from "./constants/Constants";
+import { Team, Color } from "./constants/Constants";
 import { words } from "./constants/wordlist";
+
+import { shuffle, sampleSize } from 'lodash'
 
 export class Board {
   cards: Card[];
   colors: number[];
   startTeam: Team;
-  constructor(startTeam) {
+
+  constructor(startTeam: Team) {
     this.startTeam = startTeam;
     this.cards = this.generateCards();
     this.colors = this.generateColors();
   }
-  
-  // blue = 0, red = 1, neutral = 2, assassin = 3
 
-  generateCards(): Card[] {
-    return sampleSize(words, 25).map((word) => {
-      return new Card(word);
-    });
+  private generateCards(): Card[] {
+    return sampleSize(words, 25).map(word => new Card(word));
   }
 
-  generateColors(): number[] {
-    return shuffle([0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,this.startTeam.valueOf()]);
+  private generateColors(): number[] {
+    return shuffle([Color.assassin, this.startTeam.valueOf(),
+      ...Array(8).fill(Color.blue), ...Array(8).fill(Color.red), 
+      ...Array(7).fill(Color.neutral)]);
   }
 }

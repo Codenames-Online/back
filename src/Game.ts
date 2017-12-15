@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
-import { GameUtility as gu } from './GameUtility'
 import * as c from './constants/Constants'
+import { GameUtility as gu } from './GameUtility'
 
 import { Clue } from './Clue';
 import { Card } from './Card'
@@ -10,8 +10,8 @@ import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
 import { Broadcaster } from './Broadcaster';
-import { Team, Turn } from './constants/Constants';
 import { RuleEnforcer } from './RuleEnforcer';
+import { Color, Team, Turn } from './constants/Constants';
 
 export class Game {
 	score: number[];
@@ -224,13 +224,13 @@ export class Game {
 				this.decrementGuesses();
 				this.updateScore(this.currTeam);
 				break;
-			case c.ASSASSIN:
+			case Color.assassin:
 				this.endGame(gu.getOtherTeam(this.currTeam));
 				break;
 			case gu.getOtherTeam(this.currTeam):
 				this.updateScore(gu.getOtherTeam(this.currTeam));
 				// fall through
-			case c.NEUTRAL:
+			case Color.neutral:
 				this.switchActiveTeam()
 				break;
 			default:
