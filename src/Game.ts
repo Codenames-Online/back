@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { GameUtility as gu } from './GameUtility'
-import * as c from '../constants/Constants'
+import * as c from './constants/Constants'
 
 import { Clue } from './Clue';
 import { Card } from './Card'
@@ -10,7 +10,7 @@ import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
 import { Broadcaster } from './Broadcaster';
-import { Team, Turn } from '../constants/Constants';
+import { Team, Turn } from './constants/Constants';
 import { RuleEnforcer } from './RuleEnforcer';
 
 export class Game {

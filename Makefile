@@ -4,10 +4,10 @@ all:
 	npm run tsc
 
 clean:
-	rm -rf lib/
+	rm -rf dist/
 
 test: all
 	npm test
 
 server: all
-	npm run ts-node game/index.ts
+	npm run ts-node src/index.ts

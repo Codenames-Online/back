@@ -1,4 +1,4 @@
-import { Team } from '../constants/Constants'
+import { Team } from './constants/Constants'
 import { SPlayer } from './SPlayer'
 import { SLoiterer } from './SLoiterer'
 

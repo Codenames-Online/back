@@ -1,7 +1,7 @@
 import { shuffle, sampleSize } from 'lodash'
 import { Card } from "./Card";
-import { Team } from "../constants/Constants";
-import { words } from "../constants/wordlist";
+import { Team } from "./constants/Constants";
+import { words } from "./constants/wordlist";
 
 export class Board {
   cards: Card[];

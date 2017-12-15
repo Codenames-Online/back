@@ -1,4 +1,4 @@
-import { Team } from "../constants/Constants";
+import { Team } from "./constants/Constants";
 import WebSocket = require('ws')
 
 export class SLoiterer {

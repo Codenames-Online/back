@@ -1,6 +1,6 @@
 import { Card } from './Card'
 import { Clue } from './Clue'
-import { Team, Turn } from '../constants/Constants'
+import { Team, Turn } from './constants/Constants'
 import { Board } from './Board'
 import { SPlayer } from './SPlayer'
 import { SLoiterer } from './SLoiterer'

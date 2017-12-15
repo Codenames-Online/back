@@ -11,14 +11,18 @@ A NodeJS back-end for Codenames built over 36 hours. Won 3rd Place at [Wildhacks
 You can run the Codenames backend using the npm package [nodemon](https://www.npmjs.com/package/nodemon).
 
 Simply run
-```
+
+``` shell
 npm install -g nodemon
 ```
+
 to install it, and then run it with
-```
+
+``` shell
 nodemon
 ```
-This will make the backend server available at http://localhost:8000. If everything is working, going to that page should say "Let's get started". You should then be able
+
+This will make the backend server available at `http://localhost:8000`. If everything is working, going to that page should say "Let's get started". You should then be able
 to use the front-end properly when running it locally.
 
 [viktor]: https://github.com/vkoves

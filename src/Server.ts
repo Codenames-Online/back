@@ -5,8 +5,8 @@ import * as logger from 'morgan'
 import http = require('http')
 import express = require('express')
 
-import { Game } from './components/Game';
-import { Receiver } from './components/Receiver'
+import { Game } from './Game';
+import { Receiver } from './Receiver'
 
 const app: express.Application = express()
 

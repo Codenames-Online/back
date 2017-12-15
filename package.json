@@ -2,8 +2,8 @@
   "name": "codenames",
   "version": "1.0.0",
   "description": "Dead names: Not codenames - wildnames - catnames - codenames in the wild",
-  "main": "lib/index",
-  "types": "lib/index",
+  "main": "dist/index",
+  "types": "dist/index",
   "engines": {
     "node": "6.5.0",
     "npm": "3.x"

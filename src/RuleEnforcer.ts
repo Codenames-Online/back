@@ -7,7 +7,7 @@ import { SPlayer } from './SPlayer'
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
-import { Team, Turn } from '../constants/Constants';
+import { Team, Turn } from './constants/Constants';
 import { Game } from './Game'
 
 export module RuleEnforcer {
