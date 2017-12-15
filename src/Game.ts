@@ -11,6 +11,7 @@ import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
 import { Broadcaster } from './Broadcaster';
 import { RuleEnforcer } from './RuleEnforcer';
+import { SPlayerTeams, SLoitererTeams } from './Teams'
 import { Color, Team, Turn } from './constants/Constants';
 
 export class Game {
@@ -48,8 +49,8 @@ export class Game {
 	// adds new loiterer to play class
 	// TODO: Weird typing issue between here and Receiver
   registerLoiterer(name: string, socket) {
-		let sloitererTeams: [SLoiterer[], SLoiterer[]] = gu.getSloitererTeams(this.loiterers);
-		let team: Team = sloitererTeams[Team.blue].length <= sloitererTeams[Team.red].length ? Team.blue : Team.red;
+		let sloitererTeams: SLoitererTeams = gu.getSloitererTeams(this.loiterers);
+		let team: Team = sloitererTeams.blue.length <= sloitererTeams.red.length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
     let newLoiterer = new SLoiterer(name, id, team, socket);
@@ -213,7 +214,8 @@ export class Game {
   }
 
 	guessAllowed(): void {
-		Broadcaster.allowGuess(gu.getPlayerTeams(this.players)[this.currTeam], true);
+		let teams = gu.getPlayerTeams(this.players);
+		Broadcaster.allowGuess(this.currTeam === Team.red ? teams.red : teams.blue, true);
 	}
 
 	checkGuess(guessIndex: number): void {
