@@ -10,7 +10,7 @@ import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
 import { Broadcaster } from './Broadcaster';
-import { RuleEnforcer } from './RuleEnforcer';
+import { RuleEnforcer as re } from './RuleEnforcer';
 import { SPlayerTeams, SLoitererTeams } from './Teams'
 import { Color, Team, Turn } from './constants/Constants';
 
@@ -60,7 +60,7 @@ export class Game {
 		Broadcaster.updateLoiterer(newLoiterer);
 		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
 
-		if (RuleEnforcer.canStartGame(sloitererRoster)) {
+		if (re.canStartGame(sloitererRoster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
   }
@@ -78,7 +78,7 @@ export class Game {
 		let sloitererRoster = gu.getSloitererRoster(this.loiterers);
 
 		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
-		if (RuleEnforcer.canStartGame(sloitererRoster)) {
+		if (re.canStartGame(sloitererRoster)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
     else {
@@ -111,7 +111,7 @@ export class Game {
 			Broadcaster.updateTeams(this.players, roster);
 		}
 
-		if (!RuleEnforcer.canStartGame(roster)) {
+		if (!re.canStartGame(roster)) {
 			Broadcaster.toggleStartButton(this.loiterers, false);
 		}
 	}

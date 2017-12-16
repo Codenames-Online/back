@@ -11,18 +11,22 @@ import { Team, Turn } from './constants/Constants';
 import { Game } from './Game'
 
 export module RuleEnforcer {
-  export function isValidName(name) { return name.length > 0 ; }
+  export function isValidName(name: string) { return /^[a-z_ ]+$/i.test(name); }
   
-  export function isValidNum(clue) {
-    return clue.num >= 0 && clue.num <= 9;
+  export function isValidNumGuesses(guesses: number) {
+    return guesses >= 0 && guesses <= 9;
   }
 
-  export function isLegalClue(clue: Clue): boolean {
-    return words.check(clue.word.toLocaleLowerCase());
+  export function isValidWord(word: string) {
+    return words.check(word.toLocaleLowerCase());
   }
 
-  export function isWordOnBoard(clue: Clue, cards: Card[]): boolean {
-    return cards.filter(card => card.word.toLocaleLowerCase() === clue.word.toLocaleLowerCase()).length > 0;
+  export function isWordOnBoard(word: string, cards: Card[]): boolean {
+    return cards.some(card => card.word.toLocaleLowerCase() === word.toLocaleLowerCase());
+  }
+
+  export function isLegalClue(clue: Clue, cards: Card[]): boolean {
+    return isValidWord(clue.word) && isValidNumGuesses(clue.num) && !isWordOnBoard(clue.word, cards);
   }
 
   export function isPlayerTurn(game: Game, player: SPlayer) {
@@ -30,7 +34,7 @@ export module RuleEnforcer {
   }
 
   export function isPlayerSpy(game: Game, player: SPlayer): boolean {
-    return Turn.spy === player.role;
+    return player.role === Turn.spy;
   }
 
   export function isSelectableCard(game: Game, cardIndex: number): boolean {
