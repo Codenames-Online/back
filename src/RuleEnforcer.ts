@@ -29,8 +29,8 @@ export module RuleEnforcer {
     return isValidWord(clue.word) && isValidNumGuesses(clue.num) && !isWordOnBoard(clue.word, cards);
   }
 
-  export function isPlayerTurn(game: Game, player: SPlayer) {
-    return game.currTeam === player.team && game.turn === player.role;
+  export function isPlayerTurn(currTeam: Team, currTurn: Turn, player: SPlayer) {
+    return currTeam === player.team && currTurn === player.role;
   }
 
   export function isPlayerSpy(game: Game, player: SPlayer): boolean {

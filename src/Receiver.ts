@@ -63,7 +63,7 @@ export class Receiver {
 				case "sendClue":
 					console.log('Case sendClue reached');
 					if(re.isLegalClue(message.clue, this.game.board.cards)
-					&& re.isPlayerTurn(this.game, this.game.getPlayerById(message.id))) {
+					&& re.isPlayerTurn(this.game.currTeam, this.game.turn, this.game.getPlayerById(message.id))) {
 						this.game.initializeClue(message.clue);
 					} else {
 						if(!re.isValidWord(message.clue.word)) {
@@ -80,7 +80,7 @@ export class Receiver {
 					console.log('Case toggleCard reached');
 					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
 					if(re.isSelectableCard(this.game, message.cardIndex)
-						&& re.isPlayerTurn(this.game, sop)
+						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)
 						&& !re.isPlayerSpy(this.game, sop)) {
 						let previousSelection = this.game.board.cards.findIndex((card: Card) => {
 							return card.votes.indexOf(sop.name) !== -1;
@@ -100,7 +100,7 @@ export class Receiver {
 					let [ canGuess, index ] = re.canSubmitGuess(this.game);
 					if(canGuess
 						&& !re.isPlayerSpy(this.game, sop)
-						&& re.isPlayerTurn(this.game, sop)) {
+						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)) {
 						// if made it inside we know index is valid
 						this.game.guessAllowed();
 					}
@@ -139,7 +139,7 @@ export class Receiver {
 					console.log('Case endTurn reached');
 
 					let sp: SPlayer = this.game.getPlayerById(message.id) as SPlayer;
-					if(re.isPlayerTurn(this.game, sp)) {
+					if(re.isPlayerTurn(this.game.currTeam, this.game.turn, sp)) {
 						this.game.switchActiveTeam();
 					}
 
