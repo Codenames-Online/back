@@ -81,7 +81,7 @@ export class Receiver {
 					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
 					if(re.isSelectableCard(this.game, message.cardIndex)
 						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)
-						&& !re.isPlayerSpy(this.game, sop)) {
+						&& !re.isPlayerSpy(sop)) {
 						let previousSelection = this.game.board.cards.findIndex((card: Card) => {
 							return card.votes.indexOf(sop.name) !== -1;
 						});
@@ -99,7 +99,7 @@ export class Receiver {
 
 					let [ canGuess, index ] = re.canSubmitGuess(this.game);
 					if(canGuess
-						&& !re.isPlayerSpy(this.game, sop)
+						&& !re.isPlayerSpy(sop)
 						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)) {
 						// if made it inside we know index is valid
 						this.game.guessAllowed();
@@ -130,7 +130,7 @@ export class Receiver {
 					console.log('Case sendMessage reached');
 
 					const player = this.game.getPlayerById(message.id);
-					if(!re.isPlayerSpy(this.game, player)) {
+					if(!re.isPlayerSpy(player)) {
 						Broadcaster.sendMessage(this.game.players, message.text, player)
 					}
 					break;

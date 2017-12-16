@@ -33,7 +33,7 @@ export module RuleEnforcer {
     return currTeam === player.team && currTurn === player.role;
   }
 
-  export function isPlayerSpy(game: Game, player: SPlayer): boolean {
+  export function isPlayerSpy(player: SPlayer): boolean {
     return player.role === Turn.spy;
   }
 
