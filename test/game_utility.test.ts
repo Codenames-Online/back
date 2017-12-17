@@ -28,11 +28,11 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 		let blue_l_three = new SLoiterer("blue", "3", Team.blue, mock_ws_instance);
 		loiterers = [red_l_one, red_l_two, blue_l_one, blue_l_two, blue_l_three];
 
-		let red_p_one = new SSpymaster("red", "1", Team.red, mock_ws_instance, Turn.spy);
-		let red_p_two = new SOperative("red", "2", Team.red, mock_ws_instance, Turn.op);
-		let red_p_three = new SOperative("red", "3", Team.red, mock_ws_instance, Turn.op);
-		let blue_p_one = new SSpymaster("blue", "1", Team.blue, mock_ws_instance, Turn.spy);
-		let blue_p_two = new SOperative("blue", "2", Team.blue, mock_ws_instance, Turn.op);
+		let red_p_one = new SSpymaster("red", "1", Team.red, mock_ws_instance);
+		let red_p_two = new SOperative("red", "2", Team.red, mock_ws_instance);
+		let red_p_three = new SOperative("red", "3", Team.red, mock_ws_instance);
+		let blue_p_one = new SSpymaster("blue", "1", Team.blue, mock_ws_instance);
+		let blue_p_two = new SOperative("blue", "2", Team.blue, mock_ws_instance);
 		players = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
 	});
 
