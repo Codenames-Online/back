@@ -29,7 +29,9 @@ export module GameUtility {
 							players.red.map(player => player.name)];
 	}
 	
-	export function getOtherTeam(team: number) { return (team + 1) % 2; }
+	export function getOtherTeam(team: Team) {
+		return team === Team.red ? Team.blue : Team.red;
+	}
 
 	export function getTeamOps(allOps: SOperative[], team: Team): SOperative[] {
 		return allOps.filter(op => op.team === team);
