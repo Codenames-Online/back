@@ -2,16 +2,16 @@ import { Card } from './Card'
 import { Clue } from './Clue'
 import { Team, Turn } from './constants/Constants'
 import { Board } from './Board'
-import { SPlayer } from './SPlayer'
+import { Player } from './Player'
 import { SLoiterer } from './SLoiterer'
 import { SSpymaster } from './SSpymaster'
 
 export module Broadcaster {
-	function broadcastToPlayers(players: SPlayer[], message: Object) {
+	function broadcastToPlayers(players: Player[], message: Object) {
 		for(let player of players) { sendToPlayer(player, message); }
 	}
 
-	function sendToPlayer(player: SPlayer, message: Object) {
+	function sendToPlayer(player: Player, message: Object) {
 		player.socket.send(JSON.stringify(message));
 	}
 
@@ -23,19 +23,19 @@ export module Broadcaster {
 		sloiterer.socket.send(JSON.stringify(message));
 	}
 
-	export function switchTurn(players: SPlayer[], team: Team, turn: Turn) {
+	export function switchTurn(players: Player[], team: Team, turn: Turn) {
 		broadcastToPlayers(players, { action: "switchTurn", team: team, turn: turn });
 	}
 
-	export function switchActiveTeam(players: SPlayer[], team: Team, turn: Turn) {
+	export function switchActiveTeam(players: Player[], team: Team, turn: Turn) {
 		broadcastToPlayers(players, { action: "switchActiveTeam", team: team, turn: turn });
 	}
 
-	export function postClue(players: SPlayer[], clue: Clue, team: Team) {
+	export function postClue(players: Player[], clue: Clue, team: Team) {
 		broadcastToPlayers(players, { action: "postClue", clue: clue, team: team });
 	}
 
-	export function generateCards(players: SPlayer[], board: Board) {
+	export function generateCards(players: Player[], board: Board) {
 		broadcastToPlayers(players, { action: "generateCards", board: Board });
 	}
 
@@ -50,15 +50,15 @@ export module Broadcaster {
 		broadcastToSloiterers(sloiterers, { action: "toggleStartButton", enable: canEnable });
 	}
 
-export function updateBoard(splayers: SPlayer[], board: [number, Card][]) {
+export function updateBoard(splayers: Player[], board: [number, Card][]) {
 		broadcastToPlayers(splayers, { action: "updateBoard", board: board });
 	}
 
-	export function updateScore(splayers: SPlayer[], score: number[]) {
+	export function updateScore(splayers: Player[], score: number[]) {
 		broadcastToPlayers(splayers, { action: "updateScore", score: score });
 	}
 
-	export function sendMessage(players: SPlayer[], chat: string, player) {
+	export function sendMessage(players: Player[], chat: string, player) {
 		broadcastToPlayers(players, {
 			action: "sendMessage",
 			text: chat,
@@ -67,19 +67,19 @@ export function updateBoard(splayers: SPlayer[], board: [number, Card][]) {
 		});
 	}
 
-	export function startGame(splayers: SPlayer[], startTeam: Team, startingRoster) {
+	export function startGame(splayers: Player[], startTeam: Team, startingRoster) {
 		broadcastToPlayers(splayers, { 
 			action: "gameStarted", startTeam: startTeam, roster: startingRoster
 		});
 	}
 
-	export function endGame(splayers: SPlayer[], team: Team) {
+	export function endGame(splayers: Player[], team: Team) {
 		broadcastToPlayers(splayers, { action: "endGame", team: team });
 	}
 
 	// PRIVATE
 
-	export function allowGuess(players: SPlayer[], bool: boolean) {
+	export function allowGuess(players: Player[], bool: boolean) {
 		broadcastToPlayers(players, { action: "allowGuess", bool: bool });
 	}
 
@@ -87,7 +87,7 @@ export function updateBoard(splayers: SPlayer[], board: [number, Card][]) {
 		sendToSloiterer(sloiterer, { action: "updateLoiterer", person: sloiterer });
 	}
 
-	export function updateLoitererToPlayer(sloiterer: SLoiterer, splayer: SPlayer) {
+	export function updateLoitererToPlayer(sloiterer: SLoiterer, splayer: Player) {
 		sendToSloiterer(sloiterer, { action: "updateLoitererToPlayer", player: splayer });
 	}
 

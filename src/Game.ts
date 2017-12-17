@@ -5,7 +5,7 @@ import { GameUtility as gu } from './GameUtility'
 import { Clue } from './Clue';
 import { Card } from './Card'
 import { Board } from './Board';
-import { SPlayer } from './SPlayer';
+import { Player } from './Player';
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
@@ -20,7 +20,7 @@ export class Game {
 	numGuesses: number;
 	turn: Turn;
 	board: Board;
-	players: SPlayer[];
+	players: Player[];
 	loiterers: SLoiterer[];
 	startTeam: Team;
 	currTeam: Team;
@@ -169,9 +169,9 @@ export class Game {
     return this.players.filter(player => player.role === Turn.op) as SOperative[];
 	}
 
-	getPlayerById(id: string): SPlayer {
+	getPlayerById(id: string): Player {
     // TODO: REALLLLLLLLY SHOULDNT CAST LIKE THIS
-    return this.players.find((player) => { return player.id === id; }) as SPlayer;
+    return this.players.find((player) => { return player.id === id; }) as Player;
 	}
 
   setStartTeam(): void {

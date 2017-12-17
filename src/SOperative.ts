@@ -1,10 +1,10 @@
-import { Card } from "./Card";
-import { SPlayer } from "./SPlayer";
-import { Team, Turn } from "./constants/Constants";
+import { Card } from './Card';
+import { Player } from './Player';
+import { Team, Turn } from './constants/Constants';
 
 import WebSocket = require('ws')
 
-export class SOperative extends SPlayer {
+export class SOperative extends Player {
   private selected?: Card;
 
   constructor(name: string, id: string, team: Team, socket: WebSocket) {

@@ -1,5 +1,5 @@
 import { Team } from './constants/Constants'
-import { SPlayer } from './SPlayer'
+import { Player } from './Player'
 import { SLoiterer } from './SLoiterer'
 import { SPlayerTeams, SLoitererTeams } from './Teams'
 import { SOperative } from './SOperative';
@@ -12,7 +12,7 @@ export module GameUtility {
 		);
 	}
 	
-	export function getPlayerTeams(players: SPlayer[]): SPlayerTeams {
+	export function getPlayerTeams(players: Player[]): SPlayerTeams {
 		return new SPlayerTeams(
 			players.filter(player => player.team === Team.red),
 			players.filter(player => player.team === Team.blue)

@@ -2,7 +2,7 @@ import { Team, Turn } from "./constants/Constants";
 
 import WebSocket = require('ws')
 
-export abstract class SPlayer {
+export abstract class Player {
   id: string;
   team: Team;
   name: string;

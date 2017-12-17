@@ -4,7 +4,7 @@ var words = checker('en');
 import { Card } from './Card'
 import { Clue } from './Clue'
 import { SLoitererTeams } from './Teams'
-import { SPlayer } from './SPlayer'
+import { Player } from './Player'
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
@@ -31,11 +31,11 @@ export module RuleEnforcer {
     return isValidWord(clue.word) && isValidNumGuesses(clue.num) && !isWordOnBoard(clue.word, cards);
   }
 
-  export function isPlayerTurn(currTeam: Team, currTurn: Turn, player: SPlayer): boolean {
+  export function isPlayerTurn(currTeam: Team, currTurn: Turn, player: Player): boolean {
     return currTeam === player.team && currTurn === player.role;
   }
 
-  export function isPlayerSpy(player: SPlayer): boolean {
+  export function isPlayerSpy(player: Player): boolean {
     return player.role === Turn.spy;
   }
 
