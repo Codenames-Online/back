@@ -97,11 +97,10 @@ export class Receiver {
 						}
 					}
 
-					let [ canGuess, index ] = re.canSubmitGuess(this.game);
+					let canGuess= re.canSubmitGuess(this.game.findOperatives(), this.game.currTeam);
 					if(canGuess
 						&& !re.isPlayerSpy(sop)
 						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)) {
-						// if made it inside we know index is valid
 						this.game.guessAllowed();
 					}
 

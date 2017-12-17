@@ -9,7 +9,8 @@ import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
 import { SLoiterer } from './SLoiterer';
 import { Team, Turn } from './constants/Constants';
-import { Game } from './Game'
+import { GameUtility as gu } from './GameUtility'
+
 
 export module RuleEnforcer {
   export function isValidName(name: string) { return /^[a-z_ ]+$/i.test(name); }
@@ -30,7 +31,7 @@ export module RuleEnforcer {
     return isValidWord(clue.word) && isValidNumGuesses(clue.num) && !isWordOnBoard(clue.word, cards);
   }
 
-  export function isPlayerTurn(currTeam: Team, currTurn: Turn, player: SPlayer) {
+  export function isPlayerTurn(currTeam: Team, currTurn: Turn, player: SPlayer): boolean {
     return currTeam === player.team && currTurn === player.role;
   }
 
@@ -42,18 +43,16 @@ export module RuleEnforcer {
     return !cards[cardIndex].revealed;
   }
 
-  export function canStartGame(teams: SLoitererTeams) {
+  export function canStartGame(teams: SLoitererTeams): boolean {
     return teams.red.length >= 2 && teams.blue.length >= 2;
   }
 
-  export function canSubmitGuess(game: Game): [boolean, number | null] {
-    let ops: SOperative[] = game.findOperatives().filter(op =>
-      op.team === game.currTeam
-    );
-    let selectedCard: Card | undefined = ops[0].getSelected();
-    if(typeof selectedCard === 'undefined') { return [false, null] };
+  export function canSubmitGuess(allOps: SOperative[], team: Team): boolean {
+    let ops: SOperative[] = gu.getTeamOps(allOps, team);
+    let selected: Card | undefined = ops[0].getSelected();
 
-    let canGuess = ops.every((op: SOperative) => op.getSelected() === selectedCard);
-    return [canGuess, canGuess ? game.board.cards.indexOf(selectedCard) : null];
+    // votes.length check and ops.every should be redundant but leaving in for now
+    return selected !== undefined && selected.votes.length === ops.length &&
+      ops.every(op => op.getSelected() === selected);
   }
 }
