@@ -7,7 +7,7 @@ import { SLoitererTeams } from './Teams'
 import { Player } from './Player'
 import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
-import { SLoiterer } from './SLoiterer';
+import { Loiterer } from './Loiterer';
 import { Team, Turn } from './constants/Constants';
 import { GameUtility as gu } from './GameUtility'
 

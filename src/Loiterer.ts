@@ -1,7 +1,7 @@
 import WebSocket = require('ws')
 import { Team } from "./constants/Constants";
 
-export class SLoiterer {
+export class Loiterer {
   name: string;
   id: string;
   team: Team;

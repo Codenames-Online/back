@@ -1,11 +1,11 @@
 import { Player } from './Player'
-import { SLoiterer } from './SLoiterer'
+import { Loiterer } from './Loiterer'
 
 export class SLoitererTeams {
-  readonly red: SLoiterer[];
-  readonly blue: SLoiterer[];
+  readonly red: Loiterer[];
+  readonly blue: Loiterer[];
 
-  constructor(red: SLoiterer[], blue: SLoiterer[]) {
+  constructor(red: Loiterer[], blue: Loiterer[]) {
 		this.red = red;
 		this.blue = blue;
   }

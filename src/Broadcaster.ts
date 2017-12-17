@@ -3,7 +3,7 @@ import { Clue } from './Clue'
 import { Team, Turn } from './constants/Constants'
 import { Board } from './Board'
 import { Player } from './Player'
-import { SLoiterer } from './SLoiterer'
+import { Loiterer } from './Loiterer'
 import { Spymaster } from './Spymaster'
 
 export module Broadcaster {
@@ -15,11 +15,11 @@ export module Broadcaster {
 		player.socket.send(JSON.stringify(message));
 	}
 
-	function broadcastToSloiterers(sloiterers: SLoiterer[], message: Object) {
+	function broadcastToSloiterers(sloiterers: Loiterer[], message: Object) {
 		for(let sloiterer of sloiterers) { sendToSloiterer(sloiterer, message); }
 	}
 
-	function sendToSloiterer(sloiterer: SLoiterer, message: Object) {
+	function sendToSloiterer(sloiterer: Loiterer, message: Object) {
 		sloiterer.socket.send(JSON.stringify(message));
 	}
 
@@ -39,14 +39,14 @@ export module Broadcaster {
 		broadcastToPlayers(players, { action: "generateCards", board: Board });
 	}
 
-	export function updateTeams(sloiterers: SLoiterer[], roster: [string[], string[]]) {
+	export function updateTeams(sloiterers: Loiterer[], roster: [string[], string[]]) {
 		broadcastToSloiterers(sloiterers, { 
 			action: "updateTeams",
 			teams: { blue: roster[Team.blue], red: roster[Team.red] },
 		});
 	}
 
-	export function toggleStartButton(sloiterers: SLoiterer[], canEnable: boolean) {
+	export function toggleStartButton(sloiterers: Loiterer[], canEnable: boolean) {
 		broadcastToSloiterers(sloiterers, { action: "toggleStartButton", enable: canEnable });
 	}
 
@@ -83,11 +83,11 @@ export function updateBoard(splayers: Player[], board: [number, Card][]) {
 		broadcastToPlayers(players, { action: "allowGuess", bool: bool });
 	}
 
-	export function updateLoiterer(sloiterer: SLoiterer) {
+	export function updateLoiterer(sloiterer: Loiterer) {
 		sendToSloiterer(sloiterer, { action: "updateLoiterer", person: sloiterer });
 	}
 
-	export function updateLoitererToPlayer(sloiterer: SLoiterer, splayer: Player) {
+	export function updateLoitererToPlayer(sloiterer: Loiterer, splayer: Player) {
 		sendToSloiterer(sloiterer, { action: "updateLoitererToPlayer", player: splayer });
 	}
 

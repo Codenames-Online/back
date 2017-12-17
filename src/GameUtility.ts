@@ -1,11 +1,11 @@
 import { Player } from './Player'
-import { SLoiterer } from './SLoiterer'
+import { Loiterer } from './Loiterer'
 import { Operative } from './Operative';
 import { Team } from './constants/Constants'
 import { SPlayerTeams, SLoitererTeams } from './Teams'
 
 export module GameUtility {
-	export function getSloitererTeams(loiterers: SLoiterer[]): SLoitererTeams {
+	export function getSloitererTeams(loiterers: Loiterer[]): SLoitererTeams {
 		return new SLoitererTeams(
 			loiterers.filter(loiterer => loiterer.team === Team.red),
 			loiterers.filter(loiterer => loiterer.team === Team.blue)

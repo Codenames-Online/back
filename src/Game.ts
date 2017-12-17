@@ -8,7 +8,7 @@ import { Board } from './Board';
 import { Player } from './Player';
 import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
-import { SLoiterer } from './SLoiterer';
+import { Loiterer } from './Loiterer';
 import { Broadcaster } from './Broadcaster';
 import { RuleEnforcer as re } from './RuleEnforcer';
 import { SPlayerTeams, SLoitererTeams } from './Teams'
@@ -21,7 +21,7 @@ export class Game {
 	turn: Turn;
 	board: Board;
 	players: Player[];
-	loiterers: SLoiterer[];
+	loiterers: Loiterer[];
 	startTeam: Team;
 	currTeam: Team;
 
@@ -53,7 +53,7 @@ export class Game {
 		let team: Team = beforeTeams.blue.length <= beforeTeams.red.length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
-    let newLoiterer = new SLoiterer(name, id, team, socket);
+    let newLoiterer = new Loiterer(name, id, team, socket);
     this.loiterers.push(newLoiterer);
     let afterTeams = gu.getSloitererTeams(this.loiterers);
 
