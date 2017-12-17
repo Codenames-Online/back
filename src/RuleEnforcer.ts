@@ -37,8 +37,8 @@ export module RuleEnforcer {
     return player.role === Turn.spy;
   }
 
-  export function isSelectableCard(game: Game, cardIndex: number): boolean {
-    return !game.board.cards[cardIndex].revealed;
+  export function isCardSelectable(cards: Card[], cardIndex: number): boolean {
+    return !cards[cardIndex].revealed;
   }
 
   export function canStartGame(sloitererRoster: [string[], string[]]) {

@@ -79,7 +79,7 @@ export class Receiver {
 				case "toggleCard": {
 					console.log('Case toggleCard reached');
 					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
-					if(re.isSelectableCard(this.game, message.cardIndex)
+					if(re.isCardSelectable(this.game.board.cards, message.cardIndex)
 						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)
 						&& !re.isPlayerSpy(sop)) {
 						let previousSelection = this.game.board.cards.findIndex((card: Card) => {
