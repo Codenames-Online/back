@@ -9,6 +9,7 @@ import 'mocha';
 import { expect } from 'chai';
 import WebSocket = require('ws')
 import { mock, instance, when } from 'ts-mockito';
+import { SPlayerTeams } from '../src/Teams';
 
 describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	let mock_ws: WebSocket;
@@ -29,10 +30,10 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 
 		let red_p_one = new SSpymaster("red", "1", Team.red, mock_ws_instance, Turn.spy);
 		let red_p_two = new SOperative("red", "2", Team.red, mock_ws_instance, Turn.op);
-		let blue_p_one = new SSpymaster("blue", "1", Team.blue, mock_ws_instance, Turn.spy);
+		let red_p_three = new SSpymaster("red", "3", Team.red, mock_ws_instance, Turn.op);
+		let blue_p_one = new SOperative("blue", "1", Team.blue, mock_ws_instance, Turn.spy);
 		let blue_p_two = new SOperative("blue", "2", Team.blue, mock_ws_instance, Turn.op);
-		let blue_p_three = new SOperative("blue", "3", Team.blue, mock_ws_instance, Turn.op);
-		players = [red_p_one, red_p_two, blue_p_one, blue_p_two, blue_p_three];
+		players = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
 	});
 
   it("should correctly split loiterers on team", () => {
@@ -45,21 +46,21 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
   it("should correctly split players on team", () => {
 		let teams = gu.getPlayerTeams(players);
 
-		expect(teams.red.length).to.equal(2);
-		expect(teams.blue.length).to.equal(3);
+		expect(teams.red.length).to.equal(3);
+		expect(teams.blue.length).to.equal(2);
 	});
 	
 	it("should get correct number of names from sloiterers", () => {
-		let team_names = gu.getSloitererRoster(players);
-
+		let team_names = gu.getSloitererRoster(gu.getSloitererTeams(loiterers));
+ 
 		expect(team_names[Team.red].length).to.equal(2);
 		expect(team_names[Team.blue].length).to.equal(3);
 	});
 	
 	it("should get correct number of names from splayers", () => {
-		let team_names = gu.getPlayerRoster(players);
+		let team_names = gu.getPlayerRoster(gu.getPlayerTeams(players));
 
-		expect(team_names[Team.red].length).to.equal(2);
-		expect(team_names[Team.blue].length).to.equal(3);
+		expect(team_names[Team.red].length).to.equal(3);
+		expect(team_names[Team.blue].length).to.equal(2);
   });
 });
