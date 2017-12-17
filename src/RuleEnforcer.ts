@@ -50,10 +50,10 @@ export module RuleEnforcer {
     let ops: SOperative[] = game.findOperatives().filter(op =>
       op.team === game.currTeam
     );
-    let selectedCard: Card | undefined = ops[0].selected;
+    let selectedCard: Card | undefined = ops[0].getSelected();
     if(typeof selectedCard === 'undefined') { return [false, null] };
 
-    let canGuess = ops.every((op: SOperative) => op.selected === selectedCard);
+    let canGuess = ops.every((op: SOperative) => op.getSelected() === selectedCard);
     return [canGuess, canGuess ? game.board.cards.indexOf(selectedCard) : null];
   }
 }
