@@ -12,6 +12,7 @@ import 'mocha';
 import { expect } from 'chai';
 import WebSocket = require('ws')
 import { mock, instance, when } from 'ts-mockito';
+import { decode } from 'punycode';
 
 describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	let mock_ws: WebSocket;
@@ -141,5 +142,36 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		expect(re.canStartGame(gu.getSloitererTeams(cant_start_one))).to.be.false;
 		expect(re.canStartGame(gu.getSloitererTeams(cant_start_two))).to.be.false;
 		expect(re.canStartGame(gu.getSloitererTeams(cant_start_three))).to.be.false;
+	});
+
+	it("should correctly determine if a guess can be submitted", () => {		
+		let red_p_one = new SSpymaster("red", "1", Team.red, mock_ws_instance, Turn.spy);
+		let red_p_two = new SOperative("red", "2", Team.red, mock_ws_instance, Turn.op);
+		let red_p_three = new SOperative("red", "3", Team.red, mock_ws_instance, Turn.op);
+		let blue_p_one = new SSpymaster("blue", "1", Team.blue, mock_ws_instance, Turn.spy);
+		let blue_p_two = new SOperative("blue", "2", Team.blue, mock_ws_instance, Turn.op);
+		let players: SPlayer[] = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
+
+		// TODO: Use utility method for getting ops
+		let ops: SOperative[] = players.filter(player => player.role === Turn.op) as SOperative[];
+		let select_card = new Card("select");
+		let decoy_card = new Card("decoy");
+
+		expect(re.canSubmitGuess(ops, Team.red)).to.be.false;
+
+		red_p_two.selectCard(select_card);
+		select_card.votes.push(red_p_two.name);
+
+		expect(re.canSubmitGuess(ops, Team.red)).to.be.false;
+
+		red_p_three.selectCard(decoy_card);
+		decoy_card.votes.push(red_p_three.name);
+
+		expect(re.canSubmitGuess(ops, Team.red)).to.be.false;
+
+		red_p_three.selectCard(select_card);
+		select_card.votes.push(red_p_three.name);
+
+		expect(re.canSubmitGuess(ops, Team.red)).to.be.true;
 	});
 });
