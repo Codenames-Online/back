@@ -4,6 +4,7 @@ import { SPlayer } from '../src/SPlayer';
 import { SLoiterer } from '../src/SLoiterer';
 import { SSpymaster } from '../src/SSpymaster';
 import { SOperative } from '../src/SOperative';
+import { GameUtility as gu } from '../src/GameUtility';
 import { RuleEnforcer as re } from '../src/RuleEnforcer';
 import { Color, Team, Turn } from '../src/constants/Constants';
 
@@ -119,5 +120,26 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 
 		expect(re.isCardSelectable(cards, 0)).to.be.true;
 		expect(re.isCardSelectable(cards, 24)).to.be.false;
+	});
+
+	it("should correctly determine if we can start a game", () => {
+		let red_l_one = new SLoiterer("red", "1", Team.red, mock_ws_instance);
+		let red_l_two = new SLoiterer("red", "2", Team.red, mock_ws_instance);
+		let blue_l_one = new SLoiterer("blue", "1", Team.blue, mock_ws_instance);
+		let blue_l_two = new SLoiterer("blue", "2", Team.blue, mock_ws_instance);
+		let blue_l_three = new SLoiterer("blue", "3", Team.blue, mock_ws_instance);
+		let loiterers = [red_l_one, red_l_two, blue_l_one, blue_l_two, blue_l_three];
+
+		let can_start_one = [red_l_one, red_l_two, blue_l_one, blue_l_two];
+		let can_start_two = [red_l_one, red_l_two, blue_l_one, blue_l_two, blue_l_three];
+		let cant_start_one = [];
+		let cant_start_two = [red_l_one, red_l_two, blue_l_one];
+		let cant_start_three = [red_l_one, blue_l_one, blue_l_two, blue_l_three];
+
+		expect(re.canStartGame(gu.getSloitererTeams(can_start_one))).to.be.true;
+		expect(re.canStartGame(gu.getSloitererTeams(can_start_two))).to.be.true;
+		expect(re.canStartGame(gu.getSloitererTeams(cant_start_one))).to.be.false;
+		expect(re.canStartGame(gu.getSloitererTeams(cant_start_two))).to.be.false;
+		expect(re.canStartGame(gu.getSloitererTeams(cant_start_three))).to.be.false;
 	});
 });
