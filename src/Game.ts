@@ -147,8 +147,8 @@ export class Game {
 		for (let loit of this.loiterers) {
 			haveTeamSpy = foundSpy[loit.team];
 			let player = haveTeamSpy
-				? new SOperative(loit.name, loit.id, loit.team, loit.socket, Turn.op)
-				: new SSpymaster(loit.name, loit.id, loit.team, loit.socket, Turn.spy);
+				? new SOperative(loit.name, loit.id, loit.team, loit.socket)
+				: new SSpymaster(loit.name, loit.id, loit.team, loit.socket);
 
 			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
 
