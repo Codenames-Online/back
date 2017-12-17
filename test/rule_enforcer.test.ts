@@ -88,14 +88,14 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if it is player turn", () => {
-		let red = new SOperative("test", "1", Team.red, mock_ws_instance, Turn.op);
+		let red = new SOperative("test", "1", Team.red, mock_ws_instance);
 
 		expect(re.isPlayerTurn(Team.red, Turn.op, red)).to.be.true;
 		expect(re.isPlayerTurn(Team.red, Turn.spy, red)).to.be.false;
 		expect(re.isPlayerTurn(Team.blue, Turn.op, red)).to.be.false;
 		expect(re.isPlayerTurn(Team.blue, Turn.spy, red)).to.be.false;
 		
-		let blue = new SSpymaster("test", "2", Team.blue, mock_ws_instance, Turn.spy);
+		let blue = new SSpymaster("test", "2", Team.blue, mock_ws_instance);
 
 		expect(re.isPlayerTurn(Team.red, Turn.op, blue)).to.be.false;
 		expect(re.isPlayerTurn(Team.red, Turn.spy, blue)).to.be.false;
@@ -104,8 +104,8 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if a player is a spy", () => {
-		let red = new SOperative("test", "1", Team.red, mock_ws_instance, Turn.op);
-		let blue = new SSpymaster("test", "2", Team.blue, mock_ws_instance, Turn.spy);
+		let red = new SOperative("test", "1", Team.red, mock_ws_instance);
+		let blue = new SSpymaster("test", "2", Team.blue, mock_ws_instance);
 
 		expect(re.isPlayerSpy(red)).to.be.false;
 		expect(re.isPlayerSpy(blue)).to.be.true;
@@ -145,11 +145,11 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if a guess can be submitted", () => {		
-		let red_p_one = new SSpymaster("red", "1", Team.red, mock_ws_instance, Turn.spy);
-		let red_p_two = new SOperative("red", "2", Team.red, mock_ws_instance, Turn.op);
-		let red_p_three = new SOperative("red", "3", Team.red, mock_ws_instance, Turn.op);
-		let blue_p_one = new SSpymaster("blue", "1", Team.blue, mock_ws_instance, Turn.spy);
-		let blue_p_two = new SOperative("blue", "2", Team.blue, mock_ws_instance, Turn.op);
+		let red_p_one = new SSpymaster("red", "1", Team.red, mock_ws_instance);
+		let red_p_two = new SOperative("red", "2", Team.red, mock_ws_instance);
+		let red_p_three = new SOperative("red", "3", Team.red, mock_ws_instance);
+		let blue_p_one = new SSpymaster("blue", "1", Team.blue, mock_ws_instance);
+		let blue_p_two = new SOperative("blue", "2", Team.blue, mock_ws_instance);
 		let players: SPlayer[] = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
 
 		// TODO: Use utility method for getting ops
