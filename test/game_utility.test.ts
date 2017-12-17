@@ -62,5 +62,10 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 
 		expect(team_names[Team.red].length).to.equal(3);
 		expect(team_names[Team.blue].length).to.equal(2);
+	});
+	
+	it("should correctly return other team", () => {
+		expect(gu.getOtherTeam(Team.red)).to.equal(Team.blue);
+		expect(gu.getOtherTeam(Team.blue)).to.equal(Team.red);
   });
 });
