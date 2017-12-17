@@ -7,7 +7,7 @@ import { Card } from './Card'
 import { Board } from './Board';
 import { Player } from './Player';
 import { SOperative } from './SOperative';
-import { SSpymaster } from './SSpymaster';
+import { Spymaster } from './Spymaster';
 import { SLoiterer } from './SLoiterer';
 import { Broadcaster } from './Broadcaster';
 import { RuleEnforcer as re } from './RuleEnforcer';
@@ -148,7 +148,7 @@ export class Game {
 			haveTeamSpy = foundSpy[loit.team];
 			let player = haveTeamSpy
 				? new SOperative(loit.name, loit.id, loit.team, loit.socket)
-				: new SSpymaster(loit.name, loit.id, loit.team, loit.socket);
+				: new Spymaster(loit.name, loit.id, loit.team, loit.socket);
 
 			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
 
@@ -159,7 +159,7 @@ export class Game {
 		this.loiterers = [];
   }
 
-	findSpymasters(): SSpymaster[] {
+	findSpymasters(): Spymaster[] {
 		return this.players.filter(player => player.role === Turn.spy).sort((p1, p2) => {
 			return p1.team < p2.team ? -1 : 1;
 		});

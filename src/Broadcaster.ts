@@ -4,7 +4,7 @@ import { Team, Turn } from './constants/Constants'
 import { Board } from './Board'
 import { Player } from './Player'
 import { SLoiterer } from './SLoiterer'
-import { SSpymaster } from './SSpymaster'
+import { Spymaster } from './Spymaster'
 
 export module Broadcaster {
 	function broadcastToPlayers(players: Player[], message: Object) {
@@ -91,7 +91,7 @@ export function updateBoard(splayers: Player[], board: [number, Card][]) {
 		sendToSloiterer(sloiterer, { action: "updateLoitererToPlayer", player: splayer });
 	}
 
-	export function promptForClue(spymaster: SSpymaster) {
+	export function promptForClue(spymaster: Spymaster) {
 		sendToPlayer(spymaster, { action: "promptForClue" });
 	}
 }
