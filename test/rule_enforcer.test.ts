@@ -100,4 +100,12 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		expect(re.isPlayerTurn(Team.blue, Turn.op, blue)).to.be.false;
 		expect(re.isPlayerTurn(Team.blue, Turn.spy, blue)).to.be.true;
 	});
+
+	it("should correctly determine if a player is a spy", () => {
+		let red = new SOperative("test", "1", Team.red, mock_ws_instance, Turn.op);
+		let blue = new SSpymaster("test", "2", Team.blue, mock_ws_instance, Turn.spy);
+
+		expect(re.isPlayerSpy(red)).to.be.false;
+		expect(re.isPlayerSpy(blue)).to.be.true;
+	});
 });
