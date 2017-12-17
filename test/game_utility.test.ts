@@ -30,8 +30,8 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 
 		let red_p_one = new SSpymaster("red", "1", Team.red, mock_ws_instance, Turn.spy);
 		let red_p_two = new SOperative("red", "2", Team.red, mock_ws_instance, Turn.op);
-		let red_p_three = new SSpymaster("red", "3", Team.red, mock_ws_instance, Turn.op);
-		let blue_p_one = new SOperative("blue", "1", Team.blue, mock_ws_instance, Turn.spy);
+		let red_p_three = new SOperative("red", "3", Team.red, mock_ws_instance, Turn.op);
+		let blue_p_one = new SSpymaster("blue", "1", Team.blue, mock_ws_instance, Turn.spy);
 		let blue_p_two = new SOperative("blue", "2", Team.blue, mock_ws_instance, Turn.op);
 		players = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
 	});
@@ -67,5 +67,15 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	it("should correctly return other team", () => {
 		expect(gu.getOtherTeam(Team.red)).to.equal(Team.blue);
 		expect(gu.getOtherTeam(Team.blue)).to.equal(Team.red);
-  });
+	});
+	
+	// TODO: update this to use get operatives utility function
+	it("should correctly split operatives on team", () => {
+		let ops: SOperative[] = players.filter(player => player.role === Turn.op) as SOperative[];
+		let red_ops = gu.getTeamOps(ops, Team.red);
+		let blue_ops = gu.getTeamOps(ops, Team.blue);
+
+		expect(red_ops.length).to.equal(2);
+		expect(blue_ops.length).to.equal(1);
+	});
 });
