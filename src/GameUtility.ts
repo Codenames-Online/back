@@ -18,17 +18,15 @@ export module GameUtility {
 		);
 	}
 	
-	export function getSloitererRoster(sloiterers: SLoiterer[]): [string[], string[]] {
-		let teams = this.getSloitererTeams(sloiterers);
-		return [teams.blue.map(loiterer => loiterer.name), 
-						teams.red.map(loiterer => loiterer.name)];
+	export function getSloitererRoster(loiterers: SLoitererTeams): [string[], string[]] {
+		return [loiterers.blue.map(loiterer => loiterer.name), 
+						loiterers.red.map(loiterer => loiterer.name)];
 	}
 	
-	export function getPlayerRoster(players: SPlayer[]): [string[], string[]] {
-			let teams = this.getPlayerTeams(players);
-			return [teams.blue.map(player => player.name),
-							teams.red.map(player => player.name)];
+	export function getPlayerRoster(players: SPlayerTeams): [string[], string[]] {
+			return [players.blue.map(player => player.name),
+							players.red.map(player => player.name)];
 	}
 	
-	export function getOtherTeam(team: number) { return (team + 1) % 2; }	
+	export function getOtherTeam(team: number) { return (team + 1) % 2; }
 }

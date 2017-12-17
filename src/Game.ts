@@ -49,18 +49,18 @@ export class Game {
 	// adds new loiterer to play class
 	// TODO: Weird typing issue between here and Receiver
   registerLoiterer(name: string, socket) {
-		let sloitererTeams: SLoitererTeams = gu.getSloitererTeams(this.loiterers);
-		let team: Team = sloitererTeams.blue.length <= sloitererTeams.red.length ? Team.blue : Team.red;
+		let beforeTeams: SLoitererTeams = gu.getSloitererTeams(this.loiterers);
+		let team: Team = beforeTeams.blue.length <= beforeTeams.red.length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
     let newLoiterer = new SLoiterer(name, id, team, socket);
     this.loiterers.push(newLoiterer);
-    let sloitererRoster = gu.getSloitererRoster(this.loiterers);
+    let afterTeams = gu.getSloitererTeams(this.loiterers);
 
 		Broadcaster.updateLoiterer(newLoiterer);
-		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
+		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(afterTeams));
 
-		if (re.canStartGame(sloitererRoster)) {
+		if (re.canStartGame(afterTeams)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
   }
@@ -75,10 +75,10 @@ export class Game {
 			}
     }
 
-		let sloitererRoster = gu.getSloitererRoster(this.loiterers);
+		let sloitererTeams = gu.getSloitererTeams(this.loiterers);
 
-		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
-		if (re.canStartGame(sloitererRoster)) {
+		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(sloitererTeams));
+		if (re.canStartGame(sloitererTeams)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
     else {
@@ -98,8 +98,13 @@ export class Game {
 			}
 			if (index > -1) { this.loiterers.splice(index, 1); }
 
-			roster = gu.getSloitererRoster(this.loiterers);
+			let teams = gu.getSloitererTeams(this.loiterers);
+			roster = gu.getSloitererRoster(teams);
 			Broadcaster.updateTeams(this.loiterers, roster);
+			
+			if (!re.canStartGame(teams)) {
+				Broadcaster.toggleStartButton(this.loiterers, false);
+			}
 		}
 		else {
 			for (var i = 0; i < this.players.length; i++) {
@@ -107,12 +112,8 @@ export class Game {
 			}
 			if (index > -1) { this.players.splice(index, 1); }
 
-			roster = gu.getPlayerRoster(this.players);
+			roster = gu.getPlayerRoster(gu.getPlayerTeams(this.players));
 			Broadcaster.updateTeams(this.players, roster);
-		}
-
-		if (!re.canStartGame(roster)) {
-			Broadcaster.toggleStartButton(this.loiterers, false);
 		}
 	}
 

@@ -3,6 +3,7 @@ var words = checker('en');
 
 import { Card } from './Card'
 import { Clue } from './Clue'
+import { SLoitererTeams } from './Teams'
 import { SPlayer } from './SPlayer'
 import { SOperative } from './SOperative';
 import { SSpymaster } from './SSpymaster';
@@ -41,10 +42,8 @@ export module RuleEnforcer {
     return !cards[cardIndex].revealed;
   }
 
-  export function canStartGame(sloitererRoster: [string[], string[]]) {
-    let redTeam = sloitererRoster[1];
-    let blueTeam = sloitererRoster[0];
-    return blueTeam.length >= 2 && redTeam.length >= 2;
+  export function canStartGame(teams: SLoitererTeams) {
+    return teams.red.length >= 2 && teams.blue.length >= 2;
   }
 
   export function canSubmitGuess(game: Game): [boolean, number | null] {

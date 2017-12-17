@@ -55,7 +55,7 @@ export class Receiver {
 
 				case "startGame":
 					console.log('Case startGame reached');
-					if(re.canStartGame(gu.getSloitererRoster(this.game.loiterers))) {
+					if(re.canStartGame(gu.getSloitererTeams(this.game.loiterers))) {
 						this.game.startGame();
 					};
 					break;
