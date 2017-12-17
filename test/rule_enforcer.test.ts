@@ -108,4 +108,16 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		expect(re.isPlayerSpy(red)).to.be.false;
 		expect(re.isPlayerSpy(blue)).to.be.true;
 	});
+
+	it("should correctly determine if a card is selectable", () => {
+		let words = ["porg", "ALPS", "BOARD", "BUG", "BUGLE", "CODE", "DIAMOND", "DICE",
+		"EAGLE", "EGYPT", "FISH", "FLY", "GAS", "GENIUS", "HAND", "HOLE", "JAM",
+		"LEAD", "LOCH NESS", "POOL", "PYRAMID", "QUEEN", "ROBOT", "SNOWMAN", "WORM"];
+		let cards = words.map(word => new Card(word));
+
+		cards[24].revealed = true;
+
+		expect(re.isCardSelectable(cards, 0)).to.be.true;
+		expect(re.isCardSelectable(cards, 24)).to.be.false;
+	});
 });
