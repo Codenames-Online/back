@@ -5,7 +5,7 @@ import { Card } from './Card'
 import { Clue } from './Clue'
 import { SLoitererTeams } from './Teams'
 import { Player } from './Player'
-import { SOperative } from './SOperative';
+import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
 import { SLoiterer } from './SLoiterer';
 import { Team, Turn } from './constants/Constants';
@@ -47,8 +47,8 @@ export module RuleEnforcer {
     return teams.red.length >= 2 && teams.blue.length >= 2;
   }
 
-  export function canSubmitGuess(allOps: SOperative[], team: Team): boolean {
-    let ops: SOperative[] = gu.getTeamOps(allOps, team);
+  export function canSubmitGuess(allOps: Operative[], team: Team): boolean {
+    let ops: Operative[] = gu.getTeamOps(allOps, team);
     let selected: Card | undefined = ops[0].getSelected();
 
     // votes.length check and ops.every should be redundant but leaving in for now

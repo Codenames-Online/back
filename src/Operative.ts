@@ -4,7 +4,7 @@ import { Team, Turn } from './constants/Constants';
 
 import WebSocket = require('ws')
 
-export class SOperative extends Player {
+export class Operative extends Player {
   private selected?: Card;
 
   constructor(name: string, id: string, team: Team, socket: WebSocket) {

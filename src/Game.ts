@@ -6,7 +6,7 @@ import { Clue } from './Clue';
 import { Card } from './Card'
 import { Board } from './Board';
 import { Player } from './Player';
-import { SOperative } from './SOperative';
+import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
 import { SLoiterer } from './SLoiterer';
 import { Broadcaster } from './Broadcaster';
@@ -147,7 +147,7 @@ export class Game {
 		for (let loit of this.loiterers) {
 			haveTeamSpy = foundSpy[loit.team];
 			let player = haveTeamSpy
-				? new SOperative(loit.name, loit.id, loit.team, loit.socket)
+				? new Operative(loit.name, loit.id, loit.team, loit.socket)
 				: new Spymaster(loit.name, loit.id, loit.team, loit.socket);
 
 			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
@@ -165,8 +165,8 @@ export class Game {
 		});
 	}
 
-	findOperatives(): SOperative[] {
-    return this.players.filter(player => player.role === Turn.op) as SOperative[];
+	findOperatives(): Operative[] {
+    return this.players.filter(player => player.role === Turn.op) as Operative[];
 	}
 
 	getPlayerById(id: string): Player {
@@ -192,7 +192,7 @@ export class Game {
   }
 
 	// toggle card (select OR deselect)
-	toggleCard(player: SOperative, cardIndex: number): void {
+	toggleCard(player: Operative, cardIndex: number): void {
 		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.name);
 		if (playerIndex !== -1) {
 			player.deselectCard();

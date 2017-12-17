@@ -4,7 +4,7 @@ import url = require('url')
 import { Card } from './Card'
 import { Game } from './Game'
 import { Player } from './Player'
-import { SOperative } from './SOperative'
+import { Operative } from './Operative'
 import { Broadcaster } from './Broadcaster';
 import { RuleEnforcer as re } from './RuleEnforcer';
 import { GameUtility as gu } from './GameUtility'
@@ -78,7 +78,7 @@ export class Receiver {
 
 				case "toggleCard": {
 					console.log('Case toggleCard reached');
-					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
+					let sop: Operative = this.game.getPlayerById(message.id) as Operative;
 					if(re.isCardSelectable(this.game.board.cards, message.cardIndex)
 						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)
 						&& !re.isPlayerSpy(sop)) {
@@ -109,7 +109,7 @@ export class Receiver {
 
 				case "submitGuess":
 					console.log('Case submitGuess reached');
-					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
+					let sop: Operative = this.game.getPlayerById(message.id) as Operative;
 					let currSelection = this.game.board.cards.findIndex((card: Card) => {
 						return card.votes.indexOf(sop.name) !== -1;
 					});
