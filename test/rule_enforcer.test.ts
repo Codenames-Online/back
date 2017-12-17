@@ -9,10 +9,18 @@ import { Color, Team, Turn } from '../src/constants/Constants';
 
 import 'mocha';
 import { expect } from 'chai';
+import WebSocket = require('ws')
 import { mock, instance, when } from 'ts-mockito';
-import { sampleSize } from 'lodash'
 
 describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
+	let mock_ws: WebSocket;
+	let mock_ws_instance: WebSocket;
+
+	before(() => {
+		mock_ws = mock(WebSocket);
+		mock_ws_instance = instance(mock_ws);
+	});
+
 	it("should allow names that have at least one character and only letters, underscores and spaces", () => {
 		expect(re.isValidName('test')).to.be.true;
 		expect(re.isValidName('valid name')).to.be.true;
@@ -75,5 +83,21 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		expect(re.isWordOnBoard("porg", cards)).to.be.true;
 		expect(re.isWordOnBoard("board", cards)).to.be.true;
 		expect(re.isWordOnBoard("WORM", cards)).to.be.true;
+	});
+
+	it("should correctly determine if it is player turn", () => {
+		let red = new SOperative("test", "1", Team.red, mock_ws_instance, Turn.op);
+
+		expect(re.isPlayerTurn(Team.red, Turn.op, red)).to.be.true;
+		expect(re.isPlayerTurn(Team.red, Turn.spy, red)).to.be.false;
+		expect(re.isPlayerTurn(Team.blue, Turn.op, red)).to.be.false;
+		expect(re.isPlayerTurn(Team.blue, Turn.spy, red)).to.be.false;
+		
+		let blue = new SSpymaster("test", "2", Team.blue, mock_ws_instance, Turn.spy);
+
+		expect(re.isPlayerTurn(Team.red, Turn.op, blue)).to.be.false;
+		expect(re.isPlayerTurn(Team.red, Turn.spy, blue)).to.be.false;
+		expect(re.isPlayerTurn(Team.blue, Turn.op, blue)).to.be.false;
+		expect(re.isPlayerTurn(Team.blue, Turn.spy, blue)).to.be.true;
 	});
 });
