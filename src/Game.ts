@@ -1,7 +1,3 @@
-import * as _ from 'lodash'
-import * as c from './constants/Constants'
-import { GameUtility as gu } from './GameUtility'
-
 import { Clue } from './Clue';
 import { Card } from './Card'
 import { Board } from './Board';
@@ -10,9 +6,14 @@ import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
 import { Loiterer } from './Loiterer';
 import { Broadcaster } from './Broadcaster';
+import { GameUtility as gu } from './GameUtility'
 import { RuleEnforcer as re } from './RuleEnforcer';
 import { SPlayerTeams, SLoitererTeams } from './Teams'
 import { Color, Team, Turn } from './constants/Constants';
+
+import ws = require('ws');
+import * as _ from 'lodash'
+import * as c from './constants/Constants'
 
 export class Game {
 	score: number[];
@@ -88,7 +89,7 @@ export class Game {
 
 	// on socket close, remove person
 	// TODO: Weird typing between here and receiver
-	removePerson(socket) {
+	removePerson(socket: ws) {
 		var index = -1
 		let roster: [string[], string[]];
 
@@ -267,5 +268,95 @@ export class Game {
 
 	endGame(team: Team): void {
 		Broadcaster.endGame(this.players, team);
+	}
+
+	handleMessage(message: any, socket: ws) {
+		switch(message.action) {
+			case "sendClue":
+				console.log('Case sendClue reached');
+				if(re.isLegalClue(message.clue, this.board.cards)
+				&& re.isPlayerTurn(this.currTeam, this.turn, this.getPlayerById(message.id))) {
+					this.initializeClue(message.clue);
+				} else {
+					if(!re.isValidWord(message.clue.word)) {
+						socket.send(JSON.stringify({ action: "invalidClueWord", reason: "notWord"}));
+					} else if(re.isWordOnBoard(message.clue.word, this.board.cards)) {
+						socket.send(JSON.stringify({ action: "invalidClueWord", reason: "wordOnBoard"}));							
+					} else if(!re.isValidNumGuesses(message.clue.num)) {
+						socket.send(JSON.stringify({ action: "invalidClueNum", }));
+					}
+				}
+				break;
+
+			case "toggleCard": {
+				console.log('Case toggleCard reached');
+				let sop: Operative = this.getPlayerById(message.id) as Operative;
+				if(re.isCardSelectable(this.board.cards, message.cardIndex)
+					&& re.isPlayerTurn(this.currTeam, this.turn, sop)
+					&& !re.isPlayerSpy(sop)) {
+					let previousSelection = this.board.cards.findIndex((card: Card) => {
+						return card.votes.indexOf(sop.name) !== -1;
+					});
+
+					if(previousSelection !== -1) {
+						console.log('first');
+						this.toggleCard(sop, previousSelection);
+					}
+
+					if (Number(previousSelection) !== Number(message.cardIndex)) {
+						console.log('second');
+						this.toggleCard(sop, message.cardIndex);
+					}
+				}
+
+				let canGuess= re.canSubmitGuess(this.findOperatives(), this.currTeam);
+				if(canGuess
+					&& !re.isPlayerSpy(sop)
+					&& re.isPlayerTurn(this.currTeam, this.turn, sop)) {
+					this.guessAllowed();
+				}
+
+				break;
+			}
+
+			case "submitGuess":
+				console.log('Case submitGuess reached');
+				let sop: Operative = this.getPlayerById(message.id) as Operative;
+				let currSelection = this.board.cards.findIndex((card: Card) => {
+					return card.votes.indexOf(sop.name) !== -1;
+				});
+
+				this.checkGuess(currSelection as number);
+
+				this.findOperatives().filter(op => op.team === sop.team).forEach(
+					innerOp => this.toggleCard(innerOp, currSelection)
+				)
+				break;
+
+			case "endGame":
+				console.log('Case endTurn reached');
+				break;
+
+			case "sendMessage":
+				console.log('Case sendMessage reached');
+
+				const player = this.getPlayerById(message.id);
+				if(!re.isPlayerSpy(player)) {
+					Broadcaster.sendMessage(this.players, message.text, player)
+				}
+				break;
+
+			case "endTurn":
+				console.log('Case endTurn reached');
+
+				let sp: Agent = this.getPlayerById(message.id) as Agent;
+				if(re.isPlayerTurn(this.currTeam, this.turn, sp)) {
+					this.switchActiveTeam();
+				}
+
+				break;
+			default:
+				console.log(`Whoops ${message} is not a known game message`);
+		}
 	}
 }
