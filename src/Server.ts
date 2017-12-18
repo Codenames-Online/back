@@ -22,6 +22,6 @@ app.use(express.static('static'));
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-let receiver = new Receiver(wss, new Game());
+let receiver = new Receiver(wss);
 
 export default server;
