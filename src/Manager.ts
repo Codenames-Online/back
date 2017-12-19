@@ -62,9 +62,12 @@ export class Manager {
 
 				case "startGame":
 					console.log('Case startGame reached');
-					if(re.canStartGame(gu.getSloitererTeams(this.game.loiterers))) {
-						this.game.startGame();
-					};
+					if(this.lobbies.has(message.gid)
+					&& re.canStartGame(gu.getSloitererTeams((this.lobbies.get(message.gid) as Lobby).getLoiterers()))) {
+						let lobby: Lobby = this.lobbies.get(message.gid) as Lobby;
+						this.lobbies.delete(message.gid);
+						this.games.set(message.gid, Game.gameFromLobby(lobby));
+					}
 					break;
 
 				// game message
