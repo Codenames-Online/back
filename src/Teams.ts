@@ -1,4 +1,4 @@
-import { Player } from './Player'
+import { Agent } from './Agent'
 import { Loiterer } from './Loiterer'
 
 export class SLoitererTeams {
@@ -12,10 +12,10 @@ export class SLoitererTeams {
 }
 
 export class SPlayerTeams {
-  readonly red: Player[];
-  readonly blue: Player[];
+  readonly red: Agent[];
+  readonly blue: Agent[];
 
-  constructor(red: Player[], blue: Player[]) {
+  constructor(red: Agent[], blue: Agent[]) {
 		this.red = red;
 		this.blue = blue;
   }

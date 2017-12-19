@@ -1,5 +1,4 @@
 import { Agent } from './Agent';
-import { Player } from './Player';
 import { Team, Turn } from './constants/Constants';
 
 import ws = require('ws');
