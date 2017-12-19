@@ -1,9 +1,9 @@
 import { Clue } from '../src/Clue'
 import { Card } from '../src/Card'
-import { SPlayer } from '../src/SPlayer';
-import { SLoiterer } from '../src/SLoiterer';
-import { SSpymaster } from '../src/SSpymaster';
-import { SOperative } from '../src/SOperative';
+import { Player } from '../src/Player';
+import { Loiterer } from '../src/Loiterer';
+import { Spymaster } from '../src/Spymaster';
+import { Operative } from '../src/Operative';
 import { GameUtility as gu } from '../src/GameUtility';
 import { RuleEnforcer as re } from '../src/RuleEnforcer';
 import { Color, Team, Turn } from '../src/constants/Constants';
@@ -88,14 +88,14 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if it is player turn", () => {
-		let red = new SOperative("test", "1", Team.red, mock_ws_instance);
+		let red = new Operative("test", "1", Team.red, mock_ws_instance);
 
 		expect(re.isPlayerTurn(Team.red, Turn.op, red)).to.be.true;
 		expect(re.isPlayerTurn(Team.red, Turn.spy, red)).to.be.false;
 		expect(re.isPlayerTurn(Team.blue, Turn.op, red)).to.be.false;
 		expect(re.isPlayerTurn(Team.blue, Turn.spy, red)).to.be.false;
 		
-		let blue = new SSpymaster("test", "2", Team.blue, mock_ws_instance);
+		let blue = new Spymaster("test", "2", Team.blue, mock_ws_instance);
 
 		expect(re.isPlayerTurn(Team.red, Turn.op, blue)).to.be.false;
 		expect(re.isPlayerTurn(Team.red, Turn.spy, blue)).to.be.false;
@@ -104,8 +104,8 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if a player is a spy", () => {
-		let red = new SOperative("test", "1", Team.red, mock_ws_instance);
-		let blue = new SSpymaster("test", "2", Team.blue, mock_ws_instance);
+		let red = new Operative("test", "1", Team.red, mock_ws_instance);
+		let blue = new Spymaster("test", "2", Team.blue, mock_ws_instance);
 
 		expect(re.isPlayerSpy(red)).to.be.false;
 		expect(re.isPlayerSpy(blue)).to.be.true;
@@ -124,11 +124,11 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if we can start a game", () => {
-		let red_l_one = new SLoiterer("red", "1", Team.red, mock_ws_instance);
-		let red_l_two = new SLoiterer("red", "2", Team.red, mock_ws_instance);
-		let blue_l_one = new SLoiterer("blue", "1", Team.blue, mock_ws_instance);
-		let blue_l_two = new SLoiterer("blue", "2", Team.blue, mock_ws_instance);
-		let blue_l_three = new SLoiterer("blue", "3", Team.blue, mock_ws_instance);
+		let red_l_one = new Loiterer("red", "1", Team.red, mock_ws_instance);
+		let red_l_two = new Loiterer("red", "2", Team.red, mock_ws_instance);
+		let blue_l_one = new Loiterer("blue", "1", Team.blue, mock_ws_instance);
+		let blue_l_two = new Loiterer("blue", "2", Team.blue, mock_ws_instance);
+		let blue_l_three = new Loiterer("blue", "3", Team.blue, mock_ws_instance);
 		let loiterers = [red_l_one, red_l_two, blue_l_one, blue_l_two, blue_l_three];
 
 		let can_start_one = [red_l_one, red_l_two, blue_l_one, blue_l_two];
@@ -145,15 +145,15 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if a guess can be submitted", () => {		
-		let red_p_one = new SSpymaster("red", "1", Team.red, mock_ws_instance);
-		let red_p_two = new SOperative("red", "2", Team.red, mock_ws_instance);
-		let red_p_three = new SOperative("red", "3", Team.red, mock_ws_instance);
-		let blue_p_one = new SSpymaster("blue", "1", Team.blue, mock_ws_instance);
-		let blue_p_two = new SOperative("blue", "2", Team.blue, mock_ws_instance);
-		let players: SPlayer[] = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
+		let red_p_one = new Spymaster("red", "1", Team.red, mock_ws_instance);
+		let red_p_two = new Operative("red", "2", Team.red, mock_ws_instance);
+		let red_p_three = new Operative("red", "3", Team.red, mock_ws_instance);
+		let blue_p_one = new Spymaster("blue", "1", Team.blue, mock_ws_instance);
+		let blue_p_two = new Operative("blue", "2", Team.blue, mock_ws_instance);
+		let players: Player[] = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
 
 		// TODO: Use utility method for getting ops
-		let ops: SOperative[] = players.filter(player => player.role === Turn.op) as SOperative[];
+		let ops: Operative[] = players.filter(player => player.role === Turn.op) as Operative[];
 		let select_card = new Card("select");
 		let decoy_card = new Card("decoy");
 
