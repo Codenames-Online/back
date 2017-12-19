@@ -35,7 +35,7 @@ export class Manager {
 
 		if(message.hasOwnProperty('action')) {
 			let action: string = message.action;
-
+			
 			switch(action) {
 				case "setName":
 					console.log('Case setName reached');
@@ -56,8 +56,8 @@ export class Manager {
 					break;
 
 				case "switchTeam":
-					this.game.switchLoitererTeam(message.pid);
-					console.log('Case switchTeam reached');
+					if(this.lobbies.has(message.gid))
+						(this.lobbies.get(message.gid) as Lobby).switchLoitererTeam(message.pid);
 					break;
 
 				case "startGame":

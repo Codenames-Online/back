@@ -47,46 +47,6 @@ export class Game {
 		Broadcaster.updateBoard(spymasters, this.boardToColorsAndCards(true));
 	}
 
-	// adds new loiterer to play class
-	// TODO: Weird typing issue between here and Receiver
-  // registerLoiterer(name: string, socket) {
-	// 	let beforeTeams: SLoitererTeams = gu.getSloitererTeams(this.loiterers);
-	// 	let team: Team = beforeTeams.blue.length <= beforeTeams.red.length ? Team.blue : Team.red;
-	// 	let id = Date.now().toString(36);
-
-  //   let newLoiterer = new Loiterer(id, name, socket, team);
-  //   this.loiterers.push(newLoiterer);
-  //   let afterTeams = gu.getSloitererTeams(this.loiterers);
-
-	// 	// Broadcaster.updateLoiterer(newLoiterer);
-	// 	Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(afterTeams));
-
-	// 	if (re.canStartGame(afterTeams)) {
-	// 		Broadcaster.toggleStartButton(this.loiterers, true);
-	// 	}
-  // }
-
-	// switches loiterer team
-	switchLoitererTeam(id: string) {
-		for (var i = 0; i < this.loiterers.length; i++) {
-			if (this.loiterers[i].id === id) {
-				var team = this.loiterers[i].team
-				team = gu.getOtherTeam(team);
-				this.loiterers[i].team = team;
-			}
-    }
-
-		let sloitererTeams = gu.getSloitererTeams(this.loiterers);
-
-		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(sloitererTeams));
-		if (re.canStartGame(sloitererTeams)) {
-			Broadcaster.toggleStartButton(this.loiterers, true);
-		}
-    else {
-      Broadcaster.toggleStartButton(this.loiterers, false);
-    }
-	}
-
 	// on socket close, remove person
 	// TODO: Weird typing between here and receiver
 	removePerson(socket: ws) {
