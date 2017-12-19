@@ -5,13 +5,14 @@ import { Board } from './Board'
 import { Agent } from './Agent'
 import { Loiterer } from './Loiterer'
 import { Spymaster } from './Spymaster'
+import { Player } from './Player';
 
 export module Broadcaster {
-	function broadcastToPlayers(players: Agent[], message: Object) {
+	function broadcastToPlayers(players: Player[], message: Object) {
 		for(let player of players) { sendToPlayer(player, message); }
 	}
 
-	function sendToPlayer(player: Agent, message: Object) {
+	function sendToPlayer(player: Player, message: Object) {
 		player.socket.send(JSON.stringify(message));
 	}
 
@@ -83,8 +84,12 @@ export function updateBoard(splayers: Agent[], board: [number, Card][]) {
 		broadcastToPlayers(players, { action: "allowGuess", bool: bool });
 	}
 
-	export function updateLoiterer(sloiterer: Loiterer) {
-		sendToSloiterer(sloiterer, { action: "updateLoiterer", person: sloiterer });
+	export function updateLoner(loner: Player) {
+		sendToPlayer(loner, { action: "updateLoner", person: loner });
+	}
+
+	export function updateLoiterer(sloiterer: Loiterer, gid: string) {
+		sendToSloiterer(sloiterer, { action: "updateLoiterer", person: sloiterer, gid: gid });
 	}
 
 	export function updateLoitererToPlayer(sloiterer: Loiterer, splayer: Agent) {
