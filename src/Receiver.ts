@@ -3,7 +3,7 @@ import url = require('url')
 
 import { Card } from './Card'
 import { Game } from './Game'
-import { Player } from './Player'
+import { Agent } from './Agent'
 import { Operative } from './Operative'
 import { Broadcaster } from './Broadcaster';
 import { RuleEnforcer as re } from './RuleEnforcer';
@@ -137,7 +137,7 @@ export class Receiver {
 				case "endTurn":
 					console.log('Case endTurn reached');
 
-					let sp: Player = this.game.getPlayerById(message.id) as Player;
+					let sp: Agent = this.game.getPlayerById(message.id) as Agent;
 					if(re.isPlayerTurn(this.game.currTeam, this.game.turn, sp)) {
 						this.game.switchActiveTeam();
 					}

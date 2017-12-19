@@ -5,7 +5,7 @@ import { GameUtility as gu } from './GameUtility'
 import { Clue } from './Clue';
 import { Card } from './Card'
 import { Board } from './Board';
-import { Player } from './Player';
+import { Agent } from './Agent';
 import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
 import { Loiterer } from './Loiterer';
@@ -20,7 +20,7 @@ export class Game {
 	numGuesses: number;
 	turn: Turn;
 	board: Board;
-	players: Player[];
+	players: Agent[];
 	loiterers: Loiterer[];
 	startTeam: Team;
 	currTeam: Team;
@@ -53,7 +53,7 @@ export class Game {
 		let team: Team = beforeTeams.blue.length <= beforeTeams.red.length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
-    let newLoiterer = new Loiterer(name, id, team, socket);
+    let newLoiterer = new Loiterer(id, name, socket, team);
     this.loiterers.push(newLoiterer);
     let afterTeams = gu.getSloitererTeams(this.loiterers);
 
@@ -147,8 +147,8 @@ export class Game {
 		for (let loit of this.loiterers) {
 			haveTeamSpy = foundSpy[loit.team];
 			let player = haveTeamSpy
-				? new Operative(loit.name, loit.id, loit.team, loit.socket)
-				: new Spymaster(loit.name, loit.id, loit.team, loit.socket);
+				? new Operative(loit.id, loit.name, loit.socket, loit.team)
+				: new Spymaster(loit.id, loit.name, loit.socket, loit.team);
 
 			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
 
@@ -169,9 +169,9 @@ export class Game {
     return this.players.filter(player => player.role === Turn.op) as Operative[];
 	}
 
-	getPlayerById(id: string): Player {
+	getPlayerById(id: string): Agent {
     // TODO: REALLLLLLLLY SHOULDNT CAST LIKE THIS
-    return this.players.find((player) => { return player.id === id; }) as Player;
+    return this.players.find((player) => { return player.id === id; }) as Agent;
 	}
 
   setStartTeam(): void {
