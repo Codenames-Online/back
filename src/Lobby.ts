@@ -17,6 +17,7 @@ export class Lobby {
 
 	addLoiterer(loiterer: Loiterer) {
 		this.loiterers.push(loiterer);
+		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(gu.getSloitererTeams(this.loiterers)));
 	}
 
 	removeLoiterer(socket: ws) {
@@ -34,5 +35,19 @@ export class Lobby {
 
 	getLoiterers(): Loiterer[] {
 		return this.loiterers;
+	}
+
+	switchLoitererTeam(pid: string) {
+		let loiterer = this.loiterers.find(loiterer => loiterer.id === pid);
+		if(loiterer) {
+			loiterer.team = gu.getOtherTeam(loiterer.team);
+		} else {
+			// handle without crashing in production
+			throw new Error('Loiterer does not exist when trying to switch teams');
+		}
+
+		let sloitererTeams = gu.getSloitererTeams(this.loiterers);
+		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(sloitererTeams));
+		Broadcaster.toggleStartButton(this.loiterers, re.canStartGame(sloitererTeams));
 	}
 }
