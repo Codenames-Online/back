@@ -1,5 +1,6 @@
 import { Clue } from '../src/Clue'
 import { Card } from '../src/Card'
+import { Agent } from '../src/Agent';
 import { Player } from '../src/Player';
 import { Loiterer } from '../src/Loiterer';
 import { Spymaster } from '../src/Spymaster';
@@ -88,14 +89,14 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if it is player turn", () => {
-		let red = new Operative("test", "1", Team.red, mock_ws_instance);
+		let red = new Operative("test", "1", mock_ws_instance, Team.red);
 
 		expect(re.isPlayerTurn(Team.red, Turn.op, red)).to.be.true;
 		expect(re.isPlayerTurn(Team.red, Turn.spy, red)).to.be.false;
 		expect(re.isPlayerTurn(Team.blue, Turn.op, red)).to.be.false;
 		expect(re.isPlayerTurn(Team.blue, Turn.spy, red)).to.be.false;
 		
-		let blue = new Spymaster("test", "2", Team.blue, mock_ws_instance);
+		let blue = new Spymaster("test", "2", mock_ws_instance, Team.blue);
 
 		expect(re.isPlayerTurn(Team.red, Turn.op, blue)).to.be.false;
 		expect(re.isPlayerTurn(Team.red, Turn.spy, blue)).to.be.false;
@@ -104,8 +105,8 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if a player is a spy", () => {
-		let red = new Operative("test", "1", Team.red, mock_ws_instance);
-		let blue = new Spymaster("test", "2", Team.blue, mock_ws_instance);
+		let red = new Operative("test", "1", mock_ws_instance, Team.red);
+		let blue = new Spymaster("test", "2", mock_ws_instance, Team.blue);
 
 		expect(re.isPlayerSpy(red)).to.be.false;
 		expect(re.isPlayerSpy(blue)).to.be.true;
@@ -124,11 +125,11 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if we can start a game", () => {
-		let red_l_one = new Loiterer("red", "1", Team.red, mock_ws_instance);
-		let red_l_two = new Loiterer("red", "2", Team.red, mock_ws_instance);
-		let blue_l_one = new Loiterer("blue", "1", Team.blue, mock_ws_instance);
-		let blue_l_two = new Loiterer("blue", "2", Team.blue, mock_ws_instance);
-		let blue_l_three = new Loiterer("blue", "3", Team.blue, mock_ws_instance);
+		let red_l_one = new Loiterer("red", "1", mock_ws_instance, Team.red);
+		let red_l_two = new Loiterer("red", "2", mock_ws_instance, Team.red);
+		let blue_l_one = new Loiterer("blue", "1", mock_ws_instance, Team.blue);
+		let blue_l_two = new Loiterer("blue", "2", mock_ws_instance, Team.blue);
+		let blue_l_three = new Loiterer("blue", "3", mock_ws_instance, Team.blue);
 		let loiterers = [red_l_one, red_l_two, blue_l_one, blue_l_two, blue_l_three];
 
 		let can_start_one = [red_l_one, red_l_two, blue_l_one, blue_l_two];
@@ -145,15 +146,15 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	});
 
 	it("should correctly determine if a guess can be submitted", () => {		
-		let red_p_one = new Spymaster("red", "1", Team.red, mock_ws_instance);
-		let red_p_two = new Operative("red", "2", Team.red, mock_ws_instance);
-		let red_p_three = new Operative("red", "3", Team.red, mock_ws_instance);
-		let blue_p_one = new Spymaster("blue", "1", Team.blue, mock_ws_instance);
-		let blue_p_two = new Operative("blue", "2", Team.blue, mock_ws_instance);
-		let players: Player[] = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
+		let red_p_one = new Spymaster("red", "1", mock_ws_instance, Team.red);
+		let red_p_two = new Operative("red", "2", mock_ws_instance, Team.red);
+		let red_p_three = new Operative("red", "3", mock_ws_instance, Team.red);
+		let blue_p_one = new Spymaster("blue", "1", mock_ws_instance, Team.blue);
+		let blue_p_two = new Operative("blue", "2", mock_ws_instance, Team.blue);
+		let agents: Agent[] = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
 
 		// TODO: Use utility method for getting ops
-		let ops: Operative[] = players.filter(player => player.role === Turn.op) as Operative[];
+		let ops: Operative[] = agents.filter(agent => agent.role === Turn.op) as Operative[];
 		let select_card = new Card("select");
 		let decoy_card = new Card("decoy");
 
