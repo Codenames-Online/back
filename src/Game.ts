@@ -1,5 +1,6 @@
 import { Clue } from './Clue';
 import { Card } from './Card'
+import { Lobby } from './Lobby';
 import { Board } from './Board';
 import { Agent } from './Agent';
 import { Operative } from './Operative';
@@ -15,6 +16,7 @@ import ws = require('ws');
 import * as _ from 'lodash'
 import * as c from './constants/Constants'
 
+
 export class Game {
 	score: number[];
 	clue?: Clue;
@@ -27,10 +29,38 @@ export class Game {
 	currTeam: Team;
 
   constructor() {
-    this.numGuesses = 0;
+		// to be removed
 		this.loiterers = [];
+
+		// switching to lobbies
+		this.setStartTeam();
+		this.board = new Board(this.startTeam);
+		this.currTeam = this.startTeam;
+		this.score = [8,8];
+		this.score[this.startTeam] = 9;
+		this.numGuesses = 0;
 		this.players = [];
-  }
+		this.turn = Turn.spy;
+	}
+	
+	static gameFromLobby(lobby: Lobby): Game {
+		let game = new Game();
+
+		game.setPlayerRoles(lobby.getLoiterers());
+		
+		let startingRoster = game.players.map((player) => {
+			return { name: player.name, role: player.role, team: player.team }
+		});
+
+		game.broadcastUpdatedBoard();
+		Broadcaster.updateScore(game.players, game.score);
+		Broadcaster.startGame(game.players, game.currTeam, startingRoster);
+
+		let spyMaster = game.findSpymasters()[game.startTeam];
+		Broadcaster.promptForClue(spyMaster);
+		
+		return game;
+	}
 
 	boardToColorsAndCards(toSpymasters): [number, Card][] {
 		return this.board.cards.map((card: Card, index) => {
@@ -78,46 +108,22 @@ export class Game {
 		}
 	}
 
-	// start button clicked -- set up game!
-	startGame() {
-  	this.setPlayerRoles();
-  	this.setStartTeam();
-    this.board = new Board(this.startTeam);
-		this.currTeam = this.startTeam;
-		this.score = [8,8];
-		this.score[this.startTeam] = 9;
-		this.turn = Turn.spy;
-
-		let startingRoster = this.players.map((player) => {
-			return { name: player.name, role: player.role, team: player.team }
-		});
-
-		this.broadcastUpdatedBoard();
-		Broadcaster.updateScore(this.players, this.score);
-		Broadcaster.startGame(this.players, this.currTeam, startingRoster);
-
-
-		let spyMaster = this.findSpymasters()[this.startTeam];
-		Broadcaster.promptForClue(spyMaster);
-  }
-
 	// turn loiterers into players
-	setPlayerRoles(): void {
+	setPlayerRoles(loiterers: Loiterer[]): void {
 		let foundSpy: [boolean, boolean] = [false, false];
 		let haveTeamSpy: boolean;
-		for (let loit of this.loiterers) {
+		
+		for (let loit of loiterers) {
 			haveTeamSpy = foundSpy[loit.team];
 			let player = haveTeamSpy
-				? new Operative(loit.id, loit.name, loit.socket, loit.team)
-				: new Spymaster(loit.id, loit.name, loit.socket, loit.team);
+				? Operative.loitererToOperative(loit)
+				: Spymaster.loitererToSpymaster(loit);
 
 			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
 
 			this.players.push(player);
 			Broadcaster.updateLoitererToPlayer(loit, player);
 		}
-
-		this.loiterers = [];
   }
 
 	findSpymasters(): Spymaster[] {
