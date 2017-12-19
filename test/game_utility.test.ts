@@ -1,3 +1,4 @@
+import { Agent } from '../src/Agent';
 import { Player } from '../src/Player';
 import { Loiterer } from '../src/Loiterer';
 import { Spymaster } from '../src/Spymaster';
@@ -15,25 +16,25 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	let mock_ws: WebSocket;
 	let mock_ws_instance: WebSocket;
 	let loiterers: Loiterer[];
-	let players: Player[];
+	let agents: Agent[];
 
 	before(() => {
 		mock_ws = mock(WebSocket);
 		mock_ws_instance = instance(mock_ws);
 
-		let red_l_one = new Loiterer("red", "1", Team.red, mock_ws_instance);
-		let red_l_two = new Loiterer("red", "2", Team.red, mock_ws_instance);
-		let blue_l_one = new Loiterer("blue", "1", Team.blue, mock_ws_instance);
-		let blue_l_two = new Loiterer("blue", "2", Team.blue, mock_ws_instance);
-		let blue_l_three = new Loiterer("blue", "3", Team.blue, mock_ws_instance);
+		let red_l_one = new Loiterer("red", "1", mock_ws_instance, Team.red);
+		let red_l_two = new Loiterer("red", "2", mock_ws_instance, Team.red);
+		let blue_l_one = new Loiterer("blue", "1", mock_ws_instance, Team.blue);
+		let blue_l_two = new Loiterer("blue", "2", mock_ws_instance, Team.blue);
+		let blue_l_three = new Loiterer("blue", "3", mock_ws_instance, Team.blue);
 		loiterers = [red_l_one, red_l_two, blue_l_one, blue_l_two, blue_l_three];
 
-		let red_p_one = new Spymaster("red", "1", Team.red, mock_ws_instance);
-		let red_p_two = new Operative("red", "2", Team.red, mock_ws_instance);
-		let red_p_three = new Operative("red", "3", Team.red, mock_ws_instance);
-		let blue_p_one = new Spymaster("blue", "1", Team.blue, mock_ws_instance);
-		let blue_p_two = new Operative("blue", "2", Team.blue, mock_ws_instance);
-		players = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
+		let red_p_one = new Spymaster("red", "1", mock_ws_instance, Team.red);
+		let red_p_two = new Operative("red", "2", mock_ws_instance, Team.red);
+		let red_p_three = new Operative("red", "3", mock_ws_instance, Team.red);
+		let blue_p_one = new Spymaster("blue", "1", mock_ws_instance, Team.blue);
+		let blue_p_two = new Operative("blue", "2", mock_ws_instance, Team.blue);
+		agents = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
 	});
 
   it("should correctly split loiterers on team", () => {
@@ -44,7 +45,7 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	});
 	
   it("should correctly split players on team", () => {
-		let teams = gu.getPlayerTeams(players);
+		let teams = gu.getPlayerTeams(agents);
 
 		expect(teams.red.length).to.equal(3);
 		expect(teams.blue.length).to.equal(2);
@@ -58,7 +59,7 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	});
 	
 	it("should get correct number of names from players", () => {
-		let team_names = gu.getPlayerRoster(gu.getPlayerTeams(players));
+		let team_names = gu.getPlayerRoster(gu.getPlayerTeams(agents));
 
 		expect(team_names[Team.red].length).to.equal(3);
 		expect(team_names[Team.blue].length).to.equal(2);
@@ -71,7 +72,7 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	
 	// TODO: update this to use get operatives utility function
 	it("should correctly split operatives on team", () => {
-		let ops: Operative[] = players.filter(player => player.role === Turn.op) as Operative[];
+		let ops: Operative[] = agents.filter(player => player.role === Turn.op) as Operative[];
 		let red_ops = gu.getTeamOps(ops, Team.red);
 		let blue_ops = gu.getTeamOps(ops, Team.blue);
 
