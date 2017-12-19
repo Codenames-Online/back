@@ -12,22 +12,21 @@ import ws = require('ws');
 import { Team } from './constants/Constants';
 
 export class Manager {
-	game: Game;
 	loners: Map<string, Player>;
 	lobbies: Map<string, Lobby>;
 	games: Map<string, Game>;
 
 	// make instance of Game class
 	constructor() {
-		this.game = new Game();
 		this.loners = new Map();
 		this.lobbies = new Map();
 		this.games = new Map();
 	}
 
 	handleClose(socket: ws) {
-		console.log('Closed connection');
-		this.game.removePerson(socket);
+		console.log('Didn\'t close connection, FIX THIS');
+		// TODO: need to handle this somehow, map of sockets to gid?
+		// this.games.get().removePerson(socket);
 	}
 
 	handleMessage(message: any, socket: ws) {
@@ -77,7 +76,8 @@ export class Manager {
 				case "toggleCard":
 				case "submitGuess":
 				case "sendMessage":
-					this.game.handleMessage(message, socket);
+					if(this.games.has(message.gid))
+						(this.games.get(message.gid) as Game).handleMessage(message, socket);
 					break;
 
 				default:
