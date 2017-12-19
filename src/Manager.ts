@@ -9,16 +9,20 @@ import { GameUtility as gu } from './GameUtility';
 import { RuleEnforcer as re } from './RuleEnforcer';
 
 import ws = require('ws');
+import { Team } from './constants/Constants';
 
 export class Manager {
 	game: Game;
-	loiterers: { [pid: string] : Loiterer};
-	lobbies: { [gid: string] : Lobby };
-	games:  { [gid: string] : Game };
+	loners: Map<string, Player>;
+	lobbies: Map<string, Lobby>;
+	games: Map<string, Game>;
 
 	// make instance of Game class
 	constructor() {
 		this.game = new Game();
+		this.loners = new Map();
+		this.lobbies = new Map();
+		this.games = new Map();
 	}
 
 	handleClose(socket: ws) {
@@ -36,12 +40,23 @@ export class Manager {
 				case "setName":
 					console.log('Case setName reached');
 					if (re.isValidName(message.name)) {
-						this.game.registerLoiterer(message.name, socket);
+						// this.game.registerLoiterer(message.name, socket);
+						this.registerPlayer(message.name, socket);
 					}
 					break;
 
+				case "createLobby":
+					this.lobbies.set('test', new Lobby('test'));
+					this.placePlayer(message.pid, 'test');
+					break;
+
+				case "joinLobby":
+					if(this.lobbies.has(message.gid))
+						this.placePlayer(message.pid, message.gid);
+					break;
+
 				case "switchTeam":
-					this.game.switchLoitererTeam(message.id);
+					this.game.switchLoitererTeam(message.pid);
 					console.log('Case switchTeam reached');
 					break;
 
@@ -66,5 +81,28 @@ export class Manager {
 					console.log(`Whoops don't know what ${message} is`);
 			}
 		}
+	}
+
+	// adds player to loners array of players with no lobby
+  registerPlayer(name: string, socket: ws) {
+		let id = Date.now().toString(36);
+		let loner = new Player(id, name, socket);
+		this.loners.set(id, loner);
+		
+		Broadcaster.updateLoner(loner);
+	}
+	
+	placePlayer(pid: string, gid: string): boolean {
+		// confirm that both exist, use casts later since we are synchronous we know
+		// they must still exist
+		if(!this.loners.has(pid) && this.lobbies.has(gid))
+			return false;
+
+		let loner: Player = this.loners.get(pid) as Player;
+		this.loners.delete(pid);
+		let loiterer = Loiterer.playerToLoiterer(loner, Team.red);
+		(this.lobbies.get(gid) as Lobby).addLoiterer(loiterer)
+		Broadcaster.updateLoiterer(loiterer, gid);
+		return true;
 	}
 }

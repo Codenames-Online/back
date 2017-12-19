@@ -49,22 +49,22 @@ export class Game {
 
 	// adds new loiterer to play class
 	// TODO: Weird typing issue between here and Receiver
-  registerLoiterer(name: string, socket) {
-		let beforeTeams: SLoitererTeams = gu.getSloitererTeams(this.loiterers);
-		let team: Team = beforeTeams.blue.length <= beforeTeams.red.length ? Team.blue : Team.red;
-		let id = Date.now().toString(36);
+  // registerLoiterer(name: string, socket) {
+	// 	let beforeTeams: SLoitererTeams = gu.getSloitererTeams(this.loiterers);
+	// 	let team: Team = beforeTeams.blue.length <= beforeTeams.red.length ? Team.blue : Team.red;
+	// 	let id = Date.now().toString(36);
 
-    let newLoiterer = new Loiterer(id, name, socket, team);
-    this.loiterers.push(newLoiterer);
-    let afterTeams = gu.getSloitererTeams(this.loiterers);
+  //   let newLoiterer = new Loiterer(id, name, socket, team);
+  //   this.loiterers.push(newLoiterer);
+  //   let afterTeams = gu.getSloitererTeams(this.loiterers);
 
-		Broadcaster.updateLoiterer(newLoiterer);
-		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(afterTeams));
+	// 	// Broadcaster.updateLoiterer(newLoiterer);
+	// 	Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(afterTeams));
 
-		if (re.canStartGame(afterTeams)) {
-			Broadcaster.toggleStartButton(this.loiterers, true);
-		}
-  }
+	// 	if (re.canStartGame(afterTeams)) {
+	// 		Broadcaster.toggleStartButton(this.loiterers, true);
+	// 	}
+  // }
 
 	// switches loiterer team
 	switchLoitererTeam(id: string) {
@@ -275,7 +275,7 @@ export class Game {
 			case "sendClue":
 				console.log('Case sendClue reached');
 				if(re.isLegalClue(message.clue, this.board.cards)
-				&& re.isPlayerTurn(this.currTeam, this.turn, this.getPlayerById(message.id))) {
+				&& re.isPlayerTurn(this.currTeam, this.turn, this.getPlayerById(message.pid))) {
 					this.initializeClue(message.clue);
 				} else {
 					if(!re.isValidWord(message.clue.word)) {
@@ -290,7 +290,7 @@ export class Game {
 
 			case "toggleCard": {
 				console.log('Case toggleCard reached');
-				let sop: Operative = this.getPlayerById(message.id) as Operative;
+				let sop: Operative = this.getPlayerById(message.pid) as Operative;
 				if(re.isCardSelectable(this.board.cards, message.cardIndex)
 					&& re.isPlayerTurn(this.currTeam, this.turn, sop)
 					&& !re.isPlayerSpy(sop)) {
@@ -321,7 +321,7 @@ export class Game {
 
 			case "submitGuess":
 				console.log('Case submitGuess reached');
-				let sop: Operative = this.getPlayerById(message.id) as Operative;
+				let sop: Operative = this.getPlayerById(message.pid) as Operative;
 				let currSelection = this.board.cards.findIndex((card: Card) => {
 					return card.votes.indexOf(sop.name) !== -1;
 				});
@@ -340,7 +340,7 @@ export class Game {
 			case "sendMessage":
 				console.log('Case sendMessage reached');
 
-				const player = this.getPlayerById(message.id);
+				const player = this.getPlayerById(message.pid);
 				if(!re.isPlayerSpy(player)) {
 					Broadcaster.sendMessage(this.players, message.text, player)
 				}
@@ -349,7 +349,7 @@ export class Game {
 			case "endTurn":
 				console.log('Case endTurn reached');
 
-				let sp: Agent = this.getPlayerById(message.id) as Agent;
+				let sp: Agent = this.getPlayerById(message.pid) as Agent;
 				if(re.isPlayerTurn(this.currTeam, this.turn, sp)) {
 					this.switchActiveTeam();
 				}

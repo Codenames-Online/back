@@ -7,10 +7,12 @@ import ws = require('ws')
 import * as _ from 'lodash'
 
 export class Lobby {
+	readonly id: string;
 	private loiterers: Loiterer[];
 
-	constructor(first: Loiterer) {
-		this.loiterers = [ first ];
+	constructor(gid: string) {
+		this.id = gid;
+		this.loiterers = [];
 	}
 
 	addLoiterer(loiterer: Loiterer) {
