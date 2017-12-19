@@ -1,14 +1,15 @@
 import { Card } from './Card';
-import { Player } from './Player';
+import { Agent } from './Agent';
 import { Team, Turn } from './constants/Constants';
 
-import WebSocket = require('ws')
+import ws = require('ws')
 
-export class Operative extends Player {
+
+export class Operative extends Agent {
   private selected?: Card;
 
-  constructor(name: string, id: string, team: Team, socket: WebSocket) {
-    super(name, id, team, socket, Turn.op);
+  constructor(id: string, name: string, socket: ws, team: Team) {
+    super(id, name, socket, team, Turn.op);
   }
   
   deselectCard() { this.selected = undefined; }

@@ -1,10 +1,11 @@
+import { Agent } from './Agent';
 import { Player } from './Player';
 import { Team, Turn } from './constants/Constants';
 
-import WebSocket = require('ws')
+import ws = require('ws');
 
-export class Spymaster extends Player {
-  constructor(name: string, id: string, team: Team, socket: WebSocket) {
-    super(name, id, team, socket, Turn.spy);
+export class Spymaster extends Agent {
+  constructor(id: string, name: string, socket: ws, team: Team) {
+    super(id, name, socket, team, Turn.spy);
   }
 }

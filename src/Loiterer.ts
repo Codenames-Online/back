@@ -1,18 +1,15 @@
-import WebSocket = require('ws')
+import { Player } from './Player'
 import { Team } from "./constants/Constants";
 
-export class Loiterer {
-  name: string;
-  id: string;
-  team: Team;
-  socket: WebSocket;
+import ws = require('ws')
 
-  constructor(name: string, id: string, team: Team, socket: WebSocket) {
-    this.name = name;
-    this.id = id;
+export class Loiterer extends Player {
+  team: Team;
+
+  constructor(id: string, name: string, socket: ws, team: Team) {
+    super(id, name, socket);
     this.team = team;
-    this.socket = socket;
   }
 
-  toJSON() { return { name: this.name, id: this.id, team: this.team }; }
+  toJSON() { return { id: this.id, name: this.name, team: this.team }; }
 }
