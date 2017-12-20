@@ -42,7 +42,7 @@ export class Game {
 	static gameFromLobby(lobby: Lobby): Game {
 		let game = new Game();
 
-		game.setPlayerRoles(lobby.getLoiterers());
+		game.agents = game.loiterersToAgents(lobby.getLoiterers());
 		
 		let startingRoster = game.agents.map(agent => {
 			return { name: agent.name, role: agent.role, team: agent.team }
@@ -58,6 +58,23 @@ export class Game {
 		return game;
 	}
 
+	loiterersToAgents(loiterers: Loiterer[]): Agent[] {
+		let foundSpy: [boolean, boolean] = [false, false];
+		let haveTeamSpy: boolean;
+		
+		return loiterers.map(loiterer => {
+			haveTeamSpy = foundSpy[loiterer.team];
+			if(!haveTeamSpy) { foundSpy[loiterer.team] = true; }
+			let agent = haveTeamSpy
+				? Operative.loitererToOperative(loiterer)
+				: Spymaster.loitererToSpymaster(loiterer);
+			Broadcaster.updateLoitererToPlayer(loiterer, agent);
+
+			return agent;
+		});
+	}
+	
+	
 	boardToColorsAndCards(toSpymasters): [number, Card][] {
 		return this.board.cards.map((card: Card, index) => {
 			let color = (toSpymasters || card.revealed) ? this.board.colors[index] : 4;
@@ -82,29 +99,11 @@ export class Game {
 		let roster = gu.getRoster(gu.getTeams(this.agents));
 		Broadcaster.updateTeams(this.agents, roster);
 	}
-
-	// turn loiterers into players
-	setPlayerRoles(loiterers: Loiterer[]): void {
-		let foundSpy: [boolean, boolean] = [false, false];
-		let haveTeamSpy: boolean;
-		
-		for (let loit of loiterers) {
-			haveTeamSpy = foundSpy[loit.team];
-			let agent = haveTeamSpy
-				? Operative.loitererToOperative(loit)
-				: Spymaster.loitererToSpymaster(loit);
-
-			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
-
-			this.agents.push(agent);
-			Broadcaster.updateLoitererToPlayer(loit, agent);
-		}
-  }
-
+	
 	findSpymasters(): Spymaster[] {
-		return this.agents.filter(agent => agent.role === Turn.spy).sort((p1, p2) => {
-			return p1.team < p2.team ? -1 : 1;
-		});
+		return this.agents.filter(
+			agent => agent.role === Turn.spy).sort(
+				(p1, p2) => { return p1.team < p2.team ? -1 : 1; });
 	}
 
 	findOperatives(): Operative[] {
