@@ -116,7 +116,7 @@ export class Manager {
 				case "startGame":
 					console.log('Case startGame reached');
 					if(this.lobbies.has(message.gid)
-					&& re.canStartGame(gu.getSloitererTeams((this.lobbies.get(message.gid) as Lobby).getLoiterers()))) {
+					&& re.canStartGame(gu.getTeams((this.lobbies.get(message.gid) as Lobby).getLoiterers()))) {
 						this.placePlayersInGame(message.gid);
 					}
 					break;

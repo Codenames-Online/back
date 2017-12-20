@@ -3,7 +3,7 @@ var words = checker('en');
 
 import { Card } from './Card'
 import { Clue } from './Clue'
-import { SLoitererTeams } from './Teams'
+import { Teams } from './Teams'
 import { Agent } from './Agent'
 import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
@@ -43,7 +43,7 @@ export module RuleEnforcer {
     return !cards[cardIndex].revealed;
   }
 
-  export function canStartGame(teams: SLoitererTeams): boolean {
+  export function canStartGame(teams: Teams<Loiterer>): boolean {
     return teams.red.length >= 2 && teams.blue.length >= 2;
   }
 

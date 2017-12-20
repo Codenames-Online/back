@@ -10,7 +10,7 @@ import 'mocha';
 import { expect } from 'chai';
 import WebSocket = require('ws')
 import { mock, instance, when } from 'ts-mockito';
-import { SPlayerTeams } from '../src/Teams';
+import { Teams } from '../src/Teams';
 
 describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	let mock_ws: WebSocket;
@@ -38,28 +38,28 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	});
 
   it("should correctly split loiterers on team", () => {
-		let teams = gu.getSloitererTeams(loiterers);
+		let teams = gu.getTeams(loiterers);
 
 		expect(teams.red.length).to.equal(2);
 		expect(teams.blue.length).to.equal(3);
 	});
 	
   it("should correctly split players on team", () => {
-		let teams = gu.getPlayerTeams(agents);
+		let teams = gu.getTeams(agents);
 
 		expect(teams.red.length).to.equal(3);
 		expect(teams.blue.length).to.equal(2);
 	});
 	
 	it("should get correct number of names from loiterers", () => {
-		let team_names = gu.getSloitererRoster(gu.getSloitererTeams(loiterers));
+		let team_names = gu.getRoster(gu.getTeams(loiterers));
  
 		expect(team_names[Team.red].length).to.equal(2);
 		expect(team_names[Team.blue].length).to.equal(3);
 	});
 	
 	it("should get correct number of names from players", () => {
-		let team_names = gu.getPlayerRoster(gu.getPlayerTeams(agents));
+		let team_names = gu.getRoster(gu.getTeams(agents));
 
 		expect(team_names[Team.red].length).to.equal(3);
 		expect(team_names[Team.blue].length).to.equal(2);

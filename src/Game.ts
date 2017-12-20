@@ -1,5 +1,6 @@
 import { Clue } from './Clue';
 import { Card } from './Card'
+import { Teams } from './Teams';
 import { Lobby } from './Lobby';
 import { Board } from './Board';
 import { Agent } from './Agent';
@@ -9,7 +10,6 @@ import { Loiterer } from './Loiterer';
 import { Broadcaster } from './Broadcaster';
 import { GameUtility as gu } from './GameUtility'
 import { RuleEnforcer as re } from './RuleEnforcer';
-import { SPlayerTeams, SLoitererTeams } from './Teams'
 import { Color, Team, Turn } from './constants/Constants';
 
 import ws = require('ws');
@@ -79,7 +79,7 @@ export class Game {
 		let index = this.agents.findIndex(agent => _.isEqual(agent.socket, socket));
 		if (index > -1) { this.agents.splice(index, 1) }
 
-		let roster = gu.getPlayerRoster(gu.getPlayerTeams(this.agents));
+		let roster = gu.getRoster(gu.getTeams(this.agents));
 		Broadcaster.updateTeams(this.agents, roster);
 	}
 
@@ -156,7 +156,7 @@ export class Game {
   }
 
 	guessAllowed(): void {
-		let teams = gu.getPlayerTeams(this.agents);
+		let teams = gu.getTeams(this.agents);
 		Broadcaster.allowGuess(this.currTeam === Team.red ? teams.red : teams.blue, true);
 	}
 

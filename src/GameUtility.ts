@@ -1,32 +1,19 @@
-import { Agent } from './Agent'
-import { Loiterer } from './Loiterer'
+import { Teams } from './Teams'
 import { Operative } from './Operative';
+import { TeamPlayer } from './TeamPlayer';
 import { Team } from './constants/Constants'
-import { SPlayerTeams, SLoitererTeams } from './Teams'
 
-export module GameUtility {
-	export function getSloitererTeams(loiterers: Loiterer[]): SLoitererTeams {
-		return new SLoitererTeams(
-			loiterers.filter(loiterer => loiterer.team === Team.red),
-			loiterers.filter(loiterer => loiterer.team === Team.blue)
+export module GameUtility {	
+	export function getTeams<T extends TeamPlayer>(teamPlayers: T[]): Teams<T> {
+		return new Teams(
+			teamPlayers.filter(teamPlayer => teamPlayer.team === Team.red),
+			teamPlayers.filter(teamPlayer => teamPlayer.team === Team.blue)
 		);
 	}
-	
-	export function getPlayerTeams(players: Agent[]): SPlayerTeams {
-		return new SPlayerTeams(
-			players.filter(player => player.team === Team.red),
-			players.filter(player => player.team === Team.blue)
-		);
-	}
-	
-	export function getSloitererRoster(loiterers: SLoitererTeams): [string[], string[]] {
-		return [loiterers.blue.map(loiterer => loiterer.name), 
-						loiterers.red.map(loiterer => loiterer.name)];
-	}
-	
-	export function getPlayerRoster(players: SPlayerTeams): [string[], string[]] {
-			return [players.blue.map(player => player.name),
-							players.red.map(player => player.name)];
+
+	export function getRoster(teamPlayers: Teams<TeamPlayer>): [string[], string[]] {
+		return [teamPlayers.blue.map(teamPlayer => teamPlayer.name), 
+						teamPlayers.red.map(teamPlayer => teamPlayer.name)];
 	}
 	
 	export function getOtherTeam(team: Team) {
