@@ -91,17 +91,17 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	it("should correctly determine if it is player turn", () => {
 		let red = new Operative("test", "1", mock_ws_instance, Team.red);
 
-		expect(re.isPlayerTurn(Team.red, Turn.op, red)).to.be.true;
-		expect(re.isPlayerTurn(Team.red, Turn.spy, red)).to.be.false;
-		expect(re.isPlayerTurn(Team.blue, Turn.op, red)).to.be.false;
-		expect(re.isPlayerTurn(Team.blue, Turn.spy, red)).to.be.false;
+		expect(re.isAgentTurn(Team.red, Turn.op, red)).to.be.true;
+		expect(re.isAgentTurn(Team.red, Turn.spy, red)).to.be.false;
+		expect(re.isAgentTurn(Team.blue, Turn.op, red)).to.be.false;
+		expect(re.isAgentTurn(Team.blue, Turn.spy, red)).to.be.false;
 		
 		let blue = new Spymaster("test", "2", mock_ws_instance, Team.blue);
 
-		expect(re.isPlayerTurn(Team.red, Turn.op, blue)).to.be.false;
-		expect(re.isPlayerTurn(Team.red, Turn.spy, blue)).to.be.false;
-		expect(re.isPlayerTurn(Team.blue, Turn.op, blue)).to.be.false;
-		expect(re.isPlayerTurn(Team.blue, Turn.spy, blue)).to.be.true;
+		expect(re.isAgentTurn(Team.red, Turn.op, blue)).to.be.false;
+		expect(re.isAgentTurn(Team.red, Turn.spy, blue)).to.be.false;
+		expect(re.isAgentTurn(Team.blue, Turn.op, blue)).to.be.false;
+		expect(re.isAgentTurn(Team.blue, Turn.spy, blue)).to.be.true;
 	});
 
 	it("should correctly determine if a player is a spy", () => {
