@@ -4,26 +4,34 @@ import { Lobby } from './Lobby';
 import { Player } from './Player';
 import { Loiterer } from './Loiterer';
 import { Operative } from './Operative';
+import { PlayerState } from './PlayerState';
 import { Broadcaster } from './Broadcaster';
+import { Team } from './constants/Constants';
 import { GameUtility as gu } from './GameUtility';
 import { RuleEnforcer as re } from './RuleEnforcer';
 
 import ws = require('ws');
-import { Team } from './constants/Constants';
 
 export class Manager {
+	playerStates: Map<ws, PlayerState>;
 	loners: Map<string, Player>;
 	lobbies: Map<string, Lobby>;
 	games: Map<string, Game>;
 
 	// make instance of Game class
 	constructor() {
+		this.playerStates = new Map();
 		this.loners = new Map();
 		this.lobbies = new Map();
 		this.games = new Map();
 	}
 
 	handleClose(socket: ws) {
+		if(!this.playerStates.has(socket)) {
+			console.log('User hadn\'t set name, no player to remove');
+			return;
+		}
+
 		console.log('Didn\'t close connection, FIX THIS');
 		// TODO: need to handle this somehow, map of sockets to gid?
 		// this.games.get().removePerson(socket);
