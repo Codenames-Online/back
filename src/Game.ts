@@ -110,8 +110,8 @@ export class Game {
     return this.agents.filter(agent => agent.role === Turn.op) as Operative[];
 	}
 
-	getPlayerById(id: string): Agent {
-    // TODO: REALLLLLLLLY SHOULDNT CAST LIKE THIS
+	// TODO: REALLLLLLLLY SHOULDNT CAST LIKE THIS
+	getAgentById(id: string): Agent {
     return this.agents.find(agent => agent.id === id) as Agent;
 	}
 
@@ -218,7 +218,7 @@ export class Game {
 			case "sendClue":
 				console.log('Case sendClue reached');
 				if(re.isLegalClue(message.clue, this.board.cards)
-				&& re.isPlayerTurn(this.currTeam, this.turn, this.getPlayerById(message.pid))) {
+				&& re.isPlayerTurn(this.currTeam, this.turn, this.getAgentById(message.pid))) {
 					this.initializeClue(message.clue);
 				} else {
 					if(!re.isValidWord(message.clue.word)) {
@@ -233,7 +233,7 @@ export class Game {
 
 			case "toggleCard": {
 				console.log('Case toggleCard reached');
-				let sop: Operative = this.getPlayerById(message.pid) as Operative;
+				let sop: Operative = this.getAgentById(message.pid) as Operative;
 				if(re.isCardSelectable(this.board.cards, message.cardIndex)
 					&& re.isPlayerTurn(this.currTeam, this.turn, sop)
 					&& !re.isPlayerSpy(sop)) {
@@ -264,7 +264,7 @@ export class Game {
 
 			case "submitGuess":
 				console.log('Case submitGuess reached');
-				let sop: Operative = this.getPlayerById(message.pid) as Operative;
+				let sop: Operative = this.getAgentById(message.pid) as Operative;
 				let currSelection = this.board.cards.findIndex((card: Card) => {
 					return card.votes.indexOf(sop.name) !== -1;
 				});
@@ -283,7 +283,7 @@ export class Game {
 			case "sendMessage":
 				console.log('Case sendMessage reached');
 
-				const agent = this.getPlayerById(message.pid);
+				const agent = this.getAgentById(message.pid);
 				if(!re.isPlayerSpy(agent)) {
 					Broadcaster.sendMessage(this.agents, message.text, agent)
 				}
@@ -292,7 +292,7 @@ export class Game {
 			case "endTurn":
 				console.log('Case endTurn reached');
 
-				let sp: Agent = this.getPlayerById(message.pid) as Agent;
+				let sp: Agent = this.getAgentById(message.pid) as Agent;
 				if(re.isPlayerTurn(this.currTeam, this.turn, sp)) {
 					this.switchActiveTeam();
 				}
