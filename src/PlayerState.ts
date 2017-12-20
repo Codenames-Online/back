@@ -1,14 +1,18 @@
 import { PlayerLocation } from './constants/Constants'
 
 export class PlayerState {
-	private gid: string;
+	private gid: string | undefined;
+	private pid: string;
 	private loc: PlayerLocation;
 
-	constructor() {
+	constructor(pid: string) {
+		this.pid = pid;
 		this.loc = PlayerLocation.loner;
 	}
 
-	getGid() { return this.gid; }
+	getPid(): string { return this.pid; }
+	getGid(): string | undefined { return this.gid; }
+	getLoc(): PlayerLocation { return this.loc; }
 
 	placeInLobby(gid: string) {
 		if(this.loc !== PlayerLocation.loner)
