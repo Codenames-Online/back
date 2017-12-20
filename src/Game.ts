@@ -79,33 +79,12 @@ export class Game {
 
 	// on socket close, remove person
 	// TODO: Weird typing between here and receiver
-	removePerson(socket: ws) {
-		var index = -1
-		let roster: [string[], string[]];
+	removeAgent(socket: ws) {
+		let index = this.players.findIndex(player => _.isEqual(player.socket, socket));
+		if (index > -1) { this.players.splice(index, 1) }
 
-		if (this.players.length == 0) {
-			for (var i = 0; i < this.loiterers.length; i++) {
-				if (_.isEqual(this.loiterers[i].socket, socket)) { index = i; }
-			}
-			if (index > -1) { this.loiterers.splice(index, 1); }
-
-			let teams = gu.getSloitererTeams(this.loiterers);
-			roster = gu.getSloitererRoster(teams);
-			Broadcaster.updateTeams(this.loiterers, roster);
-			
-			if (!re.canStartGame(teams)) {
-				Broadcaster.toggleStartButton(this.loiterers, false);
-			}
-		}
-		else {
-			for (var i = 0; i < this.players.length; i++) {
-				if (_.isEqual(this.players[i].socket, socket)) { index = i; }
-			}
-			if (index > -1) { this.players.splice(index, 1); }
-
-			roster = gu.getPlayerRoster(gu.getPlayerTeams(this.players));
-			Broadcaster.updateTeams(this.players, roster);
-		}
+		let roster = gu.getPlayerRoster(gu.getPlayerTeams(this.players));
+		Broadcaster.updateTeams(this.players, roster);
 	}
 
 	// turn loiterers into players
