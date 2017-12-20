@@ -5,7 +5,6 @@ import { Team, Turn } from './constants/Constants';
 
 import ws = require('ws')
 
-
 export class Operative extends Agent {
   private selected?: Card;
 
