@@ -68,7 +68,7 @@ export class Game {
 			let agent = haveTeamSpy
 				? Operative.loitererToOperative(loiterer)
 				: Spymaster.loitererToSpymaster(loiterer);
-			Broadcaster.updateLoitererToPlayer(loiterer, agent);
+			Broadcaster.updateLoitererToAgent(loiterer, agent);
 
 			return agent;
 		});

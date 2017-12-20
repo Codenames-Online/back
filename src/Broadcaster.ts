@@ -92,7 +92,7 @@ export function updateBoard(splayers: Agent[], board: [number, Card][]) {
 		sendToSloiterer(sloiterer, { action: "updateLoiterer", person: sloiterer, gid: gid });
 	}
 
-	export function updateLoitererToPlayer(sloiterer: Loiterer, splayer: Agent) {
+	export function updateLoitererToAgent(sloiterer: Loiterer, splayer: Agent) {
 		sendToSloiterer(sloiterer, { action: "updateLoitererToPlayer", player: splayer });
 	}
 
