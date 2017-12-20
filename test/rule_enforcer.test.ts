@@ -108,8 +108,8 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		let red = new Operative("test", "1", mock_ws_instance, Team.red);
 		let blue = new Spymaster("test", "2", mock_ws_instance, Team.blue);
 
-		expect(re.isPlayerSpy(red)).to.be.false;
-		expect(re.isPlayerSpy(blue)).to.be.true;
+		expect(re.isAgentSpy(red)).to.be.false;
+		expect(re.isAgentSpy(blue)).to.be.true;
 	});
 
 	it("should correctly determine if a card is selectable", () => {
