@@ -6,17 +6,21 @@ import { Loiterer } from './Loiterer';
 import { Operative } from './Operative';
 import { PlayerState } from './PlayerState';
 import { Broadcaster } from './Broadcaster';
-import { Team, PlayerLocation } from './constants/Constants';
+import { words } from './constants/Wordlist';
 import { GameUtility as gu } from './GameUtility';
 import { RuleEnforcer as re } from './RuleEnforcer';
+import { Team, PlayerLocation } from './constants/Constants';
 
 import ws = require('ws');
+import { shuffle } from 'lodash'
 
 export class Manager {
 	playerStates: Map<ws, PlayerState>;
 	loners: Map<string, Player>;
 	lobbies: Map<string, Lobby>;
 	games: Map<string, Game>;
+	usedGids: Set<string>;
+	availableGids: string[];
 
 	// make instance of Game class
 	constructor() {
@@ -24,6 +28,8 @@ export class Manager {
 		this.loners = new Map();
 		this.lobbies = new Map();
 		this.games = new Map();
+		this.usedGids = new Set();
+		this.availableGids = words.map(word => word.toLocaleLowerCase());
 	}
 
 	handleClose(socket: ws) {
@@ -73,13 +79,21 @@ export class Manager {
 					break;
 
 				case "createLobby":
-					this.lobbies.set('test', new Lobby('test'));
-					this.placePlayerInLobby(message.pid, 'test', socket);
+					if(this.availableGids.length <= 0)
+						throw new Error('If these are real games that\'s awesome, now add more gids')
+					
+					let tempGids = shuffle(this.availableGids)
+					let newGid: string = tempGids.pop() as string;
+					this.availableGids = tempGids;
+
+					this.lobbies.set(newGid, new Lobby(newGid));
+					this.placePlayerInLobby(message.pid, newGid, socket);
 					break;
 
 				case "joinLobby":
-					if(this.lobbies.has(message.gid))
-						this.placePlayerInLobby(message.pid, message.gid, socket);
+					let gid = message.gid.toLocaleLowerCase();
+					if(this.lobbies.has(gid))
+						this.placePlayerInLobby(message.pid, gid, socket);
 					break;
 
 				case "switchTeam":
