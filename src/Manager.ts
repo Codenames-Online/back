@@ -48,14 +48,26 @@ export class Manager {
 				break;
 			case PlayerLocation.lobby:
 				if(this.lobbies.has(state.getGid())) {
-					(this.lobbies.get(state.getGid()) as Lobby).removeLoiterer(socket);
+					let lobby = (this.lobbies.get(state.getGid()) as Lobby);
+					lobby.removeLoiterer(socket);
 					console.log(`Removed player from lobby ${state.getGid()} with id: ${state.getPid()}`)
+
+					if(lobby.empty()) {
+						this.lobbies.delete(state.getGid());
+						console.log(`Deleted lobby ${state.getGid()}`);
+					}
 				}
 				break;
 			case PlayerLocation.game:
 				if(this.games.has(state.getGid())) {
-					(this.games.get(state.getGid()) as Game).removeAgent(socket);
-					console.log(`Removed player from game ${state.getGid()} with id: ${state.getPid()}`)
+					let game = (this.games.get(state.getGid()) as Game);
+					game.removeAgent(socket);
+					console.log(`Removed player from game ${state.getGid()} with id: ${state.getPid()}`);
+
+					if(game.empty()) {
+						this.games.delete(state.getGid());
+						console.log(`Deleted game ${state.getGid()}`);
+					}
 				}
 				break;
 			default:
