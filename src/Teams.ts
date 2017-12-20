@@ -1,21 +1,10 @@
-import { Agent } from './Agent'
-import { Loiterer } from './Loiterer'
+import { TeamPlayer } from './TeamPlayer';
 
-export class SLoitererTeams {
-  readonly red: Loiterer[];
-  readonly blue: Loiterer[];
+export class Teams<T extends TeamPlayer> {
+  readonly red: T[];
+  readonly blue: T[];
 
-  constructor(red: Loiterer[], blue: Loiterer[]) {
-		this.red = red;
-		this.blue = blue;
-  }
-}
-
-export class SPlayerTeams {
-  readonly red: Agent[];
-  readonly blue: Agent[];
-
-  constructor(red: Agent[], blue: Agent[]) {
+  constructor(red: T[], blue: T[]) {
 		this.red = red;
 		this.blue = blue;
   }

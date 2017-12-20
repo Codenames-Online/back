@@ -138,11 +138,11 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		let cant_start_two = [red_l_one, red_l_two, blue_l_one];
 		let cant_start_three = [red_l_one, blue_l_one, blue_l_two, blue_l_three];
 
-		expect(re.canStartGame(gu.getSloitererTeams(can_start_one))).to.be.true;
-		expect(re.canStartGame(gu.getSloitererTeams(can_start_two))).to.be.true;
-		expect(re.canStartGame(gu.getSloitererTeams(cant_start_one))).to.be.false;
-		expect(re.canStartGame(gu.getSloitererTeams(cant_start_two))).to.be.false;
-		expect(re.canStartGame(gu.getSloitererTeams(cant_start_three))).to.be.false;
+		expect(re.canStartGame(gu.getTeams(can_start_one))).to.be.true;
+		expect(re.canStartGame(gu.getTeams(can_start_two))).to.be.true;
+		expect(re.canStartGame(gu.getTeams(cant_start_one))).to.be.false;
+		expect(re.canStartGame(gu.getTeams(cant_start_two))).to.be.false;
+		expect(re.canStartGame(gu.getTeams(cant_start_three))).to.be.false;
 	});
 
 	it("should correctly determine if a guess can be submitted", () => {		
