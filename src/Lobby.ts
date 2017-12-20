@@ -1,5 +1,7 @@
+import { Player } from './Player'
 import { Loiterer } from './Loiterer'
 import { Broadcaster } from './Broadcaster'
+import { Team } from './constants/Constants'
 import { GameUtility as gu } from './GameUtility'
 import { RuleEnforcer as re } from './RuleEnforcer'
 
@@ -15,8 +17,14 @@ export class Lobby {
 		this.loiterers = [];
 	}
 
-	addLoiterer(loiterer: Loiterer) {
+	addPlayer(player: Player) {
+		let teams = gu.getSloitererTeams(this.loiterers);
+		let team: Team = teams.blue.length <= teams.red.length ? Team.blue : Team.red;
+
+		let loiterer = Loiterer.loitererFromPlayer(player, team);
 		this.loiterers.push(loiterer);
+
+		Broadcaster.updateLoiterer(loiterer, this.id);
 		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(gu.getSloitererTeams(this.loiterers)));
 	}
 

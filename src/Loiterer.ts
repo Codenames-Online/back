@@ -11,7 +11,7 @@ export class Loiterer extends Player {
     this.team = team;
   }
 
-  static playerToLoiterer(player: Player, team: Team): Loiterer {
+  static loitererFromPlayer(player: Player, team: Team): Loiterer {
     return new Loiterer(player.id, player.name, player.socket, team);
   }
 
