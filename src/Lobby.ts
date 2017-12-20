@@ -17,6 +17,10 @@ export class Lobby {
 		this.loiterers = [];
 	}
 
+	empty(): boolean {
+		return this.loiterers.length === 0;
+	}
+
 	addPlayer(player: Player) {
 		let teams = gu.getSloitererTeams(this.loiterers);
 		let team: Team = teams.blue.length <= teams.red.length ? Team.blue : Team.red;

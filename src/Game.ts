@@ -215,6 +215,10 @@ export class Game {
 		Broadcaster.endGame(this.players, team);
 	}
 
+	empty(): boolean {
+		return this.players.length === 0;
+	}
+
 	handleMessage(message: any, socket: ws) {
 		switch(message.action) {
 			case "sendClue":
