@@ -103,9 +103,7 @@ export class Manager {
 
 		let loner: Player = this.loners.get(pid) as Player;
 		this.loners.delete(pid);
-		let loiterer = Loiterer.playerToLoiterer(loner, Team.red);
-		(this.lobbies.get(gid) as Lobby).addLoiterer(loiterer)
-		Broadcaster.updateLoiterer(loiterer, gid);
+		(this.lobbies.get(gid) as Lobby).addPlayer(loner)
 		return true;
 	}
 }
