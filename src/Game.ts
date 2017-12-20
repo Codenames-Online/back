@@ -23,15 +23,11 @@ export class Game {
 	numGuesses: number;
 	turn: Turn;
 	board: Board;
-	players: Agent[];
-	loiterers: Loiterer[];
+	agents: Agent[];
 	startTeam: Team;
 	currTeam: Team;
 
   constructor() {
-		// to be removed
-		this.loiterers = [];
-
 		// switching to lobbies
 		this.setStartTeam();
 		this.board = new Board(this.startTeam);
@@ -39,7 +35,7 @@ export class Game {
 		this.score = [8,8];
 		this.score[this.startTeam] = 9;
 		this.numGuesses = 0;
-		this.players = [];
+		this.agents = [];
 		this.turn = Turn.spy;
 	}
 	
@@ -48,13 +44,13 @@ export class Game {
 
 		game.setPlayerRoles(lobby.getLoiterers());
 		
-		let startingRoster = game.players.map((player) => {
-			return { name: player.name, role: player.role, team: player.team }
+		let startingRoster = game.agents.map(agent => {
+			return { name: agent.name, role: agent.role, team: agent.team }
 		});
 
 		game.broadcastUpdatedBoard();
-		Broadcaster.updateScore(game.players, game.score);
-		Broadcaster.startGame(game.players, game.currTeam, startingRoster);
+		Broadcaster.updateScore(game.agents, game.score);
+		Broadcaster.startGame(game.agents, game.currTeam, startingRoster);
 
 		let spyMaster = game.findSpymasters()[game.startTeam];
 		Broadcaster.promptForClue(spyMaster);
@@ -80,11 +76,11 @@ export class Game {
 	// on socket close, remove person
 	// TODO: Weird typing between here and receiver
 	removeAgent(socket: ws) {
-		let index = this.players.findIndex(player => _.isEqual(player.socket, socket));
-		if (index > -1) { this.players.splice(index, 1) }
+		let index = this.agents.findIndex(agent => _.isEqual(agent.socket, socket));
+		if (index > -1) { this.agents.splice(index, 1) }
 
-		let roster = gu.getPlayerRoster(gu.getPlayerTeams(this.players));
-		Broadcaster.updateTeams(this.players, roster);
+		let roster = gu.getPlayerRoster(gu.getPlayerTeams(this.agents));
+		Broadcaster.updateTeams(this.agents, roster);
 	}
 
 	// turn loiterers into players
@@ -94,30 +90,30 @@ export class Game {
 		
 		for (let loit of loiterers) {
 			haveTeamSpy = foundSpy[loit.team];
-			let player = haveTeamSpy
+			let agent = haveTeamSpy
 				? Operative.loitererToOperative(loit)
 				: Spymaster.loitererToSpymaster(loit);
 
 			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
 
-			this.players.push(player);
-			Broadcaster.updateLoitererToPlayer(loit, player);
+			this.agents.push(agent);
+			Broadcaster.updateLoitererToPlayer(loit, agent);
 		}
   }
 
 	findSpymasters(): Spymaster[] {
-		return this.players.filter(player => player.role === Turn.spy).sort((p1, p2) => {
+		return this.agents.filter(agent => agent.role === Turn.spy).sort((p1, p2) => {
 			return p1.team < p2.team ? -1 : 1;
 		});
 	}
 
 	findOperatives(): Operative[] {
-    return this.players.filter(player => player.role === Turn.op) as Operative[];
+    return this.agents.filter(agent => agent.role === Turn.op) as Operative[];
 	}
 
 	getPlayerById(id: string): Agent {
     // TODO: REALLLLLLLLY SHOULDNT CAST LIKE THIS
-    return this.players.find((player) => { return player.id === id; }) as Agent;
+    return this.agents.find(agent => agent.id === id) as Agent;
 	}
 
   setStartTeam(): void {
@@ -133,20 +129,19 @@ export class Game {
 		this.turn = Turn.op;
 		this.numGuesses = clue.guesses;
 
-		Broadcaster.switchTurn(this.players, this.currTeam, this.turn);
-		Broadcaster.postClue(this.players, this.clue, this.currTeam);
+		Broadcaster.switchTurn(this.agents, this.currTeam, this.turn);
+		Broadcaster.postClue(this.agents, this.clue, this.currTeam);
   }
 
 	// toggle card (select OR deselect)
-	toggleCard(player: Operative, cardIndex: number): void {
-		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.name);
-		if (playerIndex !== -1) {
-			player.deselectCard();
-			this.board.cards[cardIndex].votes.splice(playerIndex, 1);
-		}
-		else {
-			player.selectCard(this.board.cards[cardIndex]);
-			this.board.cards[cardIndex].votes.push(player.name);
+	toggleCard(agent: Operative, cardIndex: number): void {
+		let agentIndex = this.board.cards[cardIndex].votes.indexOf(agent.name);
+		if (agentIndex !== -1) {
+			agent.deselectCard();
+			this.board.cards[cardIndex].votes.splice(agentIndex, 1);
+		} else {
+			agent.selectCard(this.board.cards[cardIndex]);
+			this.board.cards[cardIndex].votes.push(agent.name);
 		}
 		this.broadcastUpdatedBoard();
 	}
@@ -155,13 +150,13 @@ export class Game {
   decrementGuesses(): void {
     this.numGuesses--;
 		(this.clue as Clue).guesses--;
-		Broadcaster.postClue(this.players, this.clue as Clue, this.currTeam);
+		Broadcaster.postClue(this.agents, this.clue as Clue, this.currTeam);
 
 		if (this.numGuesses == 0) { this.switchActiveTeam(); }
   }
 
 	guessAllowed(): void {
-		let teams = gu.getPlayerTeams(this.players);
+		let teams = gu.getPlayerTeams(this.agents);
 		Broadcaster.allowGuess(this.currTeam === Team.red ? teams.red : teams.blue, true);
 	}
 
@@ -193,7 +188,7 @@ export class Game {
     this.currTeam = this.currTeam === Team.red ? Team.blue : Team.red;
 		this.turn = Turn.spy;
 		var spymasters = this.findSpymasters();
-		Broadcaster.switchActiveTeam(this.players, this.currTeam, this.turn);
+		Broadcaster.switchActiveTeam(this.agents, this.currTeam, this.turn);
 		Broadcaster.promptForClue(spymasters[this.currTeam]);
 	}
 
@@ -203,7 +198,7 @@ export class Game {
 		if (this.score[team] == 0) {
 			this.endGame(team);
 		}
-		Broadcaster.updateScore(this.players, this.score);
+		Broadcaster.updateScore(this.agents, this.score);
   }
 
 	revealCard(guessIndex: number): void {
@@ -212,11 +207,11 @@ export class Game {
 	}
 
 	endGame(team: Team): void {
-		Broadcaster.endGame(this.players, team);
+		Broadcaster.endGame(this.agents, team);
 	}
 
 	empty(): boolean {
-		return this.players.length === 0;
+		return this.agents.length === 0;
 	}
 
 	handleMessage(message: any, socket: ws) {
@@ -289,9 +284,9 @@ export class Game {
 			case "sendMessage":
 				console.log('Case sendMessage reached');
 
-				const player = this.getPlayerById(message.pid);
-				if(!re.isPlayerSpy(player)) {
-					Broadcaster.sendMessage(this.players, message.text, player)
+				const agent = this.getPlayerById(message.pid);
+				if(!re.isPlayerSpy(agent)) {
+					Broadcaster.sendMessage(this.agents, message.text, agent)
 				}
 				break;
 
