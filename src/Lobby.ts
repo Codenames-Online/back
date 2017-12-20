@@ -26,6 +26,8 @@ export class Lobby {
 
 		Broadcaster.updateLoiterer(loiterer, this.id);
 		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(gu.getSloitererTeams(this.loiterers)));
+		if (re.canStartGame(gu.getSloitererTeams(this.loiterers)))
+			Broadcaster.toggleStartButton(this.loiterers, true);
 	}
 
 	removeLoiterer(socket: ws) {
