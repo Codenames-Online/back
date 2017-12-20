@@ -6,7 +6,7 @@ import { Loiterer } from './Loiterer';
 import { Operative } from './Operative';
 import { PlayerState } from './PlayerState';
 import { Broadcaster } from './Broadcaster';
-import { Team } from './constants/Constants';
+import { Team, PlayerLocation } from './constants/Constants';
 import { GameUtility as gu } from './GameUtility';
 import { RuleEnforcer as re } from './RuleEnforcer';
 
@@ -32,9 +32,26 @@ export class Manager {
 			return;
 		}
 
+		// player exists somewhere
+		let state = this.playerStates.get(socket) as PlayerState;
+
+		switch(state.getLoc()) {
+			case PlayerLocation.loner:
+				this.removeLoner(socket, state.getPid())
+				console.log(`Removed player from loners with id: ${state.getPid()}`)
+				break;
+			default:
+				console.log('Sorry, unknown player location.')
+		}
+
 		console.log('Didn\'t close connection, FIX THIS');
 		// TODO: need to handle this somehow, map of sockets to gid?
 		// this.games.get().removePerson(socket);
+	}
+
+	removeLoner(socket: ws, pid: string): void {
+		this.loners.delete(pid);
+		this.playerStates.delete(socket);
 	}
 
 	handleMessage(message: any, socket: ws) {
@@ -100,6 +117,7 @@ export class Manager {
 		let loner = new Player(id, name, socket);
 		this.loners.set(id, loner);
 		
+		this.playerStates.set(socket, new PlayerState(id));
 		Broadcaster.updateLoner(loner);
 	}
 	
