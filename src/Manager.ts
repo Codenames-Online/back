@@ -46,18 +46,17 @@ export class Manager {
 					console.log(`Removed player from lobby ${state.getGid()} with id: ${state.getPid()}`)
 				}
 				break;
+			case PlayerLocation.game:
+				if(this.games.has(state.getGid())) {
+					(this.games.get(state.getGid()) as Game).removeAgent(socket);
+					console.log(`Removed player from game ${state.getGid()} with id: ${state.getPid()}`)
+				}
+				break;
 			default:
 				console.log('Sorry, unknown player location.')
 		}
-		// TODO: need to handle this somehow, map of sockets to gid?
-		// this.games.get().removePerson(socket);
 	}
-
-	removeLoner(socket: ws, pid: string): void {
-		this.loners.delete(pid);
-		this.playerStates.delete(socket);
-	}
-
+	
 	handleMessage(message: any, socket: ws) {
 		console.log(message)
 
@@ -75,12 +74,12 @@ export class Manager {
 
 				case "createLobby":
 					this.lobbies.set('test', new Lobby('test'));
-					this.placePlayer(message.pid, 'test', socket);
+					this.placePlayerInLobby(message.pid, 'test', socket);
 					break;
 
 				case "joinLobby":
 					if(this.lobbies.has(message.gid))
-						this.placePlayer(message.pid, message.gid, socket);
+						this.placePlayerInLobby(message.pid, message.gid, socket);
 					break;
 
 				case "switchTeam":
@@ -92,9 +91,7 @@ export class Manager {
 					console.log('Case startGame reached');
 					if(this.lobbies.has(message.gid)
 					&& re.canStartGame(gu.getSloitererTeams((this.lobbies.get(message.gid) as Lobby).getLoiterers()))) {
-						let lobby: Lobby = this.lobbies.get(message.gid) as Lobby;
-						this.lobbies.delete(message.gid);
-						this.games.set(message.gid, Game.gameFromLobby(lobby));
+						this.placePlayersInGame(message.gid);
 					}
 					break;
 
@@ -115,6 +112,11 @@ export class Manager {
 		}
 	}
 
+	removeLoner(socket: ws, pid: string): void {
+		this.loners.delete(pid);
+		this.playerStates.delete(socket);
+	}
+
 	// adds player to loners array of players with no lobby
   registerPlayer(name: string, socket: ws) {
 		let id = Date.now().toString(36);
@@ -125,7 +127,7 @@ export class Manager {
 		Broadcaster.updateLoner(loner);
 	}
 	
-	placePlayer(pid: string, gid: string, socket: ws): boolean {
+	placePlayerInLobby(pid: string, gid: string, socket: ws): boolean {
 		// confirm that both exist, use casts later since we are synchronous we know
 		// they must still exist
 		if(!this.loners.has(pid) || !this.lobbies.has(gid) || !this.playerStates.has(socket))
@@ -139,5 +141,14 @@ export class Manager {
 		lonerState.placeInLobby(gid);
 		
 		return true;
+	}
+
+	placePlayersInGame(gid: string) {
+		let lobby: Lobby = this.lobbies.get(gid) as Lobby;
+		lobby.getLoiterers().forEach(loiterer => {
+			(this.playerStates.get(loiterer.socket) as PlayerState).placeInGame();
+		});
+		this.lobbies.delete(gid);
+		this.games.set(gid, Game.gameFromLobby(lobby));		
 	}
 }
