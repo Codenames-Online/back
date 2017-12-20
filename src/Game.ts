@@ -236,7 +236,7 @@ export class Game {
 				let sop: Operative = this.getAgentById(message.pid) as Operative;
 				if(re.isCardSelectable(this.board.cards, message.cardIndex)
 					&& re.isAgentTurn(this.currTeam, this.turn, sop)
-					&& !re.isPlayerSpy(sop)) {
+					&& !re.isAgentSpy(sop)) {
 					let previousSelection = this.board.cards.findIndex((card: Card) => {
 						return card.votes.indexOf(sop.name) !== -1;
 					});
@@ -254,7 +254,7 @@ export class Game {
 
 				let canGuess= re.canSubmitGuess(this.findOperatives(), this.currTeam);
 				if(canGuess
-					&& !re.isPlayerSpy(sop)
+					&& !re.isAgentSpy(sop)
 					&& re.isAgentTurn(this.currTeam, this.turn, sop)) {
 					this.guessAllowed();
 				}
@@ -284,7 +284,7 @@ export class Game {
 				console.log('Case sendMessage reached');
 
 				const agent = this.getAgentById(message.pid);
-				if(!re.isPlayerSpy(agent)) {
+				if(!re.isAgentSpy(agent)) {
 					Broadcaster.sendMessage(this.agents, message.text, agent)
 				}
 				break;
