@@ -1,22 +1,20 @@
-var checker = require('check-word');
-var words = checker('en');
-
-import { Card } from './Card'
-import { Clue } from './Clue'
-import { Teams } from './Teams'
-import { Agent } from './Agent'
+import { Card } from './Card';
+import { Clue } from './Clue';
+import { Teams } from './Teams';
+import { Agent } from './Agent';
+import { Loiterer } from './Loiterer';
 import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
-import { Loiterer } from './Loiterer';
+import { GameUtility as gu } from './GameUtility';
 import { Team, Turn } from './constants/Constants';
-import { GameUtility as gu } from './GameUtility'
 
+let words = require('check-word')('en');
 
 export module RuleEnforcer {
   export function isValidName(name: string) { return /^[a-z_ ]+$/i.test(name); }
   
   export function isValidNumGuesses(guesses: number) {
-    return guesses >= 0 && guesses <= 9;
+    return 0 <= guesses && guesses <= 9;
   }
 
   export function isValidWord(word: string) {
@@ -31,12 +29,12 @@ export module RuleEnforcer {
     return isValidWord(clue.word) && isValidNumGuesses(clue.num) && !isWordOnBoard(clue.word, cards);
   }
 
-  export function isAgentTurn(currTeam: Team, currTurn: Turn, player: Agent): boolean {
-    return currTeam === player.team && currTurn === player.role;
+  export function isAgentTurn(currTeam: Team, currTurn: Turn, agent: Agent): boolean {
+    return currTeam === agent.team && currTurn === agent.role;
   }
 
-  export function isAgentSpy(player: Agent): boolean {
-    return player.role === Turn.spy;
+  export function isAgentSpy(agent: Agent): boolean {
+    return agent.role === Turn.spy;
   }
 
   export function isCardSelectable(cards: Card[], cardIndex: number): boolean {
