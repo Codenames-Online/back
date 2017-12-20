@@ -40,11 +40,15 @@ export class Manager {
 				this.removeLoner(socket, state.getPid())
 				console.log(`Removed player from loners with id: ${state.getPid()}`)
 				break;
+			case PlayerLocation.lobby:
+				if(this.lobbies.has(state.getGid())) {
+					(this.lobbies.get(state.getGid()) as Lobby).removeLoiterer(socket);
+					console.log(`Removed player from lobby ${state.getGid()} with id: ${state.getPid()}`)
+				}
+				break;
 			default:
 				console.log('Sorry, unknown player location.')
 		}
-
-		console.log('Didn\'t close connection, FIX THIS');
 		// TODO: need to handle this somehow, map of sockets to gid?
 		// this.games.get().removePerson(socket);
 	}
@@ -71,12 +75,12 @@ export class Manager {
 
 				case "createLobby":
 					this.lobbies.set('test', new Lobby('test'));
-					this.placePlayer(message.pid, 'test');
+					this.placePlayer(message.pid, 'test', socket);
 					break;
 
 				case "joinLobby":
 					if(this.lobbies.has(message.gid))
-						this.placePlayer(message.pid, message.gid);
+						this.placePlayer(message.pid, message.gid, socket);
 					break;
 
 				case "switchTeam":
@@ -121,15 +125,19 @@ export class Manager {
 		Broadcaster.updateLoner(loner);
 	}
 	
-	placePlayer(pid: string, gid: string): boolean {
+	placePlayer(pid: string, gid: string, socket: ws): boolean {
 		// confirm that both exist, use casts later since we are synchronous we know
 		// they must still exist
-		if(!this.loners.has(pid) && this.lobbies.has(gid))
+		if(!this.loners.has(pid) || !this.lobbies.has(gid) || !this.playerStates.has(socket))
 			return false;
 
 		let loner: Player = this.loners.get(pid) as Player;
 		this.loners.delete(pid);
 		(this.lobbies.get(gid) as Lobby).addPlayer(loner)
+
+		let lonerState = this.playerStates.get(socket) as PlayerState;
+		lonerState.placeInLobby(gid);
+		
 		return true;
 	}
 }
