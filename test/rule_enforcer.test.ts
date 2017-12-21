@@ -1,6 +1,7 @@
-import { Clue } from '../src/Clue'
-import { Card } from '../src/Card'
+import { Clue } from '../src/Clue';
+import { Card } from '../src/Card';
 import { Agent } from '../src/Agent';
+import { Teams } from '../src/Teams';
 import { Player } from '../src/Player';
 import { Loiterer } from '../src/Loiterer';
 import { Spymaster } from '../src/Spymaster';
@@ -11,9 +12,9 @@ import { Color, Team, Turn } from '../src/constants/Constants';
 
 import 'mocha';
 import { expect } from 'chai';
-import WebSocket = require('ws')
+import WebSocket = require('ws');
 import { mock, instance, when } from 'ts-mockito';
-import { decode } from 'punycode';
+
 
 describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 	let mock_ws: WebSocket;
@@ -154,25 +155,25 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		let agents: Agent[] = [red_p_one, red_p_two, red_p_three, blue_p_one, blue_p_two];
 
 		// TODO: Use utility method for getting ops
-		let ops: Operative[] = agents.filter(agent => agent.role === Turn.op) as Operative[];
+		let ops: Teams<Operative> = gu.getOperatives(agents);
 		let select_card = new Card("select");
 		let decoy_card = new Card("decoy");
 
-		expect(re.canSubmitGuess(ops, Team.red)).to.be.false;
+		expect(re.canSubmitGuess(gu.getByTeam(ops, Team.red))).to.be.false;
 
 		red_p_two.selectCard(select_card);
 		select_card.votes.push(red_p_two.name);
 
-		expect(re.canSubmitGuess(ops, Team.red)).to.be.false;
+		expect(re.canSubmitGuess(gu.getByTeam(ops, Team.red))).to.be.false;
 
 		red_p_three.selectCard(decoy_card);
 		decoy_card.votes.push(red_p_three.name);
 
-		expect(re.canSubmitGuess(ops, Team.red)).to.be.false;
+		expect(re.canSubmitGuess(gu.getByTeam(ops, Team.red))).to.be.false;
 
 		red_p_three.selectCard(select_card);
 		select_card.votes.push(red_p_three.name);
 
-		expect(re.canSubmitGuess(ops, Team.red)).to.be.true;
+		expect(re.canSubmitGuess(gu.getByTeam(ops, Team.red))).to.be.true;
 	});
 });
