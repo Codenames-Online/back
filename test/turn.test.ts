@@ -71,4 +71,15 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		expect(turn.getRole()).to.equal(Turn.spy);
 		expect(turn.getTeam()).to.equal(Team.red);
 	});
+
+	it("should send expected messages to expected agents on advance from spy to op", () => {
+		// state is red spy
+		this.turn.advance(this.agents);
+
+		// state is red op
+		// should have sent switchTurn message to all 5 agents
+		verify(mock_ws.send(
+			{ action: "switchTurn", team: this.turn.getTeam(), turn: this.turn.getRole() }
+		)).times(5);
+	});
 });
