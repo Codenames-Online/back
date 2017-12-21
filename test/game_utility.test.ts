@@ -72,11 +72,8 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 	
 	// TODO: update this to use get operatives utility function
 	it("should correctly split operatives on team", () => {
-		let ops: Operative[] = agents.filter(player => player.role === Turn.op) as Operative[];
-		let red_ops = gu.getTeamOps(ops, Team.red);
-		let blue_ops = gu.getTeamOps(ops, Team.blue);
-
-		expect(red_ops.length).to.equal(2);
-		expect(blue_ops.length).to.equal(1);
+		let ops: Teams<Operative> = gu.getOperatives(agents);
+		expect(ops.red.length).to.equal(2);
+		expect(ops.blue.length).to.equal(1);
 	});
 });
