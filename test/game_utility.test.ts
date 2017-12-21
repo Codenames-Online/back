@@ -1,4 +1,5 @@
 import { Agent } from '../src/Agent';
+import { Teams } from '../src/Teams';
 import { Player } from '../src/Player';
 import { Loiterer } from '../src/Loiterer';
 import { Spymaster } from '../src/Spymaster';
@@ -7,20 +8,18 @@ import { GameUtility as gu } from '../src/GameUtility';
 import { Color, Team, Turn } from '../src/constants/Constants';
 
 import 'mocha';
+import ws = require('ws')
 import { expect } from 'chai';
-import WebSocket = require('ws')
-import { mock, instance, when } from 'ts-mockito';
-import { Teams } from '../src/Teams';
+import { mock, instance } from 'ts-mockito';
+
 
 describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
-	let mock_ws: WebSocket;
-	let mock_ws_instance: WebSocket;
+	let mock_ws_instance: ws;
 	let loiterers: Loiterer[];
 	let agents: Agent[];
 
 	before(() => {
-		mock_ws = mock(WebSocket);
-		mock_ws_instance = instance(mock_ws);
+		mock_ws_instance = instance(mock(ws));
 
 		let red_l_one = new Loiterer("1", "red_one", mock_ws_instance, Team.red);
 		let red_l_two = new Loiterer("2", "red_two", mock_ws_instance, Team.red);
