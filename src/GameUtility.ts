@@ -22,10 +22,6 @@ export module GameUtility {
 		return team === Team.red ? Team.blue : Team.red;
 	}
 
-	export function getTeamOps(allOps: Operative[], team: Team): Operative[] {
-		return allOps.filter(op => op.team === team);
-	}
-
 	// takes an object which extends the hasRedAndBlue interface meaning it has
 	// a field 'red' and a field 'blue' both of which are arrays of objects
 	// which extend TeamPlayer. hasRedAndBlue needs a Type argument so we

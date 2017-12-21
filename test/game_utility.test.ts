@@ -70,7 +70,6 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 		expect(gu.getOtherTeam(Team.blue)).to.equal(Team.red);
 	});
 	
-	// TODO: update this to use get operatives utility function
 	it("should correctly split operatives on team", () => {
 		let ops: Teams<Operative> = gu.getOperatives(agents);
 		expect(ops.red.length).to.equal(2);
