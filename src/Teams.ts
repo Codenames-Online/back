@@ -8,4 +8,6 @@ export class Teams<T extends TeamPlayer> {
 		this.red = red;
 		this.blue = blue;
   }
+
+  getAll() { return this.red.concat(this.blue); }
 }
