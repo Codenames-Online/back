@@ -38,9 +38,37 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		expect(turn.getTeam()).to.equal(Team.red);
 	});
 
-	
 	it("should error on starting twice", () => {	
 		turn.start([]);
 		expect(turn.start).to.throw(Error);
+	});
+
+	it("should error on advancing without first starting", () => {	
+		expect(turn.advance).to.throw(Error);
+	});
+
+	it("should correctly change teams and roles on advance", () => {
+		expect(turn.getRole()).to.equal(Turn.spy);
+		expect(turn.getTeam()).to.equal(Team.red);
+
+		turn.advance(agents);
+
+		expect(turn.getRole()).to.equal(Turn.op);
+		expect(turn.getTeam()).to.equal(Team.red);
+
+		turn.advance(agents);
+
+		expect(turn.getRole()).to.equal(Turn.spy);
+		expect(turn.getTeam()).to.equal(Team.blue);
+
+		turn.advance(agents);
+
+		expect(turn.getRole()).to.equal(Turn.op);
+		expect(turn.getTeam()).to.equal(Team.blue);
+
+		turn.advance(agents);
+
+		expect(turn.getRole()).to.equal(Turn.spy);
+		expect(turn.getTeam()).to.equal(Team.red);
 	});
 });
