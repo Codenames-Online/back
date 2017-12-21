@@ -16,7 +16,6 @@ import ws = require('ws');
 import * as _ from 'lodash'
 import * as c from './constants/Constants'
 
-
 export class Game {
 	score: number[];
 	clue?: Clue;
@@ -52,8 +51,8 @@ export class Game {
 		Broadcaster.updateScore(game.agents, game.score);
 		Broadcaster.startGame(game.agents, game.currTeam, startingRoster);
 
-		let spyMaster = game.findSpymasters()[game.startTeam];
-		Broadcaster.promptForClue(spyMaster);
+		let startSpy: Spymaster[] = gu.getByTeam(gu.getSpymasters(game.agents), game.startTeam);
+		Broadcaster.promptForClue(startSpy.pop() as Spymaster);
 		
 		return game;
 	}
@@ -83,11 +82,11 @@ export class Game {
 	}
 
 	broadcastUpdatedBoard() {
-		var spymasters = this.findSpymasters();
-    var operatives = this.findOperatives();
+		let ops = gu.getOperatives(this.agents).getAll();
+		let spys = gu.getSpymasters(this.agents).getAll();
 
-		Broadcaster.updateBoard(operatives, this.boardToColorsAndCards(false));
-		Broadcaster.updateBoard(spymasters, this.boardToColorsAndCards(true));
+		Broadcaster.updateBoard(ops, this.boardToColorsAndCards(false));
+		Broadcaster.updateBoard(spys, this.boardToColorsAndCards(true));
 	}
 
 	// on socket close, remove person
@@ -100,16 +99,6 @@ export class Game {
 		Broadcaster.updateTeams(this.agents, roster);
 	}
 	
-	findSpymasters(): Spymaster[] {
-		return this.agents.filter(
-			agent => agent.role === Turn.spy).sort(
-				(p1, p2) => { return p1.team < p2.team ? -1 : 1; });
-	}
-
-	findOperatives(): Operative[] {
-    return this.agents.filter(agent => agent.role === Turn.op) as Operative[];
-	}
-
 	// TODO: REALLLLLLLLY SHOULDNT CAST LIKE THIS
 	getAgentById(id: string): Agent {
     return this.agents.find(agent => agent.id === id) as Agent;
@@ -186,9 +175,11 @@ export class Game {
 	switchActiveTeam(): void {
     this.currTeam = this.currTeam === Team.red ? Team.blue : Team.red;
 		this.turn = Turn.spy;
-		var spymasters = this.findSpymasters();
+		
 		Broadcaster.switchActiveTeam(this.agents, this.currTeam, this.turn);
-		Broadcaster.promptForClue(spymasters[this.currTeam]);
+		
+		let currTeamSpy: Spymaster[] = gu.getByTeam(gu.getSpymasters(this.agents), this.currTeam)
+		Broadcaster.promptForClue(currTeamSpy.pop() as Spymaster);
 	}
 
   // update this.score
@@ -252,9 +243,9 @@ export class Game {
 					}
 				}
 
-				let canGuess= re.canSubmitGuess(this.findOperatives(), this.currTeam);
-				if(canGuess
-					&& !re.isAgentSpy(sop)
+				let currOperatives = gu.getByTeam(gu.getOperatives(this.agents), this.currTeam);
+				if(!re.isAgentSpy(sop)
+					&& re.canSubmitGuess(currOperatives)
 					&& re.isAgentTurn(this.currTeam, this.turn, sop)) {
 					this.guessAllowed();
 				}
@@ -271,9 +262,8 @@ export class Game {
 
 				this.checkGuess(currSelection as number);
 
-				this.findOperatives().filter(op => op.team === sop.team).forEach(
-					innerOp => this.toggleCard(innerOp, currSelection)
-				)
+				gu.getByTeam(gu.getOperatives(this.agents), sop.team).forEach(op => 
+						this.toggleCard(op, currSelection))
 				break;
 
 			case "endGame":
