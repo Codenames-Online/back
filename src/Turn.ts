@@ -20,7 +20,9 @@ export class GameTurn {
 
 	// fill in after writing tests
 	advance(agents: Agent[]) {
+		if(!this.started) { throw new Error("Can't advance without starting"); }
 
+		this.advanceState();
 	}
 
 	start(agents: Agent[]) {
@@ -31,5 +33,12 @@ export class GameTurn {
 
 		Broadcaster.startGame(agents, this.team, gu.getStartingRoster(agents));
 		Broadcaster.promptForClue(spyArr.pop() as Spymaster)
+	}
+
+	private advanceState(): void {
+		if(this.role === Turn.op)
+			this.team = gu.getOtherTeam(this.team);
+		
+		this.role = this.role === Turn.op ? Turn.spy : Turn.op;
 	}
 }
