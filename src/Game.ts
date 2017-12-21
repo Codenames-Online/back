@@ -23,23 +23,22 @@ export class Game {
 	turn: Turn;
 	board: Board;
 	agents: Agent[];
-	startTeam: Team;
 	currTeam: Team;
 
-  constructor() {
+  constructor(startTeam: Team) {
 		// switching to lobbies
-		this.setStartTeam();
-		this.board = new Board(this.startTeam);
-		this.currTeam = this.startTeam;
+		this.board = new Board(startTeam);
+		this.currTeam = startTeam;
 		this.score = [8,8];
-		this.score[this.startTeam] = 9;
+		this.score[startTeam] = 9;
 		this.numGuesses = 0;
 		this.agents = [];
 		this.turn = Turn.spy;
 	}
 	
 	static gameFromLobby(lobby: Lobby): Game {
-		let game = new Game();
+		let startTeam = gu.getStartTeam();
+		let game = new Game(startTeam);
 
 		game.agents = game.loiterersToAgents(lobby.getLoiterers());
 		
@@ -51,12 +50,12 @@ export class Game {
 		Broadcaster.updateScore(game.agents, game.score);
 		Broadcaster.startGame(game.agents, game.currTeam, startingRoster);
 
-		let startSpy: Spymaster[] = gu.getByTeam(gu.getSpymasters(game.agents), game.startTeam);
+		let startSpy: Spymaster[] = gu.getByTeam(gu.getSpymasters(game.agents), startTeam);
 		Broadcaster.promptForClue(startSpy.pop() as Spymaster);
 		
 		return game;
 	}
-
+	
 	loiterersToAgents(loiterers: Loiterer[]): Agent[] {
 		let foundSpy: [boolean, boolean] = [false, false];
 		let haveTeamSpy: boolean;
@@ -103,10 +102,6 @@ export class Game {
 	getAgentById(id: string): Agent {
     return this.agents.find(agent => agent.id === id) as Agent;
 	}
-
-  setStartTeam(): void {
-  	this.startTeam = Math.round(Math.random()) ? Team.red : Team.blue ;
-  }
 
   // set the clue and the initial number of guesses for operatives, switch turn to operatives
   initializeClue(clue: Clue): void {
