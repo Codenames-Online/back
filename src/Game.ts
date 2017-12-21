@@ -126,7 +126,6 @@ export class Game {
 			agent.selectCard(this.board.cards[cardIndex]);
 			this.board.cards[cardIndex].votes.push(agent.name);
 		}
-		this.broadcastUpdatedBoard();
 	}
 
   // decrease number of guesses
@@ -163,8 +162,6 @@ export class Game {
 			default:
 				throw new Error(`There shouldn't be an extra card type: ${this.board.colors[guessIndex]}`);
 		}
-
-		this.broadcastUpdatedBoard();
 	}
 
 	switchActiveTeam(): void {
@@ -188,7 +185,6 @@ export class Game {
 
 	revealCard(guessIndex: number): void {
 		this.board.cards[guessIndex].revealed = true;
-		this.broadcastUpdatedBoard();
 	}
 
 	endGame(team: Team): void {
@@ -236,6 +232,9 @@ export class Game {
 						console.log('second');
 						this.toggleCard(sop, message.cardIndex);
 					}
+
+					// move outside this.toggleCard to prevent repeated triggering
+					this.broadcastUpdatedBoard();
 				}
 
 				let currOperatives = gu.getByTeam(gu.getOperatives(this.agents), this.currTeam);
@@ -259,6 +258,9 @@ export class Game {
 
 				gu.getByTeam(gu.getOperatives(this.agents), sop.team).forEach(op => 
 						this.toggleCard(op, currSelection))
+				
+				// move outside this.toggleCard to prevent repeated triggering
+				this.broadcastUpdatedBoard();
 				break;
 
 			case "endGame":
