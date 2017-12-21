@@ -86,5 +86,12 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 
 		expect(gu.getByTeam(ops, Team.red).length).to.equal(2);
 		expect(gu.getByTeam(ops, Team.blue).length).to.equal(1);
-	});	
+	});
+	
+	it("should eventually produce both starting team colors", () => {
+		let toFind = gu.getOtherTeam(gu.getStartTeam());
+		// test passes as long as this loop doesn't hang forever
+		// due to randomness this test can be reliably expected to not hang for too long
+		while(toFind !== gu.getStartTeam()) {}
+	});
 });
