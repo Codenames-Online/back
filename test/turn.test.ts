@@ -25,7 +25,7 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		["1", "blue_spy", Team.blue, Turn.spy], ["2", "blue_op_one", Team.blue, Turn.op]]
 		
 		agents = data.map(t =>
-			new (t[3] === Turn.op ? Spymaster : Operative)(t[0], t[1], ws_inst, t[2])
+			new (t[3] === Turn.spy ? Spymaster : Operative)(t[0], t[1], ws_inst, t[2])
 		);
 	});
 
@@ -79,7 +79,7 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		// that it was sent to one agent)
 		verify(mock_ws.send(deepEqual(JSON.stringify(
 			{ action: "promptForClue" }
-		)))).times(5);
+		)))).once();
 
 		// should have sent gameStarted message to all 5 agents
 		verify(mock_ws.send(deepEqual(JSON.stringify(
@@ -98,5 +98,27 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		verify(mock_ws.send(deepEqual(JSON.stringify(
 			{ action: "switchTurn", team: turn.getTeam(), turn: turn.getRole() }
 		)))).times(5);
+	});
+
+	it("should send expected messages to expected agents on advance from op to spy", () => {
+		turn.start(agents);
+
+		// state is red spy
+		turn.advance(agents);
+
+		// state is red op
+		turn.advance(agents);
+
+		// state is blue spy
+		// should have sent switchActiveTeam message to all 5 agents
+		verify(mock_ws.send(deepEqual(JSON.stringify(
+			{ action: "switchActiveTeam", team: turn.getTeam(), turn: turn.getRole() }
+		)))).times(5);
+
+		// should also have sent promptForClue to blue spy (currently just checking
+		// that is was sent once)
+		verify(mock_ws.send(deepEqual(JSON.stringify(
+			{ action: "promptForClue" }
+		)))).once();
 	});
 });
