@@ -81,4 +81,11 @@ describe("Filename: game_utility.test.ts:\n\nGame Utility", () => {
 		expect((spys.red.pop() as Spymaster).name).to.equal("red_spy");
 		expect((spys.blue.pop() as Spymaster).name).to.equal("blue_spy");
 	});
+
+	it("should correctly split spymasters on team", () => {
+		let ops: Teams<Operative> = gu.getOperatives(agents);
+
+		expect(gu.getByTeam(ops, Team.red).length).to.equal(2);
+		expect(gu.getByTeam(ops, Team.blue).length).to.equal(1);
+	});	
 });
