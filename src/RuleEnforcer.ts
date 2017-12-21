@@ -45,8 +45,7 @@ export module RuleEnforcer {
     return teams.red.length >= 2 && teams.blue.length >= 2;
   }
 
-  export function canSubmitGuess(allOps: Operative[], team: Team): boolean {
-    let ops: Operative[] = gu.getTeamOps(allOps, team);
+  export function canSubmitGuess(ops: Operative[]): boolean {
     let selected: Card | undefined = ops[0].getSelected();
 
     // votes.length check and ops.every should be redundant but leaving in for now
