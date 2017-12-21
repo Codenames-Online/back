@@ -11,17 +11,17 @@ import { RuleEnforcer as re } from '../src/RuleEnforcer';
 import { Color, Team, Turn } from '../src/constants/Constants';
 
 import 'mocha';
+import ws = require('ws');
 import { expect } from 'chai';
-import WebSocket = require('ws');
-import { mock, instance, when } from 'ts-mockito';
+import { mock, instance } from 'ts-mockito';
 
 
 describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
-	let mock_ws: WebSocket;
-	let mock_ws_instance: WebSocket;
+	let mock_ws: ws;
+	let mock_ws_instance: ws;
 
 	before(() => {
-		mock_ws = mock(WebSocket);
+		mock_ws = mock(ws);
 		mock_ws_instance = instance(mock_ws);
 	});
 
