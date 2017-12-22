@@ -17,6 +17,11 @@ export module GameUtility {
 		return [teamPlayers.blue.map(teamPlayer => teamPlayer.name), 
 						teamPlayers.red.map(teamPlayer => teamPlayer.name)];
 	}
+
+	export function getStartingRoster(agents: Agent[]) {
+		return agents.map(agent => {
+			return { name: agent.name, role: agent.role, team: agent.team }});
+	}
 	
 	export function getOtherTeam(team: Team) {
 		return team === Team.red ? Team.blue : Team.red;
