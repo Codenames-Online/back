@@ -8,7 +8,7 @@ import { Team, Turn } from '../src/constants/Constants';
 import 'mocha';
 import ws = require('ws');
 import { expect } from 'chai';
-import { mock, instance, when, verify } from 'ts-mockito';
+import { mock, instance, when, verify, deepEqual } from 'ts-mockito';
 
 describe("Filename: turn.test.ts:\n\nTurn", () => {
 	let mock_ws: ws;
@@ -72,14 +72,31 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		expect(turn.getTeam()).to.equal(Team.red);
 	});
 
+	it("should send expected messages to expected agents on start", () => {
+		turn.start(agents);
+
+		// should have sent prompt for clue to red spymaster (for now just confirming
+		// that it was sent to one agent)
+		verify(mock_ws.send(deepEqual(JSON.stringify(
+			{ action: "promptForClue" }
+		)))).times(5);
+
+		// should have sent gameStarted message to all 5 agents
+		verify(mock_ws.send(deepEqual(JSON.stringify(
+			{ action: "gameStarted", team: turn.getTeam(), turn: turn.getRole() }
+		)))).times(5);
+	});
+
 	it("should send expected messages to expected agents on advance from spy to op", () => {
+		turn.start(agents);
+
 		// state is red spy
-		this.turn.advance(this.agents);
+		turn.advance(agents);
 
 		// state is red op
 		// should have sent switchTurn message to all 5 agents
-		verify(mock_ws.send(
-			{ action: "switchTurn", team: this.turn.getTeam(), turn: this.turn.getRole() }
-		)).times(5);
+		verify(mock_ws.send(deepEqual(JSON.stringify(
+			{ action: "switchTurn", team: turn.getTeam(), turn: turn.getRole() }
+		)))).times(5);
 	});
 });
