@@ -1,6 +1,6 @@
 import { Card } from './Card'
 import { Clue } from './Clue'
-import { Team, Turn } from './constants/Constants'
+import { Team, Role } from './constants/Constants'
 import { Board } from './Board'
 import { Agent } from './Agent'
 import { Loiterer } from './Loiterer'
@@ -16,11 +16,11 @@ export module Broadcaster {
 		player.socket.send(JSON.stringify(message));
 	}
 
-	export function switchTurn(agents: Agent[], team: Team, turn: Turn) {
+	export function switchTurn(agents: Agent[], team: Team, turn: Role) {
 		broadcastToPlayers(agents, { action: "switchTurn", team: team, turn: turn });
 	}
 
-	export function switchActiveTeam(agents: Agent[], team: Team, turn: Turn) {
+	export function switchActiveTeam(agents: Agent[], team: Team, turn: Role) {
 		broadcastToPlayers(agents, { action: "switchActiveTeam", team: team, turn: turn });
 	}
 

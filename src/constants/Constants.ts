@@ -11,7 +11,7 @@ export enum Team {
   red = 1,
 }
 
-export enum Turn {
+export enum Role {
   spy = 0,
   op = 1,
 }

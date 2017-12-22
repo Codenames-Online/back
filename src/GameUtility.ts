@@ -3,7 +3,7 @@ import { Teams } from './Teams';
 import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
 import { TeamPlayer } from './TeamPlayer';
-import { Team, Turn } from './constants/Constants'
+import { Team, Role } from './constants/Constants'
 
 export module GameUtility {	
 	export function getTeams<T extends TeamPlayer>(teamPlayers: T[]): Teams<T> {
@@ -41,14 +41,14 @@ export module GameUtility {
 	}
 
 	export function getOperatives(agents: Agent[]): Teams<Operative> {
-		return getTeams(getAgentByRole(agents, Turn.op) as Operative[]);
+		return getTeams(getAgentByRole(agents, Role.op) as Operative[]);
 	}
 
 	export function getSpymasters(agents: Agent[]): Teams<Spymaster> {
-		return getTeams(getAgentByRole(agents, Turn.spy) as Spymaster[]);
+		return getTeams(getAgentByRole(agents, Role.spy) as Spymaster[]);
 	}
 
-	function getAgentByRole(agents: Agent[], role: Turn): Agent[] {
+	function getAgentByRole(agents: Agent[], role: Role): Agent[] {
 		return agents.filter(agent => agent.role === role);
 	}
 }

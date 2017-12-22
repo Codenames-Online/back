@@ -6,7 +6,7 @@ import { Loiterer } from './Loiterer';
 import { Operative } from './Operative';
 import { Spymaster } from './Spymaster';
 import { GameUtility as gu } from './GameUtility';
-import { Team, Turn } from './constants/Constants';
+import { Team, Role } from './constants/Constants';
 
 let words = require('check-word')('en');
 
@@ -29,12 +29,12 @@ export module RuleEnforcer {
     return isValidWord(clue.word) && isValidNumGuesses(clue.num) && !isWordOnBoard(clue.word, cards);
   }
 
-  export function isAgentTurn(currTeam: Team, currTurn: Turn, agent: Agent): boolean {
+  export function isAgentTurn(currTeam: Team, currTurn: Role, agent: Agent): boolean {
     return currTeam === agent.team && currTurn === agent.role;
   }
 
   export function isAgentSpy(agent: Agent): boolean {
-    return agent.role === Turn.spy;
+    return agent.role === Role.spy;
   }
 
   export function isCardSelectable(cards: Card[], cardIndex: number): boolean {
