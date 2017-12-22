@@ -4,7 +4,7 @@ import { Broadcaster } from "./Broadcaster";
 import { GameUtility as gu } from './GameUtility';
 import { Team, Role } from "./constants/Constants";
 
-export class GameTurn {
+export class Turn {
 	private role: Role;
 	private team: Team;
 	private started: Boolean;

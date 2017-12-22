@@ -1,5 +1,5 @@
 import { Agent } from '../src/Agent';
-import { GameTurn } from '../src/Turn';
+import { Turn } from '../src/Turn';
 import { Loiterer } from '../src/Loiterer';
 import { Spymaster } from '../src/Spymaster';
 import { Operative } from '../src/Operative';
@@ -15,7 +15,7 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 	let mock_ws: ws;
 	let ws_inst: ws;
 	let agents: Agent[];
-	let turn: GameTurn;
+	let turn: Turn;
 
 	before(() => {
 		mock_ws = mock(ws);
@@ -31,7 +31,7 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 	});
 
 	beforeEach(() => {
-		turn = new GameTurn(Team.red);
+		turn = new Turn(Team.red);
 		resetCalls(mock_ws);
 	});
 
