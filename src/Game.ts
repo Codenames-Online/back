@@ -1,5 +1,6 @@
 import { Clue } from './Clue';
-import { Card } from './Card'
+import { Card } from './Card';
+import { Turn } from './Turn';
 import { Teams } from './Teams';
 import { Lobby } from './Lobby';
 import { Board } from './Board';
@@ -20,56 +21,24 @@ export class Game {
 	score: number[];
 	clue?: Clue;
 	numGuesses: number;
-	turn: Role;
 	board: Board;
 	agents: Agent[];
-	currTeam: Team;
+	turn: Turn;
 
-  constructor(startTeam: Team) {
+  constructor(startTeam: Team, agents: Agent[]) {
 		// switching to lobbies
 		this.board = new Board(startTeam);
-		this.currTeam = startTeam;
 		this.score = [8,8];
 		this.score[startTeam] = 9;
 		this.numGuesses = 0;
-		this.agents = [];
-		this.turn = Role.spy;
-	}
-	
-	static gameFromLobby(lobby: Lobby): Game {
-		let startTeam = gu.getStartTeam();
-		let game = new Game(startTeam);
-
-		game.agents = game.loiterersToAgents(lobby.getLoiterers());
+		this.agents = agents;
+		this.turn = new Turn(startTeam);
 		
-		let startingRoster = gu.getStartingRoster(game.agents);
+		this.broadcastUpdatedBoard()
+		Broadcaster.updateScore(this.agents, this.score);
 
-		game.broadcastUpdatedBoard();
-		Broadcaster.updateScore(game.agents, game.score);
-		Broadcaster.startGame(game.agents, game.currTeam, startingRoster);
-
-		let startSpy: Spymaster[] = gu.getByTeam(gu.getSpymasters(game.agents), startTeam);
-		Broadcaster.promptForClue(startSpy.pop() as Spymaster);
-		
-		return game;
+		this.turn.start(this.agents);
 	}
-	
-	loiterersToAgents(loiterers: Loiterer[]): Agent[] {
-		let foundSpy: [boolean, boolean] = [false, false];
-		let haveTeamSpy: boolean;
-		
-		return loiterers.map(loiterer => {
-			haveTeamSpy = foundSpy[loiterer.team];
-			if(!haveTeamSpy) { foundSpy[loiterer.team] = true; }
-			let agent = haveTeamSpy
-				? Operative.loitererToOperative(loiterer)
-				: Spymaster.loitererToSpymaster(loiterer);
-			Broadcaster.updateLoitererToAgent(loiterer, agent);
-
-			return agent;
-		});
-	}
-	
 	
 	boardToColorsAndCards(toSpymasters): [number, Card][] {
 		return this.board.cards.map((card: Card, index) => {
