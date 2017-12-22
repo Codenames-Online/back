@@ -10,7 +10,7 @@ import { Loiterer } from './Loiterer';
 import { Broadcaster } from './Broadcaster';
 import { GameUtility as gu } from './GameUtility'
 import { RuleEnforcer as re } from './RuleEnforcer';
-import { Color, Team, Turn } from './constants/Constants';
+import { Color, Team, Role } from './constants/Constants';
 
 import ws = require('ws');
 import * as _ from 'lodash'
@@ -20,7 +20,7 @@ export class Game {
 	score: number[];
 	clue?: Clue;
 	numGuesses: number;
-	turn: Turn;
+	turn: Role;
 	board: Board;
 	agents: Agent[];
 	currTeam: Team;
@@ -33,7 +33,7 @@ export class Game {
 		this.score[startTeam] = 9;
 		this.numGuesses = 0;
 		this.agents = [];
-		this.turn = Turn.spy;
+		this.turn = Role.spy;
 	}
 	
 	static gameFromLobby(lobby: Lobby): Game {
@@ -107,7 +107,7 @@ export class Game {
 		this.clue.num = Number(clue.num);
 		this.clue.guesses = Number(clue.num) + 1;
 		console.log("Clue num after: " + this.clue.num);
-		this.turn = Turn.op;
+		this.turn = Role.op;
 		this.numGuesses = clue.guesses;
 
 		Broadcaster.switchTurn(this.agents, this.currTeam, this.turn);
@@ -164,7 +164,7 @@ export class Game {
 
 	switchActiveTeam(): void {
     this.currTeam = this.currTeam === Team.red ? Team.blue : Team.red;
-		this.turn = Turn.spy;
+		this.turn = Role.spy;
 		
 		Broadcaster.switchActiveTeam(this.agents, this.currTeam, this.turn);
 		

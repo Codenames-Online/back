@@ -5,7 +5,7 @@ import { Loiterer } from '../src/Loiterer';
 import { Spymaster } from '../src/Spymaster';
 import { Operative } from '../src/Operative';
 import { GameUtility as gu } from '../src/GameUtility';
-import { Color, Team, Turn } from '../src/constants/Constants';
+import { Color, Team, Role } from '../src/constants/Constants';
 
 import 'mocha';
 import ws = require('ws')

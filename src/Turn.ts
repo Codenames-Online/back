@@ -1,21 +1,20 @@
 import { Agent } from "./Agent";
 import { Spymaster } from "./Spymaster";
 import { Broadcaster } from "./Broadcaster";
-import { GameUtility as gu } from "./GameUtility";
-import { Team, Turn } from "./constants/Constants";
+import { GameUtility as gu } from './GameUtility';
+import { Team, Role } from "./constants/Constants";
 
 export class GameTurn {
-	private role: Turn;
+	private role: Role;
 	private team: Team;
 	private started: Boolean;
 
 	constructor(startTeam: Team) {
 		this.team = startTeam;
-		this.role = Turn.spy;
-		this.started = false;
+		this.role = Role.spy;
 	}
 
-	getRole(): Turn { return this.role; }
+	getRole(): Role { return this.role; }
 	getTeam(): Team { return this.team; }
 
 	// fill in after writing tests
@@ -37,14 +36,14 @@ export class GameTurn {
 	}
 
 	private advanceState(): void {
-		if(this.role === Turn.op)
+		if(this.role === Role.op)
 			this.team = gu.getOtherTeam(this.team);
 		
-		this.role = this.role === Turn.op ? Turn.spy : Turn.op;
+		this.role = this.role === Role.op ? Role.spy : Role.op;
 	}
 
 	private sendMessages(agents: Agent[]): void {
-		if(this.role === Turn.spy) {
+		if(this.role === Role.spy) {
 			let spyArr: Spymaster[] = gu.getByTeam(gu.getSpymasters(agents), this.team);
 			
 			Broadcaster.promptForClue(spyArr.pop() as Spymaster);

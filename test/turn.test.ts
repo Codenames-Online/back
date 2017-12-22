@@ -4,7 +4,7 @@ import { Loiterer } from '../src/Loiterer';
 import { Spymaster } from '../src/Spymaster';
 import { Operative } from '../src/Operative';
 import { GameUtility as gu } from '../src/GameUtility';
-import { Team, Turn } from '../src/constants/Constants';
+import { Team, Role } from '../src/constants/Constants';
 
 import 'mocha';
 import ws = require('ws');
@@ -21,12 +21,12 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		mock_ws = mock(ws);
 		ws_inst = instance(mock_ws);
 
-		let data: [string, string, Team, Turn][] = [["1", "red_spy", Team.red, Turn.spy],
-		["2", "red_op_one", Team.red, Turn.op], ["3", "red_op_two", Team.red, Turn.op],
-		["1", "blue_spy", Team.blue, Turn.spy], ["2", "blue_op_one", Team.blue, Turn.op]]
+		let data: [string, string, Team, Role][] = [["1", "red_spy", Team.red, Role.spy],
+		["2", "red_op_one", Team.red, Role.op], ["3", "red_op_two", Team.red, Role.op],
+		["1", "blue_spy", Team.blue, Role.spy], ["2", "blue_op_one", Team.blue, Role.op]]
 		
 		agents = data.map(t =>
-			new (t[3] === Turn.spy ? Spymaster : Operative)(t[0], t[1], ws_inst, t[2])
+			new (t[3] === Role.spy ? Spymaster : Operative)(t[0], t[1], ws_inst, t[2])
 		);
 	});
 
@@ -36,7 +36,7 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 	});
 
 	it("should always begin with spy of starting team", () => {	
-		expect(turn.getRole()).to.equal(Turn.spy);
+		expect(turn.getRole()).to.equal(Role.spy);
 		expect(turn.getTeam()).to.equal(Team.red);
 	});
 
@@ -52,27 +52,27 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 	it("should correctly change teams and roles on advance", () => {
 		turn.start(agents);
 
-		expect(turn.getRole()).to.equal(Turn.spy);
+		expect(turn.getRole()).to.equal(Role.spy);
 		expect(turn.getTeam()).to.equal(Team.red);
 
 		turn.advance(agents);
 
-		expect(turn.getRole()).to.equal(Turn.op);
+		expect(turn.getRole()).to.equal(Role.op);
 		expect(turn.getTeam()).to.equal(Team.red);
 
 		turn.advance(agents);
 
-		expect(turn.getRole()).to.equal(Turn.spy);
+		expect(turn.getRole()).to.equal(Role.spy);
 		expect(turn.getTeam()).to.equal(Team.blue);
 
 		turn.advance(agents);
 
-		expect(turn.getRole()).to.equal(Turn.op);
+		expect(turn.getRole()).to.equal(Role.op);
 		expect(turn.getTeam()).to.equal(Team.blue);
 
 		turn.advance(agents);
 
-		expect(turn.getRole()).to.equal(Turn.spy);
+		expect(turn.getRole()).to.equal(Role.spy);
 		expect(turn.getTeam()).to.equal(Team.red);
 	});
 
@@ -120,9 +120,9 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		)))).times(5);
 
 		// should also have sent promptForClue to blue spy (currently just checking
-		// that is was sent once)
+		// that is was sent twice [once to start game and then once on switch])
 		verify(mock_ws.send(deepEqual(JSON.stringify(
 			{ action: "promptForClue" }
-		)))).once();
+		)))).twice();
 	});
 });
