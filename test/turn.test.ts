@@ -37,4 +37,10 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 		expect(turn.getRole()).to.equal(Turn.spy);
 		expect(turn.getTeam()).to.equal(Team.red);
 	});
+
+	
+	it("should error on starting twice", () => {	
+		turn.start([]);
+		expect(turn.start).to.throw(Error);
+	});
 });
