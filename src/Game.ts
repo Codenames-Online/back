@@ -76,11 +76,10 @@ export class Game {
 		this.clue.num = Number(clue.num);
 		this.clue.guesses = Number(clue.num) + 1;
 		console.log("Clue num after: " + this.clue.num);
-		this.turn = Role.op;
 		this.numGuesses = clue.guesses;
 
-		Broadcaster.switchTurn(this.agents, this.currTeam, this.turn);
-		Broadcaster.postClue(this.agents, this.clue, this.currTeam);
+		this.turn.advance(this.agents);
+		Broadcaster.postClue(this.agents, this.clue, this.turn.getTeam());
   }
 
 	// toggle card (select OR deselect)
@@ -99,46 +98,36 @@ export class Game {
   decrementGuesses(): void {
     this.numGuesses--;
 		(this.clue as Clue).guesses--;
-		Broadcaster.postClue(this.agents, this.clue as Clue, this.currTeam);
+		Broadcaster.postClue(this.agents, this.clue as Clue, this.turn.getTeam());
 
-		if (this.numGuesses == 0) { this.switchActiveTeam(); }
+		if (this.numGuesses === 0) { this.turn.advance(this.agents); }
   }
 
 	guessAllowed(): void {
 		let teams = gu.getTeams(this.agents);
-		Broadcaster.allowGuess(this.currTeam === Team.red ? teams.red : teams.blue, true);
+		Broadcaster.allowGuess(this.turn.getTeam() === Team.red ? teams.red : teams.blue, true);
 	}
 
 	checkGuess(guessIndex: number): void {
 		this.revealCard(guessIndex);
 
 		switch(this.board.colors[guessIndex]) {
-			case this.currTeam:
+			case this.turn.getTeam():
 				this.decrementGuesses();
-				this.updateScore(this.currTeam);
+				this.updateScore(this.turn.getTeam());
 				break;
 			case Color.assassin:
-				this.endGame(gu.getOtherTeam(this.currTeam));
+				this.endGame(gu.getOtherTeam(this.turn.getTeam()));
 				break;
-			case gu.getOtherTeam(this.currTeam):
-				this.updateScore(gu.getOtherTeam(this.currTeam));
+			case gu.getOtherTeam(this.turn.getTeam()):
+				this.updateScore(gu.getOtherTeam(this.turn.getTeam()));
 				// fall through
 			case Color.neutral:
-				this.switchActiveTeam()
+				this.turn.advance(this.agents);
 				break;
 			default:
 				throw new Error(`There shouldn't be an extra card type: ${this.board.colors[guessIndex]}`);
 		}
-	}
-
-	switchActiveTeam(): void {
-    this.currTeam = this.currTeam === Team.red ? Team.blue : Team.red;
-		this.turn = Role.spy;
-		
-		Broadcaster.switchActiveTeam(this.agents, this.currTeam, this.turn);
-		
-		let currTeamMaster: Spymaster[] = gu.getByTeam(gu.getSpymasters(this.agents), this.currTeam)
-		Broadcaster.promptForClue(currTeamMaster.pop() as Spymaster);
 	}
 
   // update this.score
@@ -167,7 +156,7 @@ export class Game {
 			case "sendClue":
 				console.log('Case sendClue reached');
 				if(re.isLegalClue(message.clue, this.board.cards)
-				&& re.isAgentTurn(this.currTeam, this.turn, this.getAgentById(message.pid))) {
+				&& re.isAgentTurn(this.turn.getTeam(), this.turn.getRole(), this.getAgentById(message.pid))) {
 					this.initializeClue(message.clue);
 				} else {
 					if(!re.isValidWord(message.clue.word)) {
@@ -184,7 +173,7 @@ export class Game {
 				console.log('Case toggleCard reached');
 				let sop: Operative = this.getAgentById(message.pid) as Operative;
 				if(re.isCardSelectable(this.board.cards, message.cardIndex)
-					&& re.isAgentTurn(this.currTeam, this.turn, sop)
+					&& re.isAgentTurn(this.turn.getTeam(), this.turn.getRole(), sop)
 					&& !re.isAgentSpy(sop)) {
 					let previousSelection = this.board.cards.findIndex((card: Card) => {
 						return card.votes.indexOf(sop.name) !== -1;
@@ -204,10 +193,10 @@ export class Game {
 					this.broadcastUpdatedBoard();
 				}
 
-				let currOperatives = gu.getByTeam(gu.getOperatives(this.agents), this.currTeam);
+				let currOperatives = gu.getByTeam(gu.getOperatives(this.agents), this.turn.getTeam());
 				if(!re.isAgentSpy(sop)
 					&& re.canSubmitGuess(currOperatives)
-					&& re.isAgentTurn(this.currTeam, this.turn, sop)) {
+					&& re.isAgentTurn(this.turn.getTeam(), this.turn.getRole(), sop)) {
 					this.guessAllowed();
 				}
 
@@ -247,8 +236,8 @@ export class Game {
 				console.log('Case endTurn reached');
 
 				let sp: Agent = this.getAgentById(message.pid) as Agent;
-				if(re.isAgentTurn(this.currTeam, this.turn, sp)) {
-					this.switchActiveTeam();
+				if(re.isAgentTurn(this.turn.getTeam(), this.turn.getRole(), sp)) {
+					this.turn.advance(this.agents);
 				}
 
 				break;
