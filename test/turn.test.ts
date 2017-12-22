@@ -3,12 +3,13 @@ import { GameTurn } from '../src/Turn';
 import { Loiterer } from '../src/Loiterer';
 import { Spymaster } from '../src/Spymaster';
 import { Operative } from '../src/Operative';
+import { GameUtility as gu } from '../src/GameUtility';
 import { Team, Turn } from '../src/constants/Constants';
 
 import 'mocha';
 import ws = require('ws');
 import { expect } from 'chai';
-import { mock, instance, when, verify, deepEqual } from 'ts-mockito';
+import { mock, instance, when, verify, deepEqual, resetCalls } from 'ts-mockito';
 
 describe("Filename: turn.test.ts:\n\nTurn", () => {
 	let mock_ws: ws;
@@ -31,6 +32,7 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 
 	beforeEach(() => {
 		turn = new GameTurn(Team.red);
+		resetCalls(mock_ws);
 	});
 
 	it("should always begin with spy of starting team", () => {	
@@ -39,7 +41,7 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 	});
 
 	it("should error on starting twice", () => {	
-		turn.start([]);
+		turn.start(agents);
 		expect(turn.start).to.throw(Error);
 	});
 
@@ -83,7 +85,7 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 
 		// should have sent gameStarted message to all 5 agents
 		verify(mock_ws.send(deepEqual(JSON.stringify(
-			{ action: "gameStarted", team: turn.getTeam(), turn: turn.getRole() }
+			{ action: "gameStarted", startTeam: turn.getTeam(), roster: gu.getStartingRoster(agents) }
 		)))).times(5);
 	});
 
