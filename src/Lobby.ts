@@ -7,6 +7,10 @@ import { RuleEnforcer as re } from './RuleEnforcer'
 
 import ws = require('ws')
 import * as _ from 'lodash'
+import { Game } from './Game';
+import { Operative } from './Operative';
+import { Spymaster } from './Spymaster';
+import { Agent } from './Agent';
 
 /**
  * Manages a single lobby before a game has been started.
@@ -70,4 +74,26 @@ export class Lobby {
 		Broadcaster.updateTeams(this.loiterers, gu.getRoster(sloitererTeams));
 		Broadcaster.toggleStartButton(this.loiterers, re.canStartGame(sloitererTeams));
 	}
+
+	generateGame(): Game {
+		return new Game(gu.getStartTeam(), this.loiterersToAgents(this.loiterers));
+	}
+
+
+	private loiterersToAgents(loiterers: Loiterer[]): Agent[] {
+		let foundSpy: [boolean, boolean] = [false, false];
+		let haveTeamSpy: boolean;
+		
+		return loiterers.map(loiterer => {
+			haveTeamSpy = foundSpy[loiterer.team];
+			if(!haveTeamSpy) { foundSpy[loiterer.team] = true; }
+			let agent = haveTeamSpy
+				? Operative.loitererToOperative(loiterer)
+				: Spymaster.loitererToSpymaster(loiterer);
+			Broadcaster.updateLoitererToAgent(loiterer, agent);
+
+			return agent;
+		});
+	}	
+
 }
