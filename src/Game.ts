@@ -42,9 +42,7 @@ export class Game {
 
 		game.agents = game.loiterersToAgents(lobby.getLoiterers());
 		
-		let startingRoster = game.agents.map(agent => {
-			return { name: agent.name, role: agent.role, team: agent.team }
-		});
+		let startingRoster = gu.getStartingRoster(game.agents);
 
 		game.broadcastUpdatedBoard();
 		Broadcaster.updateScore(game.agents, game.score);
