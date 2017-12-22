@@ -190,6 +190,6 @@ export class Manager {
 			(this.playerStates.get(loiterer.socket) as PlayerState).placeInGame();
 		});
 		this.lobbies.delete(gid);
-		this.games.set(gid, Game.gameFromLobby(lobby));		
+		this.games.set(gid, lobby.generateGame());		
 	}
 }
