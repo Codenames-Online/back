@@ -23,6 +23,7 @@ export class GameTurn {
 		if(!this.started) { throw new Error("Can't advance without starting"); }
 
 		this.advanceState();
+		this.sendMessages(agents);
 	}
 
 	start(agents: Agent[]) {
@@ -40,5 +41,16 @@ export class GameTurn {
 			this.team = gu.getOtherTeam(this.team);
 		
 		this.role = this.role === Turn.op ? Turn.spy : Turn.op;
+	}
+
+	private sendMessages(agents: Agent[]): void {
+		if(this.role === Turn.spy) {
+			let spyArr: Spymaster[] = gu.getByTeam(gu.getSpymasters(agents), this.team);
+			
+			Broadcaster.promptForClue(spyArr.pop() as Spymaster);
+			Broadcaster.switchActiveTeam(agents, this.team, this.role);
+		} else {
+			Broadcaster.switchTurn(agents, this.team, this.role);
+		}
 	}
 }
