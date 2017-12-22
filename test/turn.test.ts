@@ -42,14 +42,16 @@ describe("Filename: turn.test.ts:\n\nTurn", () => {
 
 	it("should error on starting twice", () => {	
 		turn.start(agents);
-		expect(turn.start).to.throw(Error);
+		expect(() => { turn.start(agents) }).to.throw(Error, "Can't start game twice");
 	});
 
 	it("should error on advancing without first starting", () => {	
-		expect(turn.advance).to.throw(Error);
+		expect(() => { turn.advance(agents) }).to.throw(Error, "Can't advance without starting");
 	});
 
 	it("should correctly change teams and roles on advance", () => {
+		turn.start(agents);
+
 		expect(turn.getRole()).to.equal(Turn.spy);
 		expect(turn.getTeam()).to.equal(Team.red);
 
