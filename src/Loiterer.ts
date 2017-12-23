@@ -1,13 +1,13 @@
-import { Team } from "../constants/Constants";
 import WebSocket = require('ws')
+import { Team } from "./constants/Constants";
 
-export class SLoiterer {
+export class Loiterer {
   name: string;
   id: string;
   team: Team;
   socket: WebSocket;
 
-  constructor(name, id, team, socket) {
+  constructor(name: string, id: string, team: Team, socket: WebSocket) {
     this.name = name;
     this.id = id;
     this.team = team;

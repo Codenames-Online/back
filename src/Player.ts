@@ -1,14 +1,15 @@
-import { Team } from "../constants/Constants";
+import { Team, Turn } from "./constants/Constants";
+
 import WebSocket = require('ws')
 
-export abstract class SPlayer {
+export abstract class Player {
   id: string;
   team: Team;
   name: string;
-  role: number;
+  role: Turn;
   socket: WebSocket;
   
-  constructor(name: string, id: string, team: Team, socket: WebSocket, role: number) {
+  constructor(name: string, id: string, team: Team, socket: WebSocket, role: Turn) {
     this.name = name;
     this.id = id;
     this.team = team;

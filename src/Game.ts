@@ -1,17 +1,18 @@
 import * as _ from 'lodash'
+import * as c from './constants/Constants'
 import { GameUtility as gu } from './GameUtility'
-import * as c from '../constants/Constants'
 
 import { Clue } from './Clue';
 import { Card } from './Card'
 import { Board } from './Board';
-import { SPlayer } from './SPlayer';
-import { SOperative } from './SOperative';
-import { SSpymaster } from './SSpymaster';
-import { SLoiterer } from './SLoiterer';
+import { Player } from './Player';
+import { Operative } from './Operative';
+import { Spymaster } from './Spymaster';
+import { Loiterer } from './Loiterer';
 import { Broadcaster } from './Broadcaster';
-import { Team, Turn } from '../constants/Constants';
-import { RuleEnforcer } from './RuleEnforcer';
+import { RuleEnforcer as re } from './RuleEnforcer';
+import { SPlayerTeams, SLoitererTeams } from './Teams'
+import { Color, Team, Turn } from './constants/Constants';
 
 export class Game {
 	score: number[];
@@ -19,8 +20,8 @@ export class Game {
 	numGuesses: number;
 	turn: Turn;
 	board: Board;
-	players: SPlayer[];
-	loiterers: SLoiterer[];
+	players: Player[];
+	loiterers: Loiterer[];
 	startTeam: Team;
 	currTeam: Team;
 
@@ -48,18 +49,18 @@ export class Game {
 	// adds new loiterer to play class
 	// TODO: Weird typing issue between here and Receiver
   registerLoiterer(name: string, socket) {
-		let sloitererTeams: [SLoiterer[], SLoiterer[]] = gu.getSloitererTeams(this.loiterers);
-		let team: Team = sloitererTeams[Team.blue].length <= sloitererTeams[Team.red].length ? Team.blue : Team.red;
+		let beforeTeams: SLoitererTeams = gu.getSloitererTeams(this.loiterers);
+		let team: Team = beforeTeams.blue.length <= beforeTeams.red.length ? Team.blue : Team.red;
 		let id = Date.now().toString(36);
 
-    let newLoiterer = new SLoiterer(name, id, team, socket);
+    let newLoiterer = new Loiterer(name, id, team, socket);
     this.loiterers.push(newLoiterer);
-    let sloitererRoster = gu.getSloitererRoster(this.loiterers);
+    let afterTeams = gu.getSloitererTeams(this.loiterers);
 
 		Broadcaster.updateLoiterer(newLoiterer);
-		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
+		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(afterTeams));
 
-		if (RuleEnforcer.canStartGame(sloitererRoster)) {
+		if (re.canStartGame(afterTeams)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
   }
@@ -74,10 +75,10 @@ export class Game {
 			}
     }
 
-		let sloitererRoster = gu.getSloitererRoster(this.loiterers);
+		let sloitererTeams = gu.getSloitererTeams(this.loiterers);
 
-		Broadcaster.updateTeams(this.loiterers, sloitererRoster);
-		if (RuleEnforcer.canStartGame(sloitererRoster)) {
+		Broadcaster.updateTeams(this.loiterers, gu.getSloitererRoster(sloitererTeams));
+		if (re.canStartGame(sloitererTeams)) {
 			Broadcaster.toggleStartButton(this.loiterers, true);
 		}
     else {
@@ -97,8 +98,13 @@ export class Game {
 			}
 			if (index > -1) { this.loiterers.splice(index, 1); }
 
-			roster = gu.getSloitererRoster(this.loiterers);
+			let teams = gu.getSloitererTeams(this.loiterers);
+			roster = gu.getSloitererRoster(teams);
 			Broadcaster.updateTeams(this.loiterers, roster);
+			
+			if (!re.canStartGame(teams)) {
+				Broadcaster.toggleStartButton(this.loiterers, false);
+			}
 		}
 		else {
 			for (var i = 0; i < this.players.length; i++) {
@@ -106,12 +112,8 @@ export class Game {
 			}
 			if (index > -1) { this.players.splice(index, 1); }
 
-			roster = gu.getPlayerRoster(this.players);
+			roster = gu.getPlayerRoster(gu.getPlayerTeams(this.players));
 			Broadcaster.updateTeams(this.players, roster);
-		}
-
-		if (!RuleEnforcer.canStartGame(roster)) {
-			Broadcaster.toggleStartButton(this.loiterers, false);
 		}
 	}
 
@@ -145,8 +147,8 @@ export class Game {
 		for (let loit of this.loiterers) {
 			haveTeamSpy = foundSpy[loit.team];
 			let player = haveTeamSpy
-				? new SOperative(loit.name, loit.id, loit.team, loit.socket, Turn.op)
-				: new SSpymaster(loit.name, loit.id, loit.team, loit.socket, Turn.spy);
+				? new Operative(loit.name, loit.id, loit.team, loit.socket)
+				: new Spymaster(loit.name, loit.id, loit.team, loit.socket);
 
 			if(!haveTeamSpy) { foundSpy[loit.team] = true; }
 
@@ -157,19 +159,19 @@ export class Game {
 		this.loiterers = [];
   }
 
-	findSpymasters(): SSpymaster[] {
+	findSpymasters(): Spymaster[] {
 		return this.players.filter(player => player.role === Turn.spy).sort((p1, p2) => {
 			return p1.team < p2.team ? -1 : 1;
 		});
 	}
 
-	findOperatives(): SOperative[] {
-    return this.players.filter(player => player.role === Turn.op) as SOperative[];
+	findOperatives(): Operative[] {
+    return this.players.filter(player => player.role === Turn.op) as Operative[];
 	}
 
-	getPlayerById(id: string): SPlayer {
+	getPlayerById(id: string): Player {
     // TODO: REALLLLLLLLY SHOULDNT CAST LIKE THIS
-    return this.players.find((player) => { return player.id === id; }) as SPlayer;
+    return this.players.find((player) => { return player.id === id; }) as Player;
 	}
 
   setStartTeam(): void {
@@ -190,7 +192,7 @@ export class Game {
   }
 
 	// toggle card (select OR deselect)
-	toggleCard(player: SOperative, cardIndex: number): void {
+	toggleCard(player: Operative, cardIndex: number): void {
 		var playerIndex = this.board.cards[cardIndex].votes.indexOf(player.name);
 		if (playerIndex !== -1) {
 			player.deselectCard();
@@ -213,7 +215,8 @@ export class Game {
   }
 
 	guessAllowed(): void {
-		Broadcaster.allowGuess(gu.getPlayerTeams(this.players)[this.currTeam], true);
+		let teams = gu.getPlayerTeams(this.players);
+		Broadcaster.allowGuess(this.currTeam === Team.red ? teams.red : teams.blue, true);
 	}
 
 	checkGuess(guessIndex: number): void {
@@ -224,13 +227,13 @@ export class Game {
 				this.decrementGuesses();
 				this.updateScore(this.currTeam);
 				break;
-			case c.ASSASSIN:
+			case Color.assassin:
 				this.endGame(gu.getOtherTeam(this.currTeam));
 				break;
 			case gu.getOtherTeam(this.currTeam):
 				this.updateScore(gu.getOtherTeam(this.currTeam));
 				// fall through
-			case c.NEUTRAL:
+			case Color.neutral:
 				this.switchActiveTeam()
 				break;
 			default:

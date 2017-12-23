@@ -1,6 +1,6 @@
 {
-	"watch": ["game"],
+	"watch": ["src"],
   "ext": "ts",
-  "ignore": ["game/**/*.spec.ts"],
-  "exec": "npm run ts-node ./game/index.ts"
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "npm run ts-node ./src/index.ts"
 }

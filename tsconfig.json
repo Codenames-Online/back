@@ -1,13 +1,14 @@
 {
 	"compilerOptions": {
 		"target": "ES6",
-		"outDir": "lib",
+		"outDir": "dist",
 		"module": "commonjs",
 		"strictNullChecks": true,
-		"declaration": true
+		"declaration": true,
+		"sourceMap": true
 	},
 	"include": [
-		"game/**/*.ts",
+		"src/**/*.ts",
 		"test/**/*.ts"
 	]
 }

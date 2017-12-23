@@ -3,10 +3,10 @@ import url = require('url')
 
 import { Card } from './Card'
 import { Game } from './Game'
-import { SPlayer } from './SPlayer'
-import { SOperative } from './SOperative'
+import { Player } from './Player'
+import { Operative } from './Operative'
 import { Broadcaster } from './Broadcaster';
-import { RuleEnforcer } from './RuleEnforcer';
+import { RuleEnforcer as re } from './RuleEnforcer';
 import { GameUtility as gu } from './GameUtility'
 
 export class Receiver {
@@ -43,7 +43,7 @@ export class Receiver {
 			switch(action) {
 				case "setName":
 					console.log('Case setName reached');
-					if (RuleEnforcer.isValidName(message.name)) {
+					if (re.isValidName(message.name)) {
 						this.game.registerLoiterer(message.name, socket);
 					}
 					break;
@@ -55,27 +55,22 @@ export class Receiver {
 
 				case "startGame":
 					console.log('Case startGame reached');
-					if(RuleEnforcer.canStartGame(gu.getSloitererRoster(this.game.loiterers))) {
+					if(re.canStartGame(gu.getSloitererTeams(this.game.loiterers))) {
 						this.game.startGame();
 					};
 					break;
 
 				case "sendClue":
 					console.log('Case sendClue reached');
-					let legalClue: boolean = RuleEnforcer.isLegalClue(message.clue);
-					let isWordOnBoard: boolean = RuleEnforcer.isWordOnBoard(message.clue, this.game.board.cards);
-					let theirTurn: boolean = RuleEnforcer.isPlayerTurn(this.game, this.game.getPlayerById(message.id));
-					let validNum: boolean = RuleEnforcer.isValidNum(message.clue)
-					if(legalClue && !isWordOnBoard && theirTurn && validNum) {
+					if(re.isLegalClue(message.clue, this.game.board.cards)
+					&& re.isPlayerTurn(this.game.currTeam, this.game.turn, this.game.getPlayerById(message.id))) {
 						this.game.initializeClue(message.clue);
 					} else {
-						if(isWordOnBoard){
-							socket.send(JSON.stringify({ action: "invalidClueWord", reason: "wordOnBoard"}));
-						}
-						else if(!legalClue) {
+						if(!re.isValidWord(message.clue.word)) {
 							socket.send(JSON.stringify({ action: "invalidClueWord", reason: "notWord"}));
-						}
-						else if(!validNum) {
+						} else if(re.isWordOnBoard(message.clue.word, this.game.board.cards)) {
+							socket.send(JSON.stringify({ action: "invalidClueWord", reason: "wordOnBoard"}));							
+						} else if(!re.isValidNumGuesses(message.clue.num)) {
 							socket.send(JSON.stringify({ action: "invalidClueNum", }));
 						}
 					}
@@ -83,10 +78,10 @@ export class Receiver {
 
 				case "toggleCard": {
 					console.log('Case toggleCard reached');
-					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
-					if(RuleEnforcer.isSelectableCard(this.game, message.cardIndex)
-						&& RuleEnforcer.isPlayerTurn(this.game, sop)
-						&& !RuleEnforcer.isPlayerSpy(this.game, sop)) {
+					let sop: Operative = this.game.getPlayerById(message.id) as Operative;
+					if(re.isCardSelectable(this.game.board.cards, message.cardIndex)
+						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)
+						&& !re.isPlayerSpy(sop)) {
 						let previousSelection = this.game.board.cards.findIndex((card: Card) => {
 							return card.votes.indexOf(sop.name) !== -1;
 						});
@@ -102,11 +97,10 @@ export class Receiver {
 						}
 					}
 
-					let [ canGuess, index ] = RuleEnforcer.canSubmitGuess(this.game);
+					let canGuess= re.canSubmitGuess(this.game.findOperatives(), this.game.currTeam);
 					if(canGuess
-						&& !RuleEnforcer.isPlayerSpy(this.game, sop)
-						&& RuleEnforcer.isPlayerTurn(this.game, sop)) {
-						// if made it inside we know index is valid
+						&& !re.isPlayerSpy(sop)
+						&& re.isPlayerTurn(this.game.currTeam, this.game.turn, sop)) {
 						this.game.guessAllowed();
 					}
 
@@ -115,7 +109,7 @@ export class Receiver {
 
 				case "submitGuess":
 					console.log('Case submitGuess reached');
-					let sop: SOperative = this.game.getPlayerById(message.id) as SOperative;
+					let sop: Operative = this.game.getPlayerById(message.id) as Operative;
 					let currSelection = this.game.board.cards.findIndex((card: Card) => {
 						return card.votes.indexOf(sop.name) !== -1;
 					});
@@ -135,7 +129,7 @@ export class Receiver {
 					console.log('Case sendMessage reached');
 
 					const player = this.game.getPlayerById(message.id);
-					if(!RuleEnforcer.isPlayerSpy(this.game, player)) {
+					if(!re.isPlayerSpy(player)) {
 						Broadcaster.sendMessage(this.game.players, message.text, player)
 					}
 					break;
@@ -143,8 +137,8 @@ export class Receiver {
 				case "endTurn":
 					console.log('Case endTurn reached');
 
-					let sp: SPlayer = this.game.getPlayerById(message.id) as SPlayer;
-					if(RuleEnforcer.isPlayerTurn(this.game, sp)) {
+					let sp: Player = this.game.getPlayerById(message.id) as Player;
+					if(re.isPlayerTurn(this.game.currTeam, this.game.turn, sp)) {
 						this.game.switchActiveTeam();
 					}
 
