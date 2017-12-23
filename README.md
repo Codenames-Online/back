@@ -25,6 +25,14 @@ nodemon
 This will make the backend server available at `http://localhost:8000`. If everything is working, going to that page should say "Let's get started". You should then be able
 to use the front-end properly when running it locally.
 
+## Development
+
+Run `npm install` to install required dependencies and then happy hacking!
+
+### Running Tests
+
+`make test` will run Mocha tests.
+
 [viktor]: https://github.com/vkoves
 [lily]: https://github.com/lilyszhang
 [armaan]: https://github.com/armaanshah96
