@@ -1,6 +1,6 @@
 import { Card } from "./Card";
 import { Team, Color } from "./constants/Constants";
-import { words } from "./constants/wordlist";
+import { words } from "./constants/Wordlist";
 
 import { shuffle, sampleSize } from 'lodash'
 
@@ -21,7 +21,7 @@ export class Board {
 
   private generateColors(): number[] {
     return shuffle([Color.assassin, this.startTeam.valueOf(),
-      ...Array(8).fill(Color.blue), ...Array(8).fill(Color.red), 
+      ...Array(8).fill(Color.blue), ...Array(8).fill(Color.red),
       ...Array(7).fill(Color.neutral)]);
   }
 }
