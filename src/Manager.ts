@@ -119,6 +119,8 @@ export class Manager {
 					let gid = message.gid.toLocaleLowerCase();
 					if(this.lobbies.has(gid))
 						this.placePlayerInLobby(message.pid, gid, socket);
+					else
+						socket.send(JSON.stringify({ action: "invalidLobby" }));
 					break;
 
 				case "switchTeam":
