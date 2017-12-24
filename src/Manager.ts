@@ -14,6 +14,19 @@ import { Team, PlayerLocation } from './constants/Constants';
 import ws = require('ws');
 import { shuffle } from 'lodash'
 
+/**
+ * Manages lobbies, active games and unallocated players. Recieves messages
+ * from WebSocketServer and routes them on to respective Lobbies or Games, or
+ * handles them directly depending on the message.
+ * 
+ * Also keeps track of all players in the system, triggering removal from
+ * respective games, lobbies or unallocated players on a socket close.
+ * 
+ * Uses Game Ids (GIDs) to keep track of current lobbies and games. Players must
+ * provide the GID matching their Player Id (PID) to take action in a game or
+ * lobby. Currently GIDs are drawn from the wordlist, this is a temporary
+ * measure that will be changed in the future.
+ */
 export class Manager {
 	playerStates: Map<ws, PlayerState>;
 	loners: Map<string, Player>;
