@@ -64,7 +64,7 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		expect(re.isValidWord("supercalifragilistcexpialidocious")).to.be.false;
 	});
 
-	it("should return false for words that are not on the board (regardless of dictionary)", () => {
+	it("should determine if words are not on the board (regardless of dictionary)", () => {
 		let words = ["ALIEN", "ALPS", "BOARD", "BUG", "BUGLE", "CODE", "DIAMOND", "DICE",
 		"EAGLE", "EGYPT", "FISH", "FLY", "GAS", "GENIUS", "HAND", "HOLE", "JAM",
 		"LEAD", "LOCH NESS", "POOL", "PYRAMID", "QUEEN", "ROBOT", "SNOWMAN", "WORM"];
@@ -76,7 +76,7 @@ describe("Filename: rules_enforcer.test.ts:\n\nRules Enforcer", () => {
 		expect(re.isWordOnBoard("supercalifragilistcexpialidocious", cards)).to.be.false;
 	});
 
-	it("should return true for words that are on the board (regardless of dictionary)", () => {
+	it("should determine if words are on the board (regardless of dictionary)", () => {
 		let words = ["porg", "ALPS", "BOARD", "BUG", "BUGLE", "CODE", "DIAMOND", "DICE",
 		"EAGLE", "EGYPT", "FISH", "FLY", "GAS", "GENIUS", "HAND", "HOLE", "JAM",
 		"LEAD", "LOCH NESS", "POOL", "PYRAMID", "QUEEN", "ROBOT", "SNOWMAN", "WORM"];
