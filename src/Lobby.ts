@@ -8,6 +8,12 @@ import { RuleEnforcer as re } from './RuleEnforcer'
 import ws = require('ws')
 import * as _ from 'lodash'
 
+/**
+ * Manages a single lobby before a game has been started.
+ * 
+ * Provides methods for adding and removing players along with switching players
+ * from team to team.
+ */
 export class Lobby {
 	readonly id: string;
 	private loiterers: Loiterer[];
