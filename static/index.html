@@ -1,21 +1,21 @@
 <html>
-    <head></head>
-    <body>
-        <h1>Lets get started</h1>
+  <head></head>
+  <body>
+    <h1>Lets get started</h1>
 
-    </body>
-    <script>
-        // Create WebSocket connection.
-        const socket = new WebSocket(`ws://${window.location.hostname}:3000`);
+  </body>
+  <script>
+    // Create WebSocket connection.
+    const socket = new WebSocket(`ws://${window.location.hostname}:3000`);
 
-        // Connection opened
-        socket.addEventListener('open', function (event) {
-            // socket.send({ greeting: 'Hello Server!'});
-        });
+    // Connection opened
+    socket.addEventListener('open', function (event) {
+        // socket.send({ greeting: 'Hello Server!'});
+    });
 
-        // Listen for messages
-        socket.addEventListener('message', function (event) {
-            console.log('Message from server ', event.data);
-        });
-    </script>
+    // Listen for messages
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server ', event.data);
+    });
+  </script>
 </html>

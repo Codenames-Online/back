@@ -1,13 +1,13 @@
 .PHONY: all clean test challenge
 
 all:
-	npm run tsc
+  npm run tsc
 
 clean:
-	rm -rf dist/
+  rm -rf dist/
 
 test: all
-	npm test
+  npm test
 
 server: all
-	npm run ts-node src/index.ts
+  npm run ts-node src/index.ts
