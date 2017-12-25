@@ -7,7 +7,7 @@ export abstract class Agent extends TeamPlayer {
   role: Role;
   
   constructor(id: string, name: string, socket: ws, team: Team, role: Role) {
-		super(id, name, socket, team);
+    super(id, name, socket, team);
     this.role = role;
   }
 

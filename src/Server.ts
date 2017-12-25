@@ -13,8 +13,8 @@ const app: express.Application = express()
 logger.token('req-body', (req, res) => { return JSON.stringify(req.body); });
 
 app.use(logger(
-		// log dev + req-body
-	':method :url :status :response-time ms - :res[content-length] :req-body'
+    // log dev + req-body
+  ':method :url :status :response-time ms - :res[content-length] :req-body'
 ));
 
 app.use(express.static('static'));

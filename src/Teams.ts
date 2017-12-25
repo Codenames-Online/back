@@ -5,8 +5,8 @@ export class Teams<T extends TeamPlayer> {
   readonly blue: T[];
 
   constructor(red: T[], blue: T[]) {
-		this.red = red;
-		this.blue = blue;
+    this.red = red;
+    this.blue = blue;
   }
 
   getAll() { return this.red.concat(this.blue); }
