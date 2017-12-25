@@ -23,7 +23,7 @@ export module GameUtility {
 	}
 
 	export function getStartTeam(): Team {
-  	return Math.round(Math.random()) ? Team.red : Team.blue ;
+		return Math.round(Math.random()) ? Team.red : Team.blue ;
 	}
 
 	// takes an object which extends the hasRedAndBlue interface meaning it has

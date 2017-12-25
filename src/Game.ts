@@ -170,8 +170,8 @@ export class Game {
 		
 		Broadcaster.switchActiveTeam(this.agents, this.currTeam, this.turn);
 		
-		let currTeamSpy: Spymaster[] = gu.getByTeam(gu.getSpymasters(this.agents), this.currTeam)
-		Broadcaster.promptForClue(currTeamSpy.pop() as Spymaster);
+		let currTeamMaster: Spymaster[] = gu.getByTeam(gu.getSpymasters(this.agents), this.currTeam)
+		Broadcaster.promptForClue(currTeamMaster.pop() as Spymaster);
 	}
 
   // update this.score
@@ -257,7 +257,7 @@ export class Game {
 				this.checkGuess(currSelection as number);
 
 				gu.getByTeam(gu.getOperatives(this.agents), sop.team).forEach(op => 
-						this.toggleCard(op, currSelection))
+						this.toggleCard(op, currSelection));
 				
 				// move outside this.toggleCard to prevent repeated triggering
 				this.broadcastUpdatedBoard();
