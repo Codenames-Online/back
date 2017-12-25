@@ -4,6 +4,13 @@ import { Broadcaster } from "./Broadcaster";
 import { GameUtility as gu } from './GameUtility';
 import { Team, Role } from "./constants/Constants";
 
+/**
+ * Handles operations conducted on a turn switch
+ * 
+ * Separates out logic for simply advancing turns from other classes so that
+ * they don't have to worry about it and so that we aren't manually setting
+ * whose turn it is.
+ */
 export class Turn {
 	private role: Role;
 	private team: Team;
@@ -17,7 +24,6 @@ export class Turn {
 	getRole(): Role { return this.role; }
 	getTeam(): Team { return this.team; }
 
-	// fill in after writing tests
 	advance(agents: Agent[]) {
 		if(!this.started) { throw new Error("Can't advance without starting"); }
 
